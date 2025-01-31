@@ -1,5 +1,7 @@
 package com.questmast.questmast.core.selectionprocess;
 
+import com.questmast.questmast.core.boardexaminer.BoardExaminer;
+import com.questmast.questmast.core.contentmoderator.ContentModerator;
 import com.questmast.questmast.core.selectionprocessstatus.SelectionProcessStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -20,6 +22,16 @@ public class SelectionProcess {
     @NotNull
     @Column(nullable = false)
     private String name;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "board_examiner_id ", nullable = false)
+    private BoardExaminer boardExaminer;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "content_moderator_id", nullable = false)
+    private ContentModerator contentModerator;
 
     @NotNull
     @ManyToOne

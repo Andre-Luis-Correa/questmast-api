@@ -2,10 +2,7 @@ package com.questmast.questmast.core.person;
 
 import com.questmast.questmast.core.person.gender.Gender;
 import com.questmast.questmast.core.person.cpf.CPF;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,4 +20,8 @@ public class NaturalPerson extends Person {
     @ManyToOne
     @JoinColumn(name = "gender_acronym", nullable = false)
     private Gender gender;
+
+    @NotNull
+    @Column(nullable = false)
+    private Boolean isEmailVerified;
 }

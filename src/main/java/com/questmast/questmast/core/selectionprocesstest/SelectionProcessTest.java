@@ -16,9 +16,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@MappedSuperclass
 @EqualsAndHashCode(callSuper = true)
-public class SelectionTestProcess extends EvaluationTest {
+public class SelectionProcessTest extends EvaluationTest {
 
     @NotNull
     @ManyToOne
