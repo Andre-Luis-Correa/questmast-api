@@ -36,5 +36,5 @@ public class SolvedEvaluationTest {
 
     @NotNull
     @OneToMany(cascade = CascadeType.ALL)
-    private List<SolvedEvaluationTestQuestion> solvedEvaluationTestQuestionList;
+    private List<SolvedEvaluationTestQuestion> solvedQuestionList;
 }
