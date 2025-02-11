@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.selectionprocessstatus;
+package com.questmast.questmast.core.selectionprocessstatus.domain.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
