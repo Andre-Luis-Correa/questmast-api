@@ -1,12 +1,12 @@
 package com.questmast.questmast.core.testquestioncategory.service;
 
+//import com.questmast.questmast.exceptions.domain.EntityNotFoundException;
 import com.questmast.questmast.core.testquestioncategory.domain.dto.TestQuestionCategoryDTO;
 import com.questmast.questmast.core.testquestioncategory.domain.dto.TestQuestionCategoryFormDTO;
 import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
 import com.questmast.questmast.core.testquestioncategory.mapper.TestQuestionCategoryMapStructMapper;
 import com.questmast.questmast.core.testquestioncategory.mapper.TestQuestionCategoryMapper;
 import com.questmast.questmast.core.testquestioncategory.repository.TestQuestionCategoryRepository;
-//import com.questmast.questmast.exceptions.domain.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

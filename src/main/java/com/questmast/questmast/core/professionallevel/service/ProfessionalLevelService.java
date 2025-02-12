@@ -1,11 +1,11 @@
 package com.questmast.questmast.core.professionallevel.service;
 
+//import com.questmast.questmast.exceptions.domain.EntityNotFoundException;
 import com.questmast.questmast.core.professionallevel.domain.dto.ProfessionalLevelDTO;
 import com.questmast.questmast.core.professionallevel.domain.dto.ProfessionalLevelFormDTO;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
 import com.questmast.questmast.core.professionallevel.mapper.ProfessionalLevelMapStructMapper;
 import com.questmast.questmast.core.professionallevel.repository.ProfessionalLevelRepository;
-//import com.questmast.questmast.exceptions.domain.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +22,9 @@ public class ProfessionalLevelService {
     private final ProfessionalLevelMapStructMapper professionalLevelMapper;
 
     public ProfessionalLevel findById(Long id) {
-        return professionalLevelRepository.findById(id)
-                //.orElseThrow(() -> new EntityNotFoundException("ProfessionalLevel", "id", id.toString()));
+        return professionalLevelRepository.findById(id).orElseThrow(
+                //() -> new EntityNotFoundException("ProfessionalLevel", "id", id.toString()));
+        );
     }
 
     public ProfessionalLevel save(ProfessionalLevelFormDTO professionalLevelFormDTO) {
