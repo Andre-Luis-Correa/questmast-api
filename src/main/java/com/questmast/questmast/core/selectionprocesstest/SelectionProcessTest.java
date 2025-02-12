@@ -2,7 +2,7 @@ package com.questmast.questmast.core.selectionprocesstest;
 
 import com.questmast.questmast.core.evaluationtest.EvaluationTest;
 import com.questmast.questmast.core.function.Function;
-import com.questmast.questmast.core.professionallevel.ProfessionalLevel;
+import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
 import com.questmast.questmast.core.selectionprocess.SelectionProcess;
 import com.questmast.questmast.core.testquestioncategory.TestQuestionCategory;
 import jakarta.persistence.*;
