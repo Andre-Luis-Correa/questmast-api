@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.questiondifficultylevel;
+package com.questmast.questmast.core.testquestioncategory.domain.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuestionDifficultyLevel {
+public class TestQuestionCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,8 +19,4 @@ public class QuestionDifficultyLevel {
     @NotNull
     @Column(nullable = false)
     private String name;
-
-    @NotNull
-    @Column(nullable = false)
-    private String description;
 }

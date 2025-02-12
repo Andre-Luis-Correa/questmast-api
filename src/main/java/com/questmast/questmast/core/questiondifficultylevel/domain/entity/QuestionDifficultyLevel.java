@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.questionalternative;
+package com.questmast.questmast.core.questiondifficultylevel.domain.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuestionAlternative {
+public class QuestionDifficultyLevel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,13 +18,9 @@ public class QuestionAlternative {
 
     @NotNull
     @Column(nullable = false)
-    private String alternativeLetter;
+    private String name;
 
     @NotNull
     @Column(nullable = false)
-    private String statement;
-
-    @NotNull
-    @Column(nullable = false)
-    private Boolean isCorrect;
+    private String description;
 }

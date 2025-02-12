@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.subject;
+package com.questmast.questmast.core.subject.domain.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

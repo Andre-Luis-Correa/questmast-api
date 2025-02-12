@@ -1,10 +1,10 @@
 package com.questmast.questmast.core.question;
 
-import com.questmast.questmast.core.questionalternative.QuestionAlternative;
-import com.questmast.questmast.core.questiondifficultylevel.QuestionDifficultyLevel;
-import com.questmast.questmast.core.subject.Subject;
-import com.questmast.questmast.core.subjecttopic.SubjectTopic;
-import com.questmast.questmast.core.testquestioncategory.TestQuestionCategory;
+import com.questmast.questmast.core.questionalternative.domain.entity.QuestionAlternative;
+import com.questmast.questmast.core.questiondifficultylevel.domain.entity.QuestionDifficultyLevel;
+import com.questmast.questmast.core.subject.domain.entity.Subject;
+import com.questmast.questmast.core.subjecttopic.domain.entity.SubjectTopic;
+import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

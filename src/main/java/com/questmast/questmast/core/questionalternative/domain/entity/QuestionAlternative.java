@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.testquestioncategory;
+package com.questmast.questmast.core.questionalternative.domain.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class TestQuestionCategory {
+public class QuestionAlternative {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,5 +18,13 @@ public class TestQuestionCategory {
 
     @NotNull
     @Column(nullable = false)
-    private String name;
+    private String alternativeLetter;
+
+    @NotNull
+    @Column(nullable = false)
+    private String statement;
+
+    @NotNull
+    @Column(nullable = false)
+    private Boolean isCorrect;
 }

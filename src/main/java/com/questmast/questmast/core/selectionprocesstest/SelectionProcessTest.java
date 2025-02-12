@@ -4,7 +4,7 @@ import com.questmast.questmast.core.evaluationtest.EvaluationTest;
 import com.questmast.questmast.core.function.Function;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
 import com.questmast.questmast.core.selectionprocess.SelectionProcess;
-import com.questmast.questmast.core.testquestioncategory.TestQuestionCategory;
+import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

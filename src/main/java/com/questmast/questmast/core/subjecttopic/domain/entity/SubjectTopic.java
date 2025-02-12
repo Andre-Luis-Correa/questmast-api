@@ -1,6 +1,6 @@
-package com.questmast.questmast.core.subjecttopic;
+package com.questmast.questmast.core.subjecttopic.domain.entity;
 
-import com.questmast.questmast.core.subject.Subject;
+import com.questmast.questmast.core.subject.domain.entity.Subject;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
