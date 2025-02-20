@@ -29,10 +29,13 @@ public record UserFormDTO(
         @NotNull
         SpecificAddressFormDTO specificAddressFormDTO,
 
-        @NotNull
-        List<PhoneFormDTO> phoneList,
+        @NotBlank
+        String mainEmail,
+
+        @NotBlank
+        String recoveryEmail,
 
         @NotNull
-        List<EmailFormDTO> emailList
+        List<PhoneFormDTO> phoneList
 ) {
 }

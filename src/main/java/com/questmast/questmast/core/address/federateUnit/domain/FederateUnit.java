@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.address.federativeunit;
+package com.questmast.questmast.core.address.federateUnit.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

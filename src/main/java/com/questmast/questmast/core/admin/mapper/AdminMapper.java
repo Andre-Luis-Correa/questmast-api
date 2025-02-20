@@ -7,7 +7,7 @@ import com.questmast.questmast.core.admin.domain.model.Admin;
 import com.questmast.questmast.core.contact.email.domain.entity.Email;
 import com.questmast.questmast.core.contact.phone.domain.model.Phone;
 import com.questmast.questmast.core.gender.domain.Gender;
-import com.questmast.questmast.core.person.cpf.CPF;
+import com.questmast.questmast.core.person.cpf.domain.CPF;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

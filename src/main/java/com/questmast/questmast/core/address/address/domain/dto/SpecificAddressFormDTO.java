@@ -13,16 +13,19 @@ public record SpecificAddressFormDTO(
         @NotBlank
         String cep,
 
-        @NotNull
-        Long streetId,
+        @NotBlank
+        String street,
 
         @NotBlank
-        String streetTypeAcronym,
+        String streetType,
 
-        @NotNull
-        Long neighborhoodId,
+        @NotBlank
+        String neighborhood,
 
-        @NotNull
-        Long cityId
+        @NotBlank
+        String city,
+
+        @NotBlank
+        String federateUnit
 ) {
 }

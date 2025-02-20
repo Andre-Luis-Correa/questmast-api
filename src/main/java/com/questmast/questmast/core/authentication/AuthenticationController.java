@@ -1,5 +1,6 @@
 package com.questmast.questmast.core.authentication;
 
+import com.questmast.questmast.common.exception.domain.CPFNotValidException;
 import com.questmast.questmast.core.address.address.domain.entity.Address;
 import com.questmast.questmast.core.address.address.service.AddressService;
 import com.questmast.questmast.core.admin.domain.dto.AdminDTO;
@@ -19,6 +20,8 @@ import com.questmast.questmast.core.address.neighborhood.domain.Neighborhood;
 import com.questmast.questmast.core.address.neighborhood.service.NeighborhoodService;
 import com.questmast.questmast.core.address.street.domain.Street;
 import com.questmast.questmast.core.address.street.service.StreetService;
+import com.questmast.questmast.core.person.cpf.domain.CPF;
+import com.questmast.questmast.core.person.cpf.service.CPFService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,26 +40,28 @@ public class AuthenticationController {
     private final AdminService adminService;
     private final GenderService genderService;
     private final AddressService addressService;
-    private final StreetService streetService;
-    private final NeighborhoodService neighborhoodService;
-    private final CityService cityService;
     private final PhoneService phoneService;
     private final EmailService emailService;
+    private final CPFService cpfService;
 
     @PostMapping
     public String authenticate(Authentication authentication) {
         return authenticationService.authenticate(authentication);
     }
 
+    @GetMapping
+    public ResponseEntity<Boolean> email(String email) throws Exception {
+        return ResponseEntity.ok().body(emailService.isEmailValid(email));
+    }
+
     @PostMapping("/register")
-    public ResponseEntity<AdminDTO> create(@RequestBody UserFormDTO userFormDTO) {
+    public ResponseEntity<AdminDTO> create(@RequestBody UserFormDTO userFormDTO) throws Exception {
+        CPF cpf = cpfService.getValidCPF(userFormDTO.cpf());
         Gender gender = genderService.findByAcronym(userFormDTO.genderAcronym());
-        Street street = streetService.findById(userFormDTO.specificAddressFormDTO().streetId());
-        Neighborhood neighborhood = neighborhoodService.findById(userFormDTO.specificAddressFormDTO().neighborhoodId());
-        City city = cityService.findById(userFormDTO.specificAddressFormDTO().cityId());
-        Address address = addressService.create(userFormDTO.specificAddressFormDTO(), street, neighborhood, city);
+        Address address = addressService.create(userFormDTO.specificAddressFormDTO());
+        Email mainEmail = emailService.getValidEmail(userFormDTO.mainEmail());
+        Email reocveryEmail = emailService.getValidEmail(userFormDTO.recoveryEmail());
         List<Phone> phoneList = phoneService.generateValidPhoneList(userFormDTO.phoneList());
-        List<Email> emailList = emailService.generateValidEmailList(userFormDTO.emailList());
 
         if(userFormDTO.personRole().equals(PersonRole.ROLE_ADMIN)) {
             adminService.create(userFormDTO, gender, address, phoneList, emailList);

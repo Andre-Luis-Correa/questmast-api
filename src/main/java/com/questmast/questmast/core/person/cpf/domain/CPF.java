@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.person.cpf;
+package com.questmast.questmast.core.person.cpf.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

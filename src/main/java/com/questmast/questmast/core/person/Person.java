@@ -29,6 +29,11 @@ public class Person {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Phone> phoneList;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Email> emailList;
+    @NotNull
+    @Embedded
+    private Email mainEmail;
+
+    @NotNull
+    @Embedded
+    private Email recoveryEmail;
 }

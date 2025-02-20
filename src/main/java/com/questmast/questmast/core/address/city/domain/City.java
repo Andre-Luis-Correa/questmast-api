@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.address.city.domain;
 
-import com.questmast.questmast.core.address.federativeunit.FederateUnit;
+import com.questmast.questmast.core.address.federateUnit.domain.FederateUnit;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

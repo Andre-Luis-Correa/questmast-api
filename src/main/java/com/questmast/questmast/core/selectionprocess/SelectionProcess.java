@@ -24,6 +24,10 @@ public class SelectionProcess {
     private String name;
 
     @NotNull
+    @Column(nullable = false)
+    private Integer viewCounter;
+
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "board_examiner_id ", nullable = false)
     private BoardExaminer boardExaminer;
