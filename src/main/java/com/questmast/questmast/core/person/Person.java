@@ -31,9 +31,11 @@ public class Person {
 
     @NotNull
     @Embedded
+    @Column(nullable = false, unique = true, name = "main_email")
     private Email mainEmail;
 
     @NotNull
     @Embedded
+    @Column(nullable = false, unique = true, name = "recovery_email")
     private Email recoveryEmail;
 }

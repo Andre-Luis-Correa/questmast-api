@@ -16,6 +16,5 @@ import lombok.NoArgsConstructor;
 public class Email {
 
     @NotNull
-    @Column(nullable = false, unique = true)
     private String email;
 }

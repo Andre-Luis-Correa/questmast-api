@@ -25,7 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public void create(UserFormDTO userFormDTO) {
-        User user = new User(userFormDTO.emailList().get(0).email(), userFormDTO.password(), PersonRole.ROLE_ADMIN);
+        User user = new User(userFormDTO.mainEmail(), userFormDTO.password(), PersonRole.ROLE_ADMIN);
         userRepository.save(user);
     }
 }
