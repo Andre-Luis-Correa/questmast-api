@@ -64,7 +64,7 @@ public class AuthenticationController {
         List<Phone> phoneList = phoneService.generateValidPhoneList(userFormDTO.phoneList());
 
         if(userFormDTO.personRole().equals(PersonRole.ROLE_ADMIN)) {
-            adminService.create(userFormDTO, gender, address, phoneList, emailList);
+            adminService.create(userFormDTO, gender, address, mainEmail, reocveryEmail, phoneList);
             userDetailsService.create(userFormDTO);
         }
 

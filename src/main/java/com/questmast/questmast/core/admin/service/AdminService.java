@@ -23,10 +23,10 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final AdminMapper adminMapper;
 
-    public void create(UserFormDTO userFormDTO, Gender gender, Address address, List<Phone> phoneList, List<Email> emailList) {
+    public void create(UserFormDTO userFormDTO, Gender gender, Address address, Email mainEmail, Email recoveryEmail, List<Phone> phoneList) {
         SpecificAddress specificAddress = new SpecificAddress(userFormDTO.specificAddressFormDTO().number(), userFormDTO.specificAddressFormDTO().complement(), address);
         CPF cpf = new CPF(userFormDTO.cpf());
-        Admin admin = convertToAdmin(userFormDTO, cpf, gender, specificAddress, phoneList, emailList);
+        Admin admin = convertToAdmin(userFormDTO, cpf, gender, specificAddress, mainEmail, recoveryEmail, phoneList);
         admin.setIsEmailVerified(true);
 
         Admin adminSaved = adminRepository.save(admin);
@@ -36,7 +36,7 @@ public class AdminService {
         return adminMapper.convertAdminToAdminDTO(admin);
     }
 
-    private Admin convertToAdmin(UserFormDTO userFormDTO, CPF cpf, Gender gender, SpecificAddress specificAddress, List<Phone> phoneList, List<Email> emailList) {
-        return adminMapper.convertToAdmin(userFormDTO, cpf, gender, specificAddress, phoneList, emailList);
+    private Admin convertToAdmin(UserFormDTO userFormDTO, CPF cpf, Gender gender, SpecificAddress specificAddress, Email mainEmail, Email recoveryEmail, List<Phone> phoneList) {
+        return adminMapper.convertToAdmin(userFormDTO, cpf, gender, specificAddress, mainEmail, recoveryEmail, phoneList);
     }
 }
