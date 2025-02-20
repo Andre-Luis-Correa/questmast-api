@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.admin.mapper;
 
-import com.questmast.questmast.core.address.domain.entity.SpecificAddress;
+import com.questmast.questmast.core.address.address.domain.entity.SpecificAddress;
 import com.questmast.questmast.core.admin.domain.dto.AdminDTO;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
 import com.questmast.questmast.core.admin.domain.model.Admin;

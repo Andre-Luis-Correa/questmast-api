@@ -2,7 +2,7 @@ package com.questmast.questmast.core.person;
 
 import com.questmast.questmast.core.contact.email.domain.entity.Email;
 import com.questmast.questmast.core.contact.phone.domain.model.Phone;
-import com.questmast.questmast.core.address.domain.entity.SpecificAddress;
+import com.questmast.questmast.core.address.address.domain.entity.SpecificAddress;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.admin.domain.dto;
 
-import com.questmast.questmast.core.address.domain.entity.SpecificAddress;
+import com.questmast.questmast.core.address.address.domain.entity.SpecificAddress;
 import com.questmast.questmast.core.contact.email.domain.entity.Email;
 import com.questmast.questmast.core.contact.phone.domain.model.Phone;
 import com.questmast.questmast.core.person.cpf.CPF;

@@ -1,17 +1,14 @@
 package com.questmast.questmast.core.admin.service;
 
-import com.questmast.questmast.core.address.domain.entity.Address;
-import com.questmast.questmast.core.address.domain.entity.SpecificAddress;
+import com.questmast.questmast.core.address.address.domain.entity.Address;
+import com.questmast.questmast.core.address.address.domain.entity.SpecificAddress;
 import com.questmast.questmast.core.admin.domain.dto.AdminDTO;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
 import com.questmast.questmast.core.admin.domain.model.Admin;
 import com.questmast.questmast.core.admin.mapper.AdminMapper;
 import com.questmast.questmast.core.admin.repository.AdminRepository;
-import com.questmast.questmast.core.authentication.user.domain.entity.User;
-import com.questmast.questmast.core.authentication.user.service.UserDetailsServiceImpl;
 import com.questmast.questmast.core.contact.email.domain.entity.Email;
 import com.questmast.questmast.core.contact.phone.domain.model.Phone;
-import com.questmast.questmast.core.enums.PersonRole;
 import com.questmast.questmast.core.gender.domain.Gender;
 import com.questmast.questmast.core.person.cpf.CPF;
 import lombok.RequiredArgsConstructor;
