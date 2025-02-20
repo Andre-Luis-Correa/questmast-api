@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.person;
 
-import com.questmast.questmast.core.person.gender.Gender;
+import com.questmast.questmast.core.gender.domain.Gender;
 import com.questmast.questmast.core.person.cpf.CPF;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

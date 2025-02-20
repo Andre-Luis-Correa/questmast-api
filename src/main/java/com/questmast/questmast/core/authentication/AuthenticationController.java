@@ -18,9 +18,4 @@ public class AuthenticationController {
     public String authenticate(Authentication authentication) {
         return authenticationService.authenticate(authentication);
     }
-
-    @GetMapping("/test")
-    public String test() {
-        return "Ola";
-    }
 }

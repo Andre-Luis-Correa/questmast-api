@@ -1,6 +1,7 @@
 package com.questmast.questmast.core.authentication.user.service;
 
 import com.questmast.questmast.core.authentication.user.authenticator.UserAuthenticated;
+import com.questmast.questmast.core.authentication.user.model.User;
 import com.questmast.questmast.core.authentication.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,5 +20,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return userRepository.findByUsername(username)
                 .map(UserAuthenticated::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    public void createUser(User user) {
+        userRepository.save(user);
     }
 }
