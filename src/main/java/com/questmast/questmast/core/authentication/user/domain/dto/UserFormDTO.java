@@ -1,20 +1,21 @@
-package com.questmast.questmast.core.admin.domain.dto;
+package com.questmast.questmast.core.authentication.user.domain.dto;
 
 import com.questmast.questmast.core.address.domain.dto.SpecificAddressFormDTO;
 import com.questmast.questmast.core.contact.email.domain.dto.EmailFormDTO;
 import com.questmast.questmast.core.contact.phone.domain.dto.PhoneFormDTO;
+import com.questmast.questmast.core.enums.PersonRole;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public record AdminFormDTO(
+public record UserFormDTO(
 
         @NotBlank
         String password,
 
-        @NotBlank
-        String emailForLogin,
+        @NotNull
+        PersonRole personRole,
 
         @NotBlank
         String cpf,

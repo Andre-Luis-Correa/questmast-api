@@ -1,8 +1,10 @@
 package com.questmast.questmast.core.authentication.user.service;
 
 import com.questmast.questmast.core.authentication.user.authenticator.UserAuthenticated;
-import com.questmast.questmast.core.authentication.user.model.User;
+import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
+import com.questmast.questmast.core.authentication.user.domain.entity.User;
 import com.questmast.questmast.core.authentication.user.repository.UserRepository;
+import com.questmast.questmast.core.enums.PersonRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,7 +24,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    public void createUser(User user) {
+    public void create(UserFormDTO userFormDTO) {
+        User user = new User(userFormDTO.emailList().get(0).email(), userFormDTO.password(), PersonRole.ROLE_ADMIN);
         userRepository.save(user);
     }
 }

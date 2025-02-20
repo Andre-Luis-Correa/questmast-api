@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class StreetService {
 
-    private final StreetRepository streetRepository,
+    private final StreetRepository streetRepository;
 
     public Street findById(Long id) {
         return streetRepository.findById(id).orElseThrow(

@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.authentication.user.model;
+package com.questmast.questmast.core.authentication.user.domain.entity;
 
 import com.questmast.questmast.core.enums.PersonRole;
 import jakarta.persistence.*;
