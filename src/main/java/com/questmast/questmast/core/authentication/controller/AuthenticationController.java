@@ -22,6 +22,7 @@ import com.questmast.questmast.core.person.cpf.domain.CPF;
 import com.questmast.questmast.core.person.cpf.service.CPFService;
 import com.questmast.questmast.core.student.domain.Student;
 import com.questmast.questmast.core.student.service.StudentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -49,14 +50,14 @@ public class AuthenticationController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<String> authenticateUser(@RequestBody UserLoginDTO userLoginDTO) {
+    public ResponseEntity<String> authenticateUser(@Valid @RequestBody UserLoginDTO userLoginDTO) {
         log.info(userLoginDTO);
         String token = userService.authenticateUser(userLoginDTO);
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
     @PostMapping("/register/student")
-    public ResponseEntity<AdminDTO> createStudent(@RequestBody UserFormDTO userFormDTO) throws Exception {
+    public ResponseEntity<AdminDTO> createStudent(@Valid @RequestBody UserFormDTO userFormDTO) throws Exception {
         CPF cpf = cpfService.getValidCPF(userFormDTO.cpf());
         Gender gender = genderService.findByAcronym(userFormDTO.genderAcronym());
         Address address = addressService.create(userFormDTO.specificAddressFormDTO());
@@ -71,7 +72,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register/admin")
-    public ResponseEntity<AdminDTO> createAdmin(@RequestBody UserFormDTO userFormDTO) throws Exception {
+    public ResponseEntity<AdminDTO> createAdmin(@Valid @RequestBody UserFormDTO userFormDTO) throws Exception {
         CPF cpf = cpfService.getValidCPF(userFormDTO.cpf());
         Gender gender = genderService.findByAcronym(userFormDTO.genderAcronym());
         Address address = addressService.create(userFormDTO.specificAddressFormDTO());
@@ -87,7 +88,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register/content-moderator")
-    public ResponseEntity<AdminDTO> create(@RequestBody UserFormDTO userFormDTO) throws Exception {
+    public ResponseEntity<AdminDTO> create(@Valid @RequestBody UserFormDTO userFormDTO) throws Exception {
         CPF cpf = cpfService.getValidCPF(userFormDTO.cpf());
         Gender gender = genderService.findByAcronym(userFormDTO.genderAcronym());
         Address address = addressService.create(userFormDTO.specificAddressFormDTO());
