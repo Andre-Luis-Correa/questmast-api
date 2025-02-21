@@ -43,6 +43,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @ExceptionHandler(JwtTokenException.class)
+    public ResponseEntity<ErrorDescription> handleJwtTokenException(JwtTokenException ex) {
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
     @ExceptionHandler(RegistrationEmailException.class)
     public ResponseEntity<ErrorDescription> handleRegistrationEmailException(RegistrationEmailException ex) {
         String message = "Não foi possível enviar o email de verificação, o registro não foi concluído.";

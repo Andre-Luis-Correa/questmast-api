@@ -1,5 +1,6 @@
 package com.questmast.questmast.core.authentication.user.service;
 
+import com.questmast.questmast.common.exception.domain.JwtTokenException;
 import com.questmast.questmast.core.authentication.security.SecurityConfiguration;
 import com.questmast.questmast.core.authentication.user.domain.entity.User;
 import com.questmast.questmast.core.authentication.user.repository.UserRepository;
@@ -43,7 +44,7 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
                 // Define o objeto de autenticação no contexto de segurança do Spring Security
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
-                throw new RuntimeException("O token está ausente.");
+                throw new JwtTokenException("O token está ausente.");
             }
         }
         filterChain.doFilter(request, response); // Continua o processamento da requisição
