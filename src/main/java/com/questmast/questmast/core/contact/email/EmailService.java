@@ -27,8 +27,8 @@ public class EmailService {
     private static final String ABSTRACT_API_KEY = "5756e145c71f4bd68088f225e200df3d";
     private final JavaMailSender javaMailSender;
 
-    public String getValidEmail(@NotBlank String email) throws Exception {
-        if(isEmailValid(email)) {
+    public String getValidEmail(@NotBlank String email) throws IOException, FieldNotValidException {
+        if(Boolean.TRUE.equals(isEmailValid(email))) {
             return email;
         } else {
             throw new FieldNotValidException("Email", email);
@@ -65,7 +65,7 @@ public class EmailService {
         if(personRole.equals(PersonRole.ROLE_ADMIN)) role = "admin";
         if(personRole.equals(PersonRole.ROLE_CONTENT_MODERATOR)) role = "content-moderator";
 
-        String apiEndpointUrl = "/authentication/verify-email/" + role + "/" + dstEmail;
+        String apiEndpointUrl = "/api/authentication/verify-email/" + role + "/" + dstEmail;
 
         String link = "http://localhost:8080" + apiEndpointUrl;
 

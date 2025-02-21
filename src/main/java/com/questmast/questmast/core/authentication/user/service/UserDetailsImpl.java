@@ -1,22 +1,28 @@
-package com.questmast.questmast.core.authentication.user.authenticator;
+package com.questmast.questmast.core.authentication.user.service;
 
 import com.questmast.questmast.core.authentication.user.domain.entity.User;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
-@RequiredArgsConstructor
-public class UserAuthenticated implements UserDetails {
+@Getter
+public class UserDetailsImpl implements UserDetails {
 
-    private final User user;
+    private User user; // Classe de usuário que criamos anteriormente
+
+    public UserDetailsImpl(User user) {
+        this.user = user;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(user.getPersonRole().name()));
+        return Collections.singletonList(
+                new SimpleGrantedAuthority(user.getPersonRole().name())
+        );
     }
 
     @Override
@@ -48,4 +54,5 @@ public class UserAuthenticated implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

@@ -1,6 +1,3 @@
--- ==============================================
--- INSERÇÕES DAS UNIDADES FEDERATIVAS (UFs)
--- ==============================================
 INSERT INTO federate_unit (acronym, name) VALUES ('AC', 'Acre');
 INSERT INTO federate_unit (acronym, name) VALUES ('AL', 'Alagoas');
 INSERT INTO federate_unit (acronym, name) VALUES ('AP', 'Amapá');
@@ -29,49 +26,40 @@ INSERT INTO federate_unit (acronym, name) VALUES ('SP', 'São Paulo');
 INSERT INTO federate_unit (acronym, name) VALUES ('SE', 'Sergipe');
 INSERT INTO federate_unit (acronym, name) VALUES ('TO', 'Tocantins');
 
--- ==============================================
--- INSERÇÕES DE ALGUMAS CIDADES (EXEMPLOS)
--- ==============================================
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (1, 'Rio Branco', 'AC');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (2, 'Maceió', 'AL');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (3, 'Macapá', 'AP');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (4, 'Manaus', 'AM');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (5, 'Salvador', 'BA');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (6, 'Fortaleza', 'CE');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (7, 'Brasília', 'DF');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (8, 'Vitória', 'ES');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (9, 'Goiânia', 'GO');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (10, 'São Luís', 'MA');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (11, 'Cuiabá', 'MT');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (12, 'Campo Grande', 'MS');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (13, 'Belo Horizonte', 'MG');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (14, 'Belém', 'PA');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (15, 'João Pessoa', 'PB');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (16, 'Curitiba', 'PR');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (17, 'Recife', 'PE');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (18, 'Teresina', 'PI');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (19, 'Rio de Janeiro', 'RJ');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (20, 'Natal', 'RN');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (21, 'Porto Alegre', 'RS');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (22, 'Porto Velho', 'RO');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (23, 'Boa Vista', 'RR');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (24, 'Florianópolis', 'SC');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (25, 'São Paulo', 'SP');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (26, 'Aracaju', 'SE');
-INSERT INTO city (id, name, federate_unit_acronym) VALUES (27, 'Palmas', 'TO');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Rio Branco', 'AC');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Maceió', 'AL');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Macapá', 'AP');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Manaus', 'AM');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Salvador', 'BA');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Fortaleza', 'CE');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Brasília', 'DF');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Vitória', 'ES');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Goiânia', 'GO');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('São Luís', 'MA');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Cuiabá', 'MT');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Campo Grande', 'MS');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Belo Horizonte', 'MG');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Belém', 'PA');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('João Pessoa', 'PB');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Curitiba', 'PR');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Recife', 'PE');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Teresina', 'PI');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Rio de Janeiro', 'RJ');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Natal', 'RN');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Porto Alegre', 'RS');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Porto Velho', 'RO');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Boa Vista', 'RR');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Florianópolis', 'SC');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('São Paulo', 'SP');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Aracaju', 'SE');
+INSERT INTO city (name, federate_unit_acronym) VALUES ('Palmas', 'TO');
 
--- ==============================================
--- INSERÇÕES DE BAIRROS (EXEMPLOS)
--- ==============================================
-INSERT INTO neighborhood (id, name) VALUES (1, 'Centro');
-INSERT INTO neighborhood (id, name) VALUES (2, 'Copacabana');
-INSERT INTO neighborhood (id, name) VALUES (3, 'Itaim Bibi');
-INSERT INTO neighborhood (id, name) VALUES (4, 'Boa Viagem');
-INSERT INTO neighborhood (id, name) VALUES (5, 'Asa Sul');
+INSERT INTO neighborhood (name) VALUES ('Centro');
+INSERT INTO neighborhood (name) VALUES ('Copacabana');
+INSERT INTO neighborhood (name) VALUES ('Itaim Bibi');
+INSERT INTO neighborhood (name) VALUES ('Boa Viagem');
+INSERT INTO neighborhood (name) VALUES ('Asa Sul');
 
--- ==============================================
--- INSERÇÕES DE TIPOS DE LOGRADOUROS
--- ==============================================
 INSERT INTO street_type (acronym, name) VALUES ('R', 'Rua');
 INSERT INTO street_type (acronym, name) VALUES ('AV', 'Avenida');
 INSERT INTO street_type (acronym, name) VALUES ('AL', 'Alameda');
@@ -83,11 +71,8 @@ INSERT INTO street_type (acronym, name) VALUES ('VLA', 'Vila');
 INSERT INTO street_type (acronym, name) VALUES ('PC', 'Ponte');
 INSERT INTO street_type (acronym, name) VALUES ('LGO', 'Largo');
 
--- ==============================================
--- INSERÇÕES DE LOGRADOUROS (EXEMPLOS)
--- ==============================================
-INSERT INTO street (id, name, street_type_acronym) VALUES (1, 'Paulista', 'AV');
-INSERT INTO street (id, name, street_type_acronym) VALUES (2, 'Brasil', 'R');
-INSERT INTO street (id, name, street_type_acronym) VALUES (3, 'Independência', 'AL');
-INSERT INTO street (id, name, street_type_acronym) VALUES (4, 'Liberdade', 'TR');
-INSERT INTO street (id, name, street_type_acronym) VALUES (5, 'Sete de Setembro', 'PR');
+INSERT INTO street (name, street_type_acronym) VALUES ('Paulista', 'AV');
+INSERT INTO street (name, street_type_acronym) VALUES ('Brasil', 'R');
+INSERT INTO street (name, street_type_acronym) VALUES ('Independência', 'AL');
+INSERT INTO street (name, street_type_acronym) VALUES ('Liberdade', 'TR');
+INSERT INTO street (name, street_type_acronym) VALUES ('Sete de Setembro', 'PR');

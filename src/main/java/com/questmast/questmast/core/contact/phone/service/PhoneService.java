@@ -9,11 +9,13 @@ import com.questmast.questmast.core.contact.phone.domain.dto.PhoneFormDTO;
 import com.questmast.questmast.core.contact.phone.domain.model.Phone;
 import com.questmast.questmast.core.contact.phone.repository.PhoneRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class PhoneService {
@@ -34,9 +36,13 @@ public class PhoneService {
                 throw new InvalidContactException("Phone", "+ " + ddi.getDdi() + " " + ddd.getDdd() + " " + phoneFormDTO.number());
             }
 
+            log.info(ddd);
+            log.info(ddi);
             Phone phone = new Phone(phoneFormDTO.number(), ddd, ddi);
+            log.info(phone);
             phoneList.add(phone);
         }
+
         return phoneList;
     }
 }

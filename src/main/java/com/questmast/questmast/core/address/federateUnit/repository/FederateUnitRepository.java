@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface FederateUnitRepository extends JpaRepository<FederateUnit, String> {
 
     Optional<FederateUnit> findByAcronym(@NotBlank String acronym);
+
+    Optional<FederateUnit> findByName(String name);
 }

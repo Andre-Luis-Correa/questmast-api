@@ -5,10 +5,11 @@ import com.questmast.questmast.core.address.address.service.AddressService;
 import com.questmast.questmast.core.admin.domain.dto.AdminDTO;
 import com.questmast.questmast.core.admin.domain.model.Admin;
 import com.questmast.questmast.core.admin.service.AdminService;
-import com.questmast.questmast.core.authentication.service.AuthenticationService;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
+import com.questmast.questmast.core.authentication.user.domain.dto.UserLoginDTO;
 import com.questmast.questmast.core.authentication.user.domain.entity.User;
-import com.questmast.questmast.core.authentication.user.service.UserDetailsServiceImpl;
+import com.questmast.questmast.core.authentication.user.service.UserService;
+import com.questmast.questmast.core.authentication.utils.UserDetailsServiceImpl;
 import com.questmast.questmast.core.contact.email.EmailService;
 import com.questmast.questmast.core.contact.phone.domain.model.Phone;
 import com.questmast.questmast.core.contact.phone.service.PhoneService;
@@ -22,19 +23,20 @@ import com.questmast.questmast.core.person.cpf.service.CPFService;
 import com.questmast.questmast.core.student.domain.Student;
 import com.questmast.questmast.core.student.service.StudentService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Log4j2
 @RestController
-@RequestMapping("/authentication")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
+@RequestMapping("/authentication")
 public class AuthenticationController {
 
-    private final AuthenticationService authenticationService;
     private final UserDetailsServiceImpl userDetailsService;
     private final AdminService adminService;
     private final ContentModeratorService contentModeratorService;
@@ -44,10 +46,12 @@ public class AuthenticationController {
     private final PhoneService phoneService;
     private final EmailService emailService;
     private final CPFService cpfService;
+    private final UserService userService;
 
     @PostMapping
-    public String authenticate(Authentication authentication) {
-        return authenticationService.authenticate(authentication);
+    public ResponseEntity<String> authenticateUser(@RequestBody UserLoginDTO userLoginDTO) {
+        String token = userService.authenticateUser(userLoginDTO);
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
     @PostMapping("/register/student")
@@ -55,11 +59,9 @@ public class AuthenticationController {
         CPF cpf = cpfService.getValidCPF(userFormDTO.cpf());
         Gender gender = genderService.findByAcronym(userFormDTO.genderAcronym());
         Address address = addressService.create(userFormDTO.specificAddressFormDTO());
-        String mainEmail = emailService.getValidEmail(userFormDTO.mainEmail());
-        String recoveryEmail = emailService.getValidEmail(userFormDTO.recoveryEmail());
         List<Phone> phoneList = phoneService.generateValidPhoneList(userFormDTO.phoneList());
 
-        studentService.create(userFormDTO, cpf, gender, address, mainEmail, recoveryEmail, phoneList);
+        studentService.create(userFormDTO, cpf, gender, address, userFormDTO.mainEmail(), userFormDTO.recoveryEmail(), phoneList);
         userDetailsService.create(PersonRole.ROLE_STUDENT, userFormDTO);
 
         emailService.sendRegistrationVerificationEmail(PersonRole.ROLE_STUDENT, userFormDTO.mainEmail());
@@ -72,11 +74,9 @@ public class AuthenticationController {
         CPF cpf = cpfService.getValidCPF(userFormDTO.cpf());
         Gender gender = genderService.findByAcronym(userFormDTO.genderAcronym());
         Address address = addressService.create(userFormDTO.specificAddressFormDTO());
-        String mainEmail = emailService.getValidEmail(userFormDTO.mainEmail());
-        String recoveryEmail = emailService.getValidEmail(userFormDTO.recoveryEmail());
         List<Phone> phoneList = phoneService.generateValidPhoneList(userFormDTO.phoneList());
 
-        adminService.create(userFormDTO, cpf, gender, address, mainEmail, recoveryEmail, phoneList);
+        adminService.create(userFormDTO, cpf, gender, address, userFormDTO.mainEmail(), userFormDTO.recoveryEmail(), phoneList);
 
         userDetailsService.create(PersonRole.ROLE_ADMIN, userFormDTO);
 
@@ -90,11 +90,9 @@ public class AuthenticationController {
         CPF cpf = cpfService.getValidCPF(userFormDTO.cpf());
         Gender gender = genderService.findByAcronym(userFormDTO.genderAcronym());
         Address address = addressService.create(userFormDTO.specificAddressFormDTO());
-        String mainEmail = emailService.getValidEmail(userFormDTO.mainEmail());
-        String recoveryEmail = emailService.getValidEmail(userFormDTO.recoveryEmail());
         List<Phone> phoneList = phoneService.generateValidPhoneList(userFormDTO.phoneList());
 
-        contentModeratorService.create(userFormDTO, cpf, gender, address, mainEmail, recoveryEmail, phoneList);
+        contentModeratorService.create(userFormDTO, cpf, gender, address, userFormDTO.mainEmail(), userFormDTO.recoveryEmail(), phoneList);
 
         userDetailsService.create(PersonRole.ROLE_CONTENT_MODERATOR, userFormDTO);
 

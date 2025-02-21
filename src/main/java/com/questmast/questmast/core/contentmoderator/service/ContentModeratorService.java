@@ -3,7 +3,6 @@ package com.questmast.questmast.core.contentmoderator.service;
 import com.questmast.questmast.common.exception.domain.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.address.address.domain.entity.Address;
 import com.questmast.questmast.core.address.address.domain.entity.SpecificAddress;
-import com.questmast.questmast.core.admin.domain.model.Admin;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
 import com.questmast.questmast.core.contact.phone.domain.model.Phone;
 import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;

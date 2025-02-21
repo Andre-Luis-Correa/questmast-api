@@ -31,8 +31,8 @@ public class AddressService {
     private final FederateUnitService federateUnitService;
 
     public Address create(@NotNull SpecificAddressFormDTO specificAddressFormDTO) {
-        StreetType streetType = streetTypeService.findByAcronym(specificAddressFormDTO.streetType());
-        FederateUnit federateUnit = federateUnitService.findByAcronym(specificAddressFormDTO.federateUnit());
+        StreetType streetType = streetTypeService.findByName(specificAddressFormDTO.streetType());
+        FederateUnit federateUnit = federateUnitService.findByName(specificAddressFormDTO.federateUnit());
 
         Street street = streetService.getOrNullByName(specificAddressFormDTO.street());
         if(street == null) {

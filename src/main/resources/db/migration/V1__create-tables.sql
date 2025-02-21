@@ -34,6 +34,8 @@ create table app_user (
                           password varchar(255) not null,
                           person_role varchar(255) not null check (person_role in ('ROLE_STUDENT','ROLE_ADMIN','ROLE_CONTENT_MODERATOR')),
                           username varchar(255) not null,
+                          name varchar(255) not null,
+                          cpf varchar(255) not null,
                           is_email_verified boolean not null,
                           primary key (username)
 );

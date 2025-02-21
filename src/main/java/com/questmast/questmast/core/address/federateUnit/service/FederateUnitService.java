@@ -22,4 +22,10 @@ public class FederateUnitService {
                 () -> new EntityNotFoundExcpetion("FederateUnit", "acronym", acronym)
         );
     }
+
+    public FederateUnit findByName(String name) {
+        return federateUnitRepository.findByName(name).orElseThrow(
+                () -> new EntityNotFoundExcpetion("FederateUnit", "name", name)
+        );
+    }
 }

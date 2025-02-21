@@ -19,6 +19,14 @@ public class User {
 
     @NotNull
     @Column(nullable = false)
+    private String name;
+
+    @NotNull
+    @Column(nullable = false)
+    private String cpf;
+
+    @NotNull
+    @Column(nullable = false)
     private String password;
 
     @NotNull

@@ -27,4 +27,10 @@ public class StreetTypeService {
         StreetType streetType = new StreetType(acronym, acronym);
         return streetTypeRepository.save(streetType);
     }
+
+    public StreetType findByName(String name) {
+        return streetTypeRepository.findByName(name).orElseThrow(
+                () -> new EntityNotFoundExcpetion("StreetType", "name", name)
+        );
+    }
 }

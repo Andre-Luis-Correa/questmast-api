@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface StreetTypeRepository extends JpaRepository<StreetType, String> {
 
     Optional<StreetType> findByAcronym(@NotBlank String name);
+
+    Optional<StreetType> findByName(String name);
 }
