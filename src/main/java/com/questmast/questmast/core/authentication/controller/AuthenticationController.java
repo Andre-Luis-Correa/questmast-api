@@ -50,6 +50,7 @@ public class AuthenticationController {
 
     @PostMapping
     public ResponseEntity<String> authenticateUser(@RequestBody UserLoginDTO userLoginDTO) {
+        log.info(userLoginDTO);
         String token = userService.authenticateUser(userLoginDTO);
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
