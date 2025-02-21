@@ -3,7 +3,6 @@ package com.questmast.questmast.common.exception.controller;
 import com.questmast.questmast.common.exception.config.ErrorDescription;
 import com.questmast.questmast.common.exception.domain.*;
 import io.swagger.v3.oas.annotations.Hidden;
-import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +25,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidContactException.class)
     public ResponseEntity<ErrorDescription> handleInvalidContactException(InvalidContactException ex) {
-        String message = "O " + ex.getEntity() + " (" + ex.getValue() + ") já está sendo utilizado.";
+        String message = ex.getEntity() + " (" + ex.getValue() + ") já está sendo utilizado.";
         ErrorDescription errorResponse = new ErrorDescription(
                 HttpStatus.NOT_FOUND.value(),
                 message
@@ -34,19 +33,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
-    @ExceptionHandler(CPFNotValidException.class)
-    public ResponseEntity<ErrorDescription> handleCPFNotValidException(CPFNotValidException ex) {
-        String message = "O CPF " + ex.getCpf() + " é inválido.";
-        ErrorDescription errorResponse = new ErrorDescription(
-                HttpStatus.NOT_FOUND.value(),
-                message
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-    }
-
-    @ExceptionHandler(EmailNotValidException.class)
-    public ResponseEntity<ErrorDescription> handleEmailNotValidException(EmailNotValidException ex) {
-        String message = "O email " + ex.getCpf() + " é inválido.";
+    @ExceptionHandler(FieldNotValidException.class)
+    public ResponseEntity<ErrorDescription> handleEmailNotValidException(FieldNotValidException ex) {
+        String message = "O " + ex.getField() + " " + ex.getValue() + " é inválido.";
         ErrorDescription errorResponse = new ErrorDescription(
                 HttpStatus.NOT_FOUND.value(),
                 message

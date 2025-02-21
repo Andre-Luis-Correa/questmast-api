@@ -1,9 +1,7 @@
 package com.questmast.questmast.core.address.address.domain.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +12,12 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class SpecificAddress {
 
+    @NotNull
+    @Column(nullable = false)
     private Long number;
+
+    @NotNull
+    @Column(nullable = false)
     private String complement;
 
     @ManyToOne(cascade = CascadeType.ALL)

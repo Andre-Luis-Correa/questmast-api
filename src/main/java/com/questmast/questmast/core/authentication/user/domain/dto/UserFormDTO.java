@@ -1,7 +1,6 @@
 package com.questmast.questmast.core.authentication.user.domain.dto;
 
 import com.questmast.questmast.core.address.address.domain.dto.SpecificAddressFormDTO;
-import com.questmast.questmast.core.contact.email.domain.dto.EmailFormDTO;
 import com.questmast.questmast.core.contact.phone.domain.dto.PhoneFormDTO;
 import com.questmast.questmast.core.enums.PersonRole;
 import jakarta.validation.constraints.NotBlank;

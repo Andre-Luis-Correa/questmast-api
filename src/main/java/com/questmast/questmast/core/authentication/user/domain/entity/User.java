@@ -25,4 +25,8 @@ public class User {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PersonRole personRole;
+
+    @NotNull
+    @Column(nullable = false)
+    private Boolean isEmailVerified;
 }

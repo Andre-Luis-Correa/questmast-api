@@ -1,7 +1,7 @@
 package com.questmast.questmast.core.selectionprocess;
 
 import com.questmast.questmast.core.boardexaminer.BoardExaminer;
-import com.questmast.questmast.core.contentmoderator.ContentModerator;
+import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;
 import com.questmast.questmast.core.selectionprocessstatus.domain.entity.SelectionProcessStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

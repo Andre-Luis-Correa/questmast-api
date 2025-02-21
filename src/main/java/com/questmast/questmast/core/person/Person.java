@@ -1,8 +1,7 @@
 package com.questmast.questmast.core.person;
 
-import com.questmast.questmast.core.contact.email.domain.entity.Email;
-import com.questmast.questmast.core.contact.phone.domain.model.Phone;
 import com.questmast.questmast.core.address.address.domain.entity.SpecificAddress;
+import com.questmast.questmast.core.contact.phone.domain.model.Phone;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -23,19 +22,16 @@ public class Person {
 
     @NotNull
     @Embedded
-    @Column(nullable = false)
     private SpecificAddress specificAddress;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Phone> phoneList;
 
     @NotNull
-    @Embedded
-    @Column(nullable = false, unique = true, name = "main_email")
-    private Email mainEmail;
+    @Column(nullable = false, unique = true)
+    private String mainEmail;
 
     @NotNull
-    @Embedded
-    @Column(nullable = false, unique = true, name = "recovery_email")
-    private Email recoveryEmail;
+    @Column(nullable = false, unique = true)
+    private String recoveryEmail;
 }

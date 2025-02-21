@@ -11,7 +11,7 @@ spring:
     show-sql: true
 
   flyway:
-    enabled: false
+    enabled: true
     baseline-on-migrate: true
 
 jwt:
@@ -26,3 +26,19 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: egsoft502@gmail.com
+    password: vzjr nnab ffwq rput
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  servlet:
+    context-path: /api

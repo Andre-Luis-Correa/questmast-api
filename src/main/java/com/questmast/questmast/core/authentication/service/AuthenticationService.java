@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.authentication;
+package com.questmast.questmast.core.authentication.service;
 
 import com.questmast.questmast.core.authentication.jwt.JwtService;
 import lombok.RequiredArgsConstructor;

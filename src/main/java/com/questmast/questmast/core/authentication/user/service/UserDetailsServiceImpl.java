@@ -1,5 +1,6 @@
 package com.questmast.questmast.core.authentication.user.service;
 
+import com.questmast.questmast.common.exception.domain.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.authentication.user.authenticator.UserAuthenticated;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
 import com.questmast.questmast.core.authentication.user.domain.entity.User;
@@ -24,8 +25,19 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    public void create(UserFormDTO userFormDTO) {
-        User user = new User(userFormDTO.mainEmail(), userFormDTO.password(), PersonRole.ROLE_ADMIN);
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(
+                () -> new EntityNotFoundExcpetion("User", "email", username)
+        );
+    }
+
+    public void create(PersonRole personRole, UserFormDTO userFormDTO) {
+        User user = new User(userFormDTO.mainEmail(), userFormDTO.password(), personRole, false);
+        userRepository.save(user);
+    }
+
+    public void updateEmailVerificationStatus(User user) {
+        user.setIsEmailVerified(Boolean.TRUE);
         userRepository.save(user);
     }
 }

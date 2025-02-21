@@ -1,7 +1,6 @@
 package com.questmast.questmast.core.admin.domain.dto;
 
 import com.questmast.questmast.core.address.address.domain.entity.SpecificAddress;
-import com.questmast.questmast.core.contact.email.domain.entity.Email;
 import com.questmast.questmast.core.contact.phone.domain.model.Phone;
 import com.questmast.questmast.core.person.cpf.domain.CPF;
 import com.questmast.questmast.core.gender.domain.Gender;
@@ -32,7 +31,10 @@ public record AdminDTO(
         @NotNull
         List<Phone> phoneList,
 
-        @NotNull
-        List<Email> emailList
+        @NotBlank
+        String mainEmail,
+
+        @NotBlank
+        String recoveryEmail
         ) {
 }

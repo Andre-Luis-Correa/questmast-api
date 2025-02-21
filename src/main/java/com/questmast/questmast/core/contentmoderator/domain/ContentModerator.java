@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.contentmoderator;
+package com.questmast.questmast.core.contentmoderator.domain;
 
 import com.questmast.questmast.core.person.NaturalPerson;
 import jakarta.persistence.Entity;
