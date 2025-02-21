@@ -29,7 +29,7 @@ public class SecurityConfiguration {
             "*",
             "/authentication",
             "/api/authentication",
-            "/api/authentication/verify-email/student/{email}",
+            "/authentication/verify-email/student/{email}",
             "/authentication/register/student",
             "/api/authentication/register/student",
             "/api/authentication/**",
