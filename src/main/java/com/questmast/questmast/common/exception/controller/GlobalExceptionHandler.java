@@ -74,10 +74,46 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorDescription> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+
+        String message = "Violação de integridade de dados: " + ex.getMessage();
+        // Mensagem padrão caso não consigamos tratar detalhadamente
+
+        if (ex.getRootCause() instanceof org.postgresql.util.PSQLException) {
+            org.postgresql.util.PSQLException psqlException = (org.postgresql.util.PSQLException) ex.getRootCause();
+
+            // Verifica se é erro de unicidade (SQLState 23505)
+            if ("23505".equals(psqlException.getSQLState())) {
+                // Captura o detalhe da mensagem, que deve conter algo como:
+                // "Key (campo)=(valor) already exists."
+                String detail = psqlException.getServerErrorMessage().getDetail();
+
+                if (detail != null) {
+                    // Usamos expressão regular para isolar o nome do campo e o valor duplicado
+                    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(".*\\((.*?)\\)=\\((.*?)\\).*");
+                    java.util.regex.Matcher matcher = pattern.matcher(detail);
+
+                    if (matcher.find()) {
+                        // group(1) -> nome do campo
+                        // group(2) -> valor duplicado
+                        String field = matcher.group(1);
+                        String value = matcher.group(2);
+
+                        message = String.format("O campo '%s' com valor '%s' já está cadastrado.",
+                                field, value);
+                    } else {
+                        // Caso o detalhe não siga o formato esperado,
+                        // podemos usar uma mensagem genérica de duplicidade
+                        message = "Registro duplicado: o valor informado já está cadastrado.";
+                    }
+                }
+            }
+        }
+
         ErrorDescription errorDescription = new ErrorDescription(
                 HttpStatus.CONFLICT.value(),
-                "Dados duplicados: " + ex.getMessage()
+                message
         );
+
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDescription);
     }
 }

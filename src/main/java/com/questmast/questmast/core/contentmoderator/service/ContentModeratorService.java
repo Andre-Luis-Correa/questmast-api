@@ -25,7 +25,7 @@ public class ContentModeratorService {
     public void create(UserFormDTO userFormDTO, CPF cpf, Gender gender, Address address, String mainEmail, String recoveryEmail, List<Phone> phoneList) {
         SpecificAddress specificAddress = new SpecificAddress(userFormDTO.specificAddressFormDTO().number(), userFormDTO.specificAddressFormDTO().complement(), address);
         ContentModerator contentModerator = convertToContentModerator(userFormDTO, cpf, gender, specificAddress, mainEmail, recoveryEmail, phoneList);
-        contentModerator.setIsEmailVerified(true);
+        contentModerator.setIsEmailVerified(false);
 
         contentModeratorRepository.save(contentModerator);
     }

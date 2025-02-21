@@ -25,7 +25,7 @@ public class StudentService {
     public void create(UserFormDTO userFormDTO, CPF cpf, Gender gender, Address address, String mainEmail, String recoveryEmail, List<Phone> phoneList) {
         SpecificAddress specificAddress = new SpecificAddress(userFormDTO.specificAddressFormDTO().number(), userFormDTO.specificAddressFormDTO().complement(), address);
         Student student = convertToStudent(userFormDTO, cpf, gender, specificAddress, mainEmail, recoveryEmail, phoneList);
-        student.setIsEmailVerified(true);
+        student.setIsEmailVerified(false);
 
         studentRepository.save(student);
     }

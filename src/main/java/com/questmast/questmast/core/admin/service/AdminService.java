@@ -26,7 +26,7 @@ public class AdminService {
     public void create(UserFormDTO userFormDTO, CPF cpf, Gender gender, Address address, String mainEmail, String recoveryEmail, List<Phone> phoneList) {
         SpecificAddress specificAddress = new SpecificAddress(userFormDTO.specificAddressFormDTO().number(), userFormDTO.specificAddressFormDTO().complement(), address);
         Admin admin = convertToAdmin(userFormDTO, cpf, gender, specificAddress, mainEmail, recoveryEmail, phoneList);
-        admin.setIsEmailVerified(true);
+        admin.setIsEmailVerified(false);
 
         adminRepository.save(admin);
     }
