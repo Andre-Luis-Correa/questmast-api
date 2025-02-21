@@ -14,6 +14,18 @@ spring:
     enabled: true
     baseline-on-migrate: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: egsoft502@gmail.com
+    password: vzjr nnab ffwq rput
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 jwt:
   private:
     key: classpath:app.key
@@ -26,18 +38,6 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
-
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: egsoft502@gmail.com
-    password: vzjr nnab ffwq rput
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
 
 server:
   servlet:
