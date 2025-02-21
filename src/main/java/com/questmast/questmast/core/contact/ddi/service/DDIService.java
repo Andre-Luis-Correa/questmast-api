@@ -1,7 +1,6 @@
 package com.questmast.questmast.core.contact.ddi.service;
 
-import com.questmast.questmast.common.exception.domain.EntityNotFoundExcpetion;
-import com.questmast.questmast.core.contact.ddd.domain.DDD;
+import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.contact.ddi.domain.DDI;
 import com.questmast.questmast.core.contact.ddi.repository.DDIRepository;
 import lombok.RequiredArgsConstructor;

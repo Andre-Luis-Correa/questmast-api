@@ -1,7 +1,7 @@
 package com.questmast.questmast.core.authentication.utils;
 
-import com.questmast.questmast.common.exception.domain.EmailNotVerifiedException;
-import com.questmast.questmast.common.exception.domain.EntityNotFoundExcpetion;
+import com.questmast.questmast.common.exception.type.EmailNotVerifiedException;
+import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
 import com.questmast.questmast.core.authentication.user.domain.entity.User;
 import com.questmast.questmast.core.authentication.user.repository.UserRepository;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -30,7 +31,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public void create(PersonRole personRole, UserFormDTO userFormDTO) {
-        User user = new User(userFormDTO.mainEmail(), userFormDTO.name(), userFormDTO.cpf(), userFormDTO.password(), personRole, false);
+        String encodedPassword = new BCryptPasswordEncoder().encode(userFormDTO.password());
+        User user = new User(userFormDTO.mainEmail(), userFormDTO.name(), userFormDTO.cpf(), encodedPassword, personRole, false);
         userRepository.save(user);
     }
 

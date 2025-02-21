@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.questionalternative.service;
 
-//import com.questmast.questmast.exceptions.domain.EntityNotFoundExcpetion;
+//import com.questmast.questmast.exceptions.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.questionalternative.domain.dto.QuestionAlternativeDTO;
 import com.questmast.questmast.core.questionalternative.domain.dto.QuestionAlternativeFormDTO;
 import com.questmast.questmast.core.questionalternative.domain.entity.QuestionAlternative;

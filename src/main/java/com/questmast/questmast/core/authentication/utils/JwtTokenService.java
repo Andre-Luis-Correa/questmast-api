@@ -14,9 +14,9 @@ import java.time.ZonedDateTime;
 @Service
 public class JwtTokenService {
 
-    private static final String SECRET_KEY = "4Z^XrroxR@dWxqf$mTTKwW$!@#qGr4P"; // Chave secreta utilizada para gerar e verificar o token
+    private static final String SECRET_KEY = "4Z^XrroxR@dWxqf$mTTKwW$!@#qGr4P";
 
-    private static final String ISSUER = "questmap-api"; // Emissor do token
+    private static final String ISSUER = "questmap-api";
 
     public String generateToken(UserDetailsImpl user) {
         try {

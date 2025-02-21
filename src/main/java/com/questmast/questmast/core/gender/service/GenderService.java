@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.gender.service;
 
-import com.questmast.questmast.common.exception.domain.EntityNotFoundExcpetion;
+import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.gender.domain.Gender;
 import com.questmast.questmast.core.gender.repository.GenderRepository;
 import lombok.RequiredArgsConstructor;

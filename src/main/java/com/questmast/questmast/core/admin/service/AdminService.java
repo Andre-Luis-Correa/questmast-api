@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.admin.service;
 
-import com.questmast.questmast.common.exception.domain.EntityNotFoundExcpetion;
+import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.address.address.domain.entity.Address;
 import com.questmast.questmast.core.address.address.domain.entity.SpecificAddress;
 import com.questmast.questmast.core.admin.domain.dto.AdminDTO;

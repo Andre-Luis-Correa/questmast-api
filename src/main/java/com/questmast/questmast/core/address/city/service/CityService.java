@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.address.city.service;
 
-import com.questmast.questmast.common.exception.domain.EntityNotFoundExcpetion;
+import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.address.city.domain.City;
 import com.questmast.questmast.core.address.city.repository.CityRepository;
 import com.questmast.questmast.core.address.federateUnit.domain.FederateUnit;

@@ -5,7 +5,7 @@ import com.questmast.questmast.core.subject.domain.dto.SubjectFormDTO;
 import com.questmast.questmast.core.subject.domain.entity.Subject;
 import com.questmast.questmast.core.subject.mapper.SubjectMapStructMapper;
 import com.questmast.questmast.core.subject.repository.SubjectRepository;
-//import com.questmast.questmast.exceptions.domain.EntityNotFoundException;
+//import com.questmast.questmast.exceptions.type.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

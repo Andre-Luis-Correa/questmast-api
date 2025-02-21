@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.testquestioncategory.service;
 
-//import com.questmast.questmast.exceptions.domain.EntityNotFoundException;
+//import com.questmast.questmast.exceptions.type.EntityNotFoundException;
 import com.questmast.questmast.core.testquestioncategory.domain.dto.TestQuestionCategoryDTO;
 import com.questmast.questmast.core.testquestioncategory.domain.dto.TestQuestionCategoryFormDTO;
 import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;

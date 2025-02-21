@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.selectionprocessstatus.service;
 
-//import com.questmast.questmast.core.exceptions.domain.EntityNotFoundException;
+//import com.questmast.questmast.core.exceptions.type.EntityNotFoundException;
 import com.questmast.questmast.core.selectionprocessstatus.domain.dto.SelectionProcessStatusDTO;
 import com.questmast.questmast.core.selectionprocessstatus.domain.dto.SelectionProcessStatusFormDTO;
 import com.questmast.questmast.core.selectionprocessstatus.domain.entity.SelectionProcessStatus;

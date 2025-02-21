@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.professionallevel.service;
 
-//import com.questmast.questmast.exceptions.domain.EntityNotFoundException;
+//import com.questmast.questmast.exceptions.type.EntityNotFoundException;
 import com.questmast.questmast.core.professionallevel.domain.dto.ProfessionalLevelDTO;
 import com.questmast.questmast.core.professionallevel.domain.dto.ProfessionalLevelFormDTO;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;

@@ -1,4 +1,4 @@
-package com.questmast.questmast.common.exception.domain;
+package com.questmast.questmast.common.exception.type;
 
 public class EmailNotVerifiedException extends RuntimeException {
     public EmailNotVerifiedException(){

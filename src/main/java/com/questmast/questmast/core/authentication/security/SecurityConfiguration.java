@@ -17,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.util.List;
 
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -26,16 +25,13 @@ public class SecurityConfiguration {
     private final UserAuthenticationFilter userAuthenticationFilter;
 
     public static final String[] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
-            "*",
             "/authentication",
-            "/api/authentication",
-            "/authentication/verify-email/student/{email}",
-            "/authentication/register/student",
-            "/api/authentication/register/student",
-            "/api/authentication/**",
-            "/api/swagger-ui.html",
-            "/api/swagger-ui/**",
-            "/api/v3/api-docs/**"
+            "/authentication/verify-email/**",
+            "/authentication/register/**",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/index.html"
     };
 
     public static final String[] ENDPOINTS_WITH_AUTHENTICATION_REQUIRED = {
@@ -60,10 +56,10 @@ public class SecurityConfiguration {
                 .cors(cors -> cors
                         .configurationSource(request -> {
                             var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-                            corsConfiguration.setAllowedOriginPatterns(List.of("*")); // Permite todas as origens
+                            corsConfiguration.setAllowedOriginPatterns(List.of("*"));
                             corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                             corsConfiguration.setAllowedHeaders(List.of("*"));
-                            corsConfiguration.setAllowCredentials(true); // Se precisar enviar cookies ou cabeçalhos de autorização
+                            corsConfiguration.setAllowCredentials(true);
                             return corsConfiguration;
                         })
                 )

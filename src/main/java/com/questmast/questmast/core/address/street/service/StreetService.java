@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.address.street.service;
 
-import com.questmast.questmast.common.exception.domain.EntityNotFoundExcpetion;
+import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.address.street.domain.Street;
 import com.questmast.questmast.core.address.street.repository.StreetRepository;
 import com.questmast.questmast.core.address.streettype.domain.StreetType;

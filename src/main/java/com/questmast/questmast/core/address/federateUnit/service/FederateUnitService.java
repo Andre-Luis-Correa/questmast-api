@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.address.federateUnit.service;
 
-import com.questmast.questmast.common.exception.domain.EntityNotFoundExcpetion;
+import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.address.federateUnit.domain.FederateUnit;
 import com.questmast.questmast.core.address.federateUnit.repository.FederateUnitRepository;
 import jakarta.validation.constraints.NotBlank;

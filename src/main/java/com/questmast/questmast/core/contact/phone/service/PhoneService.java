@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.contact.phone.service;
 
-import com.questmast.questmast.common.exception.domain.InvalidContactException;
+import com.questmast.questmast.common.exception.type.InvalidContactException;
 import com.questmast.questmast.core.contact.ddd.domain.DDD;
 import com.questmast.questmast.core.contact.ddd.service.DDDService;
 import com.questmast.questmast.core.contact.ddi.domain.DDI;

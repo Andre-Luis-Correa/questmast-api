@@ -1,7 +1,7 @@
 package com.questmast.questmast.common.exception.controller;
 
 import com.questmast.questmast.common.exception.config.ErrorDescription;
-import com.questmast.questmast.common.exception.domain.*;
+import com.questmast.questmast.common.exception.type.*;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

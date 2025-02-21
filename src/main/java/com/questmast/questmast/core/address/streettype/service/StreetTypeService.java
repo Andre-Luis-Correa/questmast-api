@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.address.streettype.service;
 
-import com.questmast.questmast.common.exception.domain.EntityNotFoundExcpetion;
+import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.address.streettype.domain.StreetType;
 import com.questmast.questmast.core.address.streettype.repository.StreetTypeRepository;
 import jakarta.validation.constraints.NotBlank;

@@ -2,7 +2,7 @@ package com.questmast.questmast.core.contact.email;
 
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
-import com.questmast.questmast.common.exception.domain.FieldNotValidException;
+import com.questmast.questmast.common.exception.type.FieldNotValidException;
 import com.questmast.questmast.core.enums.PersonRole;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.validation.constraints.NotBlank;

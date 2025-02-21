@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.subjecttopic.service;
 
-//import com.questmast.questmast.core.exceptions.domain.EntityNotFoundException;
+//import com.questmast.questmast.core.exceptions.type.EntityNotFoundException;
 import com.questmast.questmast.core.subjecttopic.domain.dto.SubjectTopicDTO;
 import com.questmast.questmast.core.subjecttopic.domain.dto.SubjectTopicFormDTO;
 import com.questmast.questmast.core.subjecttopic.domain.entity.SubjectTopic;

@@ -1,7 +1,7 @@
 package com.questmast.questmast.core.person.cpf.service;
 
 import br.com.caelum.stella.validation.CPFValidator;
-import com.questmast.questmast.common.exception.domain.FieldNotValidException;
+import com.questmast.questmast.common.exception.type.FieldNotValidException;
 import com.questmast.questmast.core.person.cpf.domain.CPF;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
