@@ -18,6 +18,7 @@ public interface StudentMapper {
     @Mapping(source = "gender", target = "gender")
     @Mapping(source = "specificAddress", target = "specificAddress")
     @Mapping(source = "phoneList", target = "phoneList")
+    @Mapping(source = "userFormDTO.birthDate", target = "birthDate")
     Student convertToStudent(UserFormDTO userFormDTO, CPF cpf, Gender gender, SpecificAddress specificAddress, String mainEmail, List<Phone> phoneList);
 
 }

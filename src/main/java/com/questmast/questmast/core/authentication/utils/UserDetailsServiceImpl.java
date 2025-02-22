@@ -39,10 +39,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public void create(UserFormDTO userFormDTO) {
-        if(userFormDTO.mainEmail().equals(userFormDTO.recoveryEmail())) {
-            throw new DuplicatedFieldValueException("mainEmail", "recoveryEmail", userFormDTO.mainEmail());
-        }
-
         String encodedPassword = new BCryptPasswordEncoder().encode(userFormDTO.password());
         User user = new User(userFormDTO.mainEmail(), userFormDTO.name(), userFormDTO.cpf(), encodedPassword, userFormDTO.personRole(), false);
         userRepository.save(user);
@@ -115,9 +111,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public User findByUsernameOrRecoveryEmailAndResetPasswordCode(String email, String resetPasswordCode) {
-        return userRepository.findByUsernameOrRecoveryEmailAndResetPasswordCode(email, resetPasswordCode).orElseThrow(
-                () -> new EntityNotFoundExcpetion("User", "email", email +  " " + resetPasswordCode)
+    public User findByResetPasswordCode(String resetPasswordCode) {
+        return userRepository.findByResetPasswordCode(resetPasswordCode).orElseThrow(
+                () -> new EntityNotFoundExcpetion("User", "resetPasswordCode", resetPasswordCode)
         );
     }
 }

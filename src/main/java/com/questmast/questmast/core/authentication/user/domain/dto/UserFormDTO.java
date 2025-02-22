@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Date;
 import java.util.List;
 
 public record UserFormDTO(
@@ -27,13 +28,14 @@ public record UserFormDTO(
         String name,
 
         @NotNull
+        Date birthDate,
+
+        @NotNull
         @Valid
         SpecificAddressFormDTO specificAddressFormDTO,
 
         @NotBlank
         String mainEmail,
-
-        String recoveryEmail,
 
         @NotNull
         @Valid

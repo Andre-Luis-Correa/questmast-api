@@ -19,6 +19,5 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByRecoveryEmail(String recoveryEmail);
 
-    @Query("SELECT us FROM User us WHERE (us.username = :email OR us.recoveryEmail = :email) AND us.resetPasswordCode = :resetPasswordCode")
-    Optional<User> findByUsernameOrRecoveryEmailAndResetPasswordCode(String email, String resetPasswordCode);
+    Optional<User> findByResetPasswordCode(String resetPasswordCode);
 }

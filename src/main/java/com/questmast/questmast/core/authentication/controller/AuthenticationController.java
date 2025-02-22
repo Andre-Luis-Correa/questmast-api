@@ -114,10 +114,7 @@ public class AuthenticationController {
     public ResponseEntity<Void> requestPasswordChange(@PathVariable String email) {
         User user = userDetailsService.findByUsernameOrRecoveryEmail(email);
 
-        if(email.equals(user.getUsername()) && user.getIsMainEmailVerified().equals(Boolean.FALSE)) {
-            throw new EmailNotVerifiedException(email);
-        }
-        if(email.equals(user.getRecoveryEmail()) && user.getIsRecoveryEmailVerified().equals(Boolean.FALSE)) {
+        if(user.getIsMainEmailVerified().equals(Boolean.FALSE) || (email.equals(user.getRecoveryEmail()) && user.getIsRecoveryEmailVerified().equals(Boolean.FALSE))) {
             throw new EmailNotVerifiedException(email);
         }
 
@@ -131,7 +128,7 @@ public class AuthenticationController {
 
     @PostMapping("/update-password")
     public ResponseEntity<Void> updatePassword(@Valid @RequestBody UserResetPasswordDTO userResetPasswordDTO) {
-        User user = userDetailsService.findByUsernameOrRecoveryEmailAndResetPasswordCode(userResetPasswordDTO.email(), userResetPasswordDTO.resetPasswordCode());
+        User user = userDetailsService.findByResetPasswordCode(userResetPasswordDTO.resetPasswordCode());
         userDetailsService.validateResetPasswordCodeExpireDate(user.getResetPasswordCodeExpireDate());
 
         userDetailsService.updateUserPassword(user, userResetPasswordDTO);

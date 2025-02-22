@@ -11,10 +11,6 @@ public record UserResetPasswordDTO(
 
         @NotNull
         @NotBlank
-        String email,
-
-        @NotNull
-        @NotBlank
         String resetPasswordCode
 ) {
 }
