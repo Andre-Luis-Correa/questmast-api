@@ -25,10 +25,7 @@ public class SecurityConfiguration {
     private final UserAuthenticationFilter userAuthenticationFilter;
 
     public static final String[] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
-            "/authentication",
-            "/authentication/verify-email/**",
-            "/authentication/register/student",
-            "/authentication/register/admin",
+            "/authentication/**",
 
             "/address/extern/{cep}",
 

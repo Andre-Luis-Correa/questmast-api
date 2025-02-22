@@ -60,9 +60,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailNotVerifiedException.class)
     public ResponseEntity<ErrorDescription> handleEmailNotVerifiedException(EmailNotVerifiedException ex) {
+        String message = "É necessário realizar a verificação do email " + ex.getEmail();
         ErrorDescription errorResponse = new ErrorDescription(
                 HttpStatus.FORBIDDEN.value(),
-                ex.getMessage()
+                message
         );
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
@@ -93,6 +94,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResetPasswordException.class)
     public ResponseEntity<ErrorDescription> handleResetPasswordException(ResetPasswordException ex) {
         String message = "Não é possível realizar a alteração da senha, o campo " + ex.getField() + " é " + ex.getReason();
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.FORBIDDEN.value(),
+                message
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
+    @ExceptionHandler(DuplicatedFieldValueException.class)
+    public ResponseEntity<ErrorDescription> handleDuplicatedFieldValueException(DuplicatedFieldValueException ex) {
+        String message = "Os campos " + ex.getMainField() + " e " + ex.getSecondaryField() + " não podem ter o mesmo valor " + ex.getValue();
         ErrorDescription errorResponse = new ErrorDescription(
                 HttpStatus.FORBIDDEN.value(),
                 message

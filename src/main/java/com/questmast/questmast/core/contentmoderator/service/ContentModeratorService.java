@@ -22,26 +22,20 @@ public class ContentModeratorService {
     private final ContentModeratorRepository contentModeratorRepository;
     private final ContentModeratorMapper contentModeratorMapper;
 
-    public void create(UserFormDTO userFormDTO, CPF cpf, Gender gender, Address address, String mainEmail, String recoveryEmail, List<Phone> phoneList) {
+    public void create(UserFormDTO userFormDTO, CPF cpf, Gender gender, Address address, String mainEmail, List<Phone> phoneList) {
         SpecificAddress specificAddress = new SpecificAddress(userFormDTO.specificAddressFormDTO().number(), userFormDTO.specificAddressFormDTO().complement(), address);
-        ContentModerator contentModerator = convertToContentModerator(userFormDTO, cpf, gender, specificAddress, mainEmail, recoveryEmail, phoneList);
-        contentModerator.setIsEmailVerified(false);
+        ContentModerator contentModerator = convertToContentModerator(userFormDTO, cpf, gender, specificAddress, mainEmail, phoneList);
 
         contentModeratorRepository.save(contentModerator);
     }
 
-    private ContentModerator convertToContentModerator(UserFormDTO userFormDTO, CPF cpf, Gender gender, SpecificAddress specificAddress, String mainEmail, String recoveryEmail, List<Phone> phoneList) {
-        return contentModeratorMapper.convertToContentModerator(userFormDTO, cpf, gender, specificAddress, mainEmail, recoveryEmail, phoneList);
+    private ContentModerator convertToContentModerator(UserFormDTO userFormDTO, CPF cpf, Gender gender, SpecificAddress specificAddress, String mainEmail, List<Phone> phoneList) {
+        return contentModeratorMapper.convertToContentModerator(userFormDTO, cpf, gender, specificAddress, mainEmail, phoneList);
     }
 
     public ContentModerator findByMainEmail(String email) {
         return contentModeratorRepository.findByMainEmail(email).orElseThrow(
                 () -> new EntityNotFoundExcpetion("ContentModerator", "email", email)
         );
-    }
-
-    public void updateEmailVerificationStatus(ContentModerator contentModerator) {
-        contentModerator.setIsEmailVerified(Boolean.TRUE);
-        contentModeratorRepository.save(contentModerator);
     }
 }

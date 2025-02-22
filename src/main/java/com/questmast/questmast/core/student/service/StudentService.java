@@ -22,26 +22,26 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
 
-    public void create(UserFormDTO userFormDTO, CPF cpf, Gender gender, Address address, String mainEmail, String recoveryEmail, List<Phone> phoneList) {
+    public void create(UserFormDTO userFormDTO, CPF cpf, Gender gender, Address address, String mainEmail, List<Phone> phoneList) {
         SpecificAddress specificAddress = new SpecificAddress(userFormDTO.specificAddressFormDTO().number(), userFormDTO.specificAddressFormDTO().complement(), address);
-        Student student = convertToStudent(userFormDTO, cpf, gender, specificAddress, mainEmail, recoveryEmail, phoneList);
-        student.setIsEmailVerified(false);
+        Student student = convertToStudent(userFormDTO, cpf, gender, specificAddress, mainEmail, phoneList);
 
         studentRepository.save(student);
     }
 
-    private Student convertToStudent(UserFormDTO userFormDTO, CPF cpf, Gender gender, SpecificAddress specificAddress, String mainEmail, String recoveryEmail, List<Phone> phoneList) {
-        return studentMapper.convertToStudent(userFormDTO, cpf, gender, specificAddress, mainEmail, recoveryEmail, phoneList);
+    private Student convertToStudent(UserFormDTO userFormDTO, CPF cpf, Gender gender, SpecificAddress specificAddress, String mainEmail, List<Phone> phoneList) {
+        return studentMapper.convertToStudent(userFormDTO, cpf, gender, specificAddress, mainEmail, phoneList);
     }
 
     public Student findByMainEmail(String email) {
         return studentRepository.findByMainEmail(email).orElseThrow(
-                () -> new EntityNotFoundExcpetion("Student", "email", email)
+                () -> new EntityNotFoundExcpetion("Student", "mainEmail", email)
         );
     }
 
-    public void updateEmailVerificationStatus(Student student) {
-        student.setIsEmailVerified(Boolean.TRUE);
-        studentRepository.save(student);
+    public Student findByRecoveryEmail(String email) {
+        return studentRepository.findByRecoveryEmail(email).orElseThrow(
+                () -> new EntityNotFoundExcpetion("Student", "recoveryEmail", email)
+        );
     }
 }

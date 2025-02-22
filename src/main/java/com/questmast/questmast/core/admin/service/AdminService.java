@@ -23,10 +23,9 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final AdminMapper adminMapper;
 
-    public void create(UserFormDTO userFormDTO, CPF cpf, Gender gender, Address address, String mainEmail, String recoveryEmail, List<Phone> phoneList) {
+    public void create(UserFormDTO userFormDTO, CPF cpf, Gender gender, Address address, String mainEmail, List<Phone> phoneList) {
         SpecificAddress specificAddress = new SpecificAddress(userFormDTO.specificAddressFormDTO().number(), userFormDTO.specificAddressFormDTO().complement(), address);
-        Admin admin = convertToAdmin(userFormDTO, cpf, gender, specificAddress, mainEmail, recoveryEmail, phoneList);
-        admin.setIsEmailVerified(false);
+        Admin admin = convertToAdmin(userFormDTO, cpf, gender, specificAddress, mainEmail, phoneList);
 
         adminRepository.save(admin);
     }
@@ -35,18 +34,13 @@ public class AdminService {
         return adminMapper.convertAdminToAdminDTO(admin);
     }
 
-    private Admin convertToAdmin(UserFormDTO userFormDTO, CPF cpf, Gender gender, SpecificAddress specificAddress, String mainEmail, String recoveryEmail, List<Phone> phoneList) {
-        return adminMapper.convertToAdmin(userFormDTO, cpf, gender, specificAddress, mainEmail, recoveryEmail, phoneList);
+    private Admin convertToAdmin(UserFormDTO userFormDTO, CPF cpf, Gender gender, SpecificAddress specificAddress, String mainEmail, List<Phone> phoneList) {
+        return adminMapper.convertToAdmin(userFormDTO, cpf, gender, specificAddress, mainEmail, phoneList);
     }
 
     public Admin findByMainEmail(String email) {
         return adminRepository.findByMainEmail(email).orElseThrow(
                 () -> new EntityNotFoundExcpetion("Admin", "email", email)
         );
-    }
-
-    public void updateEmailVerificationStatus(Admin admin) {
-        admin.setIsEmailVerified(Boolean.TRUE);
-        adminRepository.save(admin);
     }
 }

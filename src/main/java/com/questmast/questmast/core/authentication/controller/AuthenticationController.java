@@ -1,10 +1,11 @@
 package com.questmast.questmast.core.authentication.controller;
 
+import com.questmast.questmast.common.exception.type.EmailNotVerifiedException;
 import com.questmast.questmast.core.address.address.domain.entity.Address;
 import com.questmast.questmast.core.address.address.service.AddressService;
 import com.questmast.questmast.core.admin.domain.dto.AdminDTO;
-import com.questmast.questmast.core.admin.domain.model.Admin;
 import com.questmast.questmast.core.admin.service.AdminService;
+import com.questmast.questmast.core.authentication.user.domain.dto.UserDTO;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserLoginDTO;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserResetPasswordDTO;
@@ -14,16 +15,15 @@ import com.questmast.questmast.core.authentication.utils.UserDetailsServiceImpl;
 import com.questmast.questmast.core.contact.email.EmailService;
 import com.questmast.questmast.core.contact.phone.domain.model.Phone;
 import com.questmast.questmast.core.contact.phone.service.PhoneService;
-import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;
 import com.questmast.questmast.core.contentmoderator.service.ContentModeratorService;
 import com.questmast.questmast.core.enums.PersonRole;
 import com.questmast.questmast.core.gender.domain.Gender;
 import com.questmast.questmast.core.gender.service.GenderService;
 import com.questmast.questmast.core.person.cpf.domain.CPF;
 import com.questmast.questmast.core.person.cpf.service.CPFService;
-import com.questmast.questmast.core.student.domain.Student;
 import com.questmast.questmast.core.student.service.StudentService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -56,98 +56,82 @@ public class AuthenticationController {
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
-    @PostMapping("/register/student")
-    public ResponseEntity<AdminDTO> createStudent(@Valid @RequestBody UserFormDTO userFormDTO) throws Exception {
-        CPF cpf = cpfService.getValidCPF(userFormDTO.cpf());
-        Gender gender = genderService.findByAcronym(userFormDTO.genderAcronym());
-        Address address = addressService.create(userFormDTO.specificAddressFormDTO());
-        List<Phone> phoneList = phoneService.generateValidPhoneList(userFormDTO.phoneList());
-
-        studentService.create(userFormDTO, cpf, gender, address, userFormDTO.mainEmail(), userFormDTO.recoveryEmail(), phoneList);
-        userDetailsService.create(PersonRole.ROLE_STUDENT, userFormDTO);
-
-        emailService.sendRegistrationVerificationEmail(PersonRole.ROLE_STUDENT, userFormDTO.mainEmail());
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @PostMapping("/register/admin")
-    public ResponseEntity<AdminDTO> createAdmin(@Valid @RequestBody UserFormDTO userFormDTO) throws Exception {
-        CPF cpf = cpfService.getValidCPF(userFormDTO.cpf());
-        Gender gender = genderService.findByAcronym(userFormDTO.genderAcronym());
-        Address address = addressService.create(userFormDTO.specificAddressFormDTO());
-        List<Phone> phoneList = phoneService.generateValidPhoneList(userFormDTO.phoneList());
-
-        adminService.create(userFormDTO, cpf, gender, address, userFormDTO.mainEmail(), userFormDTO.recoveryEmail(), phoneList);
-        userDetailsService.create(PersonRole.ROLE_ADMIN, userFormDTO);
-
-        emailService.sendRegistrationVerificationEmail(PersonRole.ROLE_ADMIN, userFormDTO.mainEmail());
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @PostMapping("/register/content-moderator")
+    @PostMapping("/register")
     public ResponseEntity<AdminDTO> create(@Valid @RequestBody UserFormDTO userFormDTO) throws Exception {
         CPF cpf = cpfService.getValidCPF(userFormDTO.cpf());
         Gender gender = genderService.findByAcronym(userFormDTO.genderAcronym());
         Address address = addressService.create(userFormDTO.specificAddressFormDTO());
         List<Phone> phoneList = phoneService.generateValidPhoneList(userFormDTO.phoneList());
 
-        contentModeratorService.create(userFormDTO, cpf, gender, address, userFormDTO.mainEmail(), userFormDTO.recoveryEmail(), phoneList);
-        userDetailsService.create(PersonRole.ROLE_CONTENT_MODERATOR, userFormDTO);
+        if(userFormDTO.personRole().equals(PersonRole.ROLE_ADMIN)) {
+            adminService.create(userFormDTO, cpf, gender, address, userFormDTO.mainEmail(), phoneList);
+        } else if (userFormDTO.personRole().equals(PersonRole.ROLE_CONTENT_MODERATOR)) {
+            contentModeratorService.create(userFormDTO, cpf, gender, address, userFormDTO.mainEmail(), phoneList);
+        } else {
+            studentService.create(userFormDTO, cpf, gender, address, userFormDTO.mainEmail(), phoneList);
+        }
 
-        emailService.sendRegistrationVerificationEmail(PersonRole.ROLE_CONTENT_MODERATOR, userFormDTO.mainEmail());
+        userDetailsService.create(userFormDTO);
+
+        emailService.sendRegistrationVerificationEmail(userFormDTO.mainEmail(), true);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/verify-email/student/{email}")
-    public ResponseEntity<String> verifyStudentEmail(@PathVariable String email) {
-        Student student = studentService.findByMainEmail(email);
-        studentService.updateEmailVerificationStatus(student);
-
+    @PostMapping("/recovery-email/{email}")
+    public ResponseEntity<Void> addRecoveryEmail(@PathVariable String email, @Valid @NotNull String recoveryEmail) {
         User user = userDetailsService.findByUsername(email);
-        userDetailsService.updateEmailVerificationStatus(user);
+        userDetailsService.updateUserRecoveryEmail(user, recoveryEmail);
 
-        return ResponseEntity.ok("Muito obrigado por confirmar seu cadastro, " + student.getName()+ "!");
+        emailService.sendRegistrationVerificationEmail(recoveryEmail, false);
+
+        return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/verify-email/admin/{email}")
-    public ResponseEntity<String> verifyAdminEmail(@PathVariable String email) {
-        Admin admin = adminService.findByMainEmail(email);
-        adminService.updateEmailVerificationStatus(admin);
-
+    @PostMapping("/verify-main-email/{email}")
+    public ResponseEntity<String> verifyMainEmail(@PathVariable String email) {
         User user = userDetailsService.findByUsername(email);
-        userDetailsService.updateEmailVerificationStatus(user);
+        userDetailsService.updateMainEmailVerificationStatus(user);
 
-        return ResponseEntity.ok("Muito obrigado por confirmar seu cadastro, " + admin.getName()+ "!");
+        return ResponseEntity.ok("Muito obrigado por confirmar seu email principal!");
     }
 
-    @PostMapping("/verify-email/content-moderator/{email}")
-    public ResponseEntity<String> verifyContentModeratorEmail(@PathVariable String email) {
-        ContentModerator contentModerator = contentModeratorService.findByMainEmail(email);
-        contentModeratorService.updateEmailVerificationStatus(contentModerator);
+    @PostMapping("/verify-recovery-email/{email}")
+    public ResponseEntity<String> verifyRecoveryMainEmail(@PathVariable String email) {
+        User user = userDetailsService.findByRecoveryEmail(email);
+        userDetailsService.updateRecoveryEmailVerificationStatus(user);
 
-        User user = userDetailsService.findByUsername(email);
-        userDetailsService.updateEmailVerificationStatus(user);
+        return ResponseEntity.ok("Muito obrigado por confirmar seu email de recuperação!");
+    }
 
-        return ResponseEntity.ok("Muito obrigado por confirmar seu cadastro, " + contentModerator.getName()+ "!");
+    @GetMapping("/{email}")
+    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable String email) {
+        User user = userDetailsService.findByUsernameOrRecoveryEmail(email);
+        return ResponseEntity.ok(userDetailsService.convertUserToUserDTO(user));
     }
 
     @PostMapping("/password-change/{email}")
     public ResponseEntity<Void> requestPasswordChange(@PathVariable String email) {
-        User user = userDetailsService.findByUsername(email);
+        User user = userDetailsService.findByUsernameOrRecoveryEmail(email);
+
+        if(email.equals(user.getUsername()) && user.getIsMainEmailVerified().equals(Boolean.FALSE)) {
+            throw new EmailNotVerifiedException(email);
+        }
+        if(email.equals(user.getRecoveryEmail()) && user.getIsRecoveryEmailVerified().equals(Boolean.FALSE)) {
+            throw new EmailNotVerifiedException(email);
+        }
+
         String resetPasswordCode = userDetailsService.generateResetPasswordCode();
         userDetailsService.updateUserResetPasswordStatus(user, resetPasswordCode);
 
-        emailService.sendResetPasswordCodeEmail(user, resetPasswordCode);
+        emailService.sendResetPasswordCodeEmail(email, resetPasswordCode);
 
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/update-password")
     public ResponseEntity<Void> updatePassword(@Valid @RequestBody UserResetPasswordDTO userResetPasswordDTO) {
-        User user = userDetailsService.findByUsernameAndResetPasswordCode(userResetPasswordDTO.mainEmail(), userResetPasswordDTO.resetPasswordCode());
+        User user = userDetailsService.findByUsernameOrRecoveryEmailAndResetPasswordCode(userResetPasswordDTO.email(), userResetPasswordDTO.resetPasswordCode());
         userDetailsService.validateResetPasswordCodeExpireDate(user.getResetPasswordCodeExpireDate());
 
         userDetailsService.updateUserPassword(user, userResetPasswordDTO);

@@ -19,7 +19,7 @@ public interface AdminMapper {
     @Mapping(source = "gender", target = "gender")
     @Mapping(source = "specificAddress", target = "specificAddress")
     @Mapping(source = "phoneList", target = "phoneList")
-    Admin convertToAdmin(UserFormDTO userFormDTO, CPF cpf, Gender gender, SpecificAddress specificAddress, String mainEmail, String recoveryEmail, List<Phone> phoneList);
+    Admin convertToAdmin(UserFormDTO userFormDTO, CPF cpf, Gender gender, SpecificAddress specificAddress, String mainEmail, List<Phone> phoneList);
 
     AdminDTO convertAdminToAdminDTO(Admin admin);
 }

@@ -19,6 +19,9 @@ public class User {
     @Id
     private String username;
 
+    @Column(unique = true)
+    private String recoveryEmail;
+
     @NotNull
     @Column(nullable = false)
     private String name;
@@ -38,18 +41,20 @@ public class User {
 
     @NotNull
     @Column(nullable = false)
-    private Boolean isEmailVerified;
+    private Boolean isMainEmailVerified;
+
+    private Boolean isRecoveryEmailVerified;
 
     private String resetPasswordCode;
 
     private LocalDateTime resetPasswordCodeExpireDate;
 
-    public User(String username, String name, String cpf, String password, PersonRole personRole, Boolean isEmailVerified) {
+    public User(String username, String name, String cpf, String password, PersonRole personRole, Boolean isMainEmailVerified) {
         this.username = username;
         this.name = name;
         this.cpf = cpf;
         this.password = password;
         this.personRole = personRole;
-        this.isEmailVerified = isEmailVerified;
+        this.isMainEmailVerified = isMainEmailVerified;
     }
 }

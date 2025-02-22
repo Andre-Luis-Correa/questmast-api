@@ -11,7 +11,7 @@ public record UserResetPasswordDTO(
 
         @NotNull
         @NotBlank
-        String mainEmail,
+        String email,
 
         @NotNull
         @NotBlank

@@ -31,7 +31,6 @@ public class Person {
     @Column(nullable = false, unique = true)
     private String mainEmail;
 
-    @NotNull
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String recoveryEmail;
 }

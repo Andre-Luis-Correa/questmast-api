@@ -25,9 +25,5 @@ public class NaturalPerson extends Person {
 
     @NotNull
     @Column(nullable = false)
-    private Boolean isEmailVerified;
-
-    @NotNull
-    @Column(nullable = false)
     private Date birthDate;
 }

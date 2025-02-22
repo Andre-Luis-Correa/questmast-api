@@ -33,7 +33,6 @@ public record UserFormDTO(
         @NotBlank
         String mainEmail,
 
-        @NotBlank
         String recoveryEmail,
 
         @NotNull
