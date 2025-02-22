@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 @Data
 @MappedSuperclass
 @EqualsAndHashCode(callSuper = true)
@@ -24,4 +26,8 @@ public class NaturalPerson extends Person {
     @NotNull
     @Column(nullable = false)
     private Boolean isEmailVerified;
+
+    @NotNull
+    @Column(nullable = false)
+    private Date birthDate;
 }

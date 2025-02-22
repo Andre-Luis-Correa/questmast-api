@@ -3,6 +3,7 @@ package com.questmast.questmast.core.contact.email;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
 import com.questmast.questmast.common.exception.type.FieldNotValidException;
+import com.questmast.questmast.core.authentication.user.domain.model.User;
 import com.questmast.questmast.core.enums.PersonRole;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.validation.constraints.NotBlank;
@@ -95,4 +96,50 @@ public class EmailService {
             log.info("Email not sent! {}", e.getMessage());
         }
     }
+
+    public void sendResetPasswordCodeEmail(User user, String resetPasswordCode) {
+        String frontEndUrl = "http://localhost:3000/reset-password?token=" + resetPasswordCode;
+
+        String emailBody = """
+        <html>
+            <body>
+                <p>Olá,</p>
+                <p>Clique no botão abaixo para redefinir sua senha (o link expira em 20 minutos):</p>
+                
+                <form action="%s" method="GET">
+                    <button type="submit" style="background-color: #4CAF50; 
+                                                color: white; 
+                                                border: none; 
+                                                padding: 10px 20px; 
+                                                text-align: center; 
+                                                text-decoration: none; 
+                                                display: inline-block; 
+                                                font-size: 16px; 
+                                                margin: 4px 2px; 
+                                                cursor: pointer;">
+                        Redefinir Senha
+                    </button>
+                </form>
+                
+                <p>Se você não solicitou uma redefinição de senha, ignore este e-mail.</p>
+                <p>Este link é válido por 20 minutos.</p>
+            </body>
+        </html>
+        """.formatted(frontEndUrl);
+
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            helper.setTo(user.getUsername());
+            helper.setSubject("Redefinição de Senha - QuestMast");
+            helper.setText(emailBody, true);
+
+            javaMailSender.send(mimeMessage);
+            log.info("Email de redefinição de senha enviado para: {}", user.getUsername());
+        } catch (Exception e) {
+            log.error("Falha ao enviar o e-mail de redefinição de senha: {}", e.getMessage());
+        }
+    }
+
 }

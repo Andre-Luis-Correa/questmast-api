@@ -27,7 +27,11 @@ public class SecurityConfiguration {
     public static final String[] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
             "/authentication",
             "/authentication/verify-email/**",
-            "/authentication/register/**",
+            "/authentication/register/student",
+            "/authentication/register/admin",
+
+            "/address/extern/{cep}",
+
             "/swagger-ui.html",
             "/swagger-ui/**",
             "/v3/api-docs/**",
@@ -43,7 +47,7 @@ public class SecurityConfiguration {
     };
 
     public static final String[] ENDPOINTS_ADMIN = {
-
+            "/authentication/register/content-moderator"
     };
 
     public static final String[] ENDPOINTS_STUDENT = {

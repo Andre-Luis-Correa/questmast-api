@@ -6,8 +6,14 @@ import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.Iterator;
+import java.util.List;
 
 @Hidden
 @ControllerAdvice
@@ -52,18 +58,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
-    @ExceptionHandler(RegistrationEmailException.class)
-    public ResponseEntity<ErrorDescription> handleRegistrationEmailException(RegistrationEmailException ex) {
-        String message = "Não foi possível enviar o email de verificação, o registro não foi concluído.";
-        ErrorDescription errorResponse = new ErrorDescription(
-                HttpStatus.NOT_FOUND.value(),
-                message
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-    }
-
     @ExceptionHandler(EmailNotVerifiedException.class)
-    public ResponseEntity<ErrorDescription> handleEmailNotVerified(EmailNotVerifiedException ex) {
+    public ResponseEntity<ErrorDescription> handleEmailNotVerifiedException(EmailNotVerifiedException ex) {
         ErrorDescription errorResponse = new ErrorDescription(
                 HttpStatus.FORBIDDEN.value(),
                 ex.getMessage()
@@ -72,37 +68,88 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
+    @ExceptionHandler(HttpConnectionException.class)
+    public ResponseEntity<ErrorDescription> handleHttpConnectionException(HttpConnectionException ex) {
+        String message = "Não foi possível se conectar ao web serviço " + ex.getWebService();
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.FORBIDDEN.value(),
+                message
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<ErrorDescription> handleEmailException(EmailException ex) {
+        String message = "Não foi possível enviar o email para " + ex.getEmail();
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.FORBIDDEN.value(),
+                message
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
+    @ExceptionHandler(ResetPasswordException.class)
+    public ResponseEntity<ErrorDescription> handleResetPasswordException(ResetPasswordException ex) {
+        String message = "Não é possível realizar a alteração da senha, o campo " + ex.getField() + " é " + ex.getReason();
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.FORBIDDEN.value(),
+                message
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorDescription> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+
+        StringBuilder sb = new StringBuilder("Erro(s) de validação nos campos: ");
+
+        for (int i = 0; i < fieldErrors.size(); i++) {
+            FieldError fieldError = fieldErrors.get(i);
+
+            sb.append("'").append(fieldError.getField()).append("'");
+
+            sb.append(" (").append(fieldError.getDefaultMessage()).append(")");
+
+            if (i < fieldErrors.size() - 1) {
+                sb.append("; ");
+            }
+        }
+
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.BAD_REQUEST.value(),
+                sb.toString()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorDescription> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
 
         String message = "Violação de integridade de dados: " + ex.getMessage();
-        // Mensagem padrão caso não consigamos tratar detalhadamente
 
         if (ex.getRootCause() instanceof org.postgresql.util.PSQLException) {
             org.postgresql.util.PSQLException psqlException = (org.postgresql.util.PSQLException) ex.getRootCause();
 
-            // Verifica se é erro de unicidade (SQLState 23505)
             if ("23505".equals(psqlException.getSQLState())) {
-                // Captura o detalhe da mensagem, que deve conter algo como:
-                // "Key (campo)=(valor) already exists."
                 String detail = psqlException.getServerErrorMessage().getDetail();
 
                 if (detail != null) {
-                    // Usamos expressão regular para isolar o nome do campo e o valor duplicado
                     java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(".*\\((.*?)\\)=\\((.*?)\\).*");
                     java.util.regex.Matcher matcher = pattern.matcher(detail);
 
                     if (matcher.find()) {
-                        // group(1) -> nome do campo
-                        // group(2) -> valor duplicado
                         String field = matcher.group(1);
                         String value = matcher.group(2);
 
                         message = String.format("O campo '%s' com valor '%s' já está cadastrado.",
                                 field, value);
                     } else {
-                        // Caso o detalhe não siga o formato esperado,
-                        // podemos usar uma mensagem genérica de duplicidade
                         message = "Registro duplicado: o valor informado já está cadastrado.";
                     }
                 }

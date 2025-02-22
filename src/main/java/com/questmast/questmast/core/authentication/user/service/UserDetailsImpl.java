@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.authentication.user.service;
 
-import com.questmast.questmast.core.authentication.user.domain.entity.User;
+import com.questmast.questmast.core.authentication.user.domain.model.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

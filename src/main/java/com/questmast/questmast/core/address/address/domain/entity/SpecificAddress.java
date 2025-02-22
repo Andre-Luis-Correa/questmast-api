@@ -14,7 +14,7 @@ public class SpecificAddress {
 
     @NotNull
     @Column(nullable = false)
-    private Long number;
+    private String number;
 
     @NotNull
     @Column(nullable = false)

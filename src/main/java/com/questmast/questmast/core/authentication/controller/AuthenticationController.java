@@ -7,7 +7,8 @@ import com.questmast.questmast.core.admin.domain.model.Admin;
 import com.questmast.questmast.core.admin.service.AdminService;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserLoginDTO;
-import com.questmast.questmast.core.authentication.user.domain.entity.User;
+import com.questmast.questmast.core.authentication.user.domain.dto.UserResetPasswordDTO;
+import com.questmast.questmast.core.authentication.user.domain.model.User;
 import com.questmast.questmast.core.authentication.user.service.UserService;
 import com.questmast.questmast.core.authentication.utils.UserDetailsServiceImpl;
 import com.questmast.questmast.core.contact.email.EmailService;
@@ -78,7 +79,6 @@ public class AuthenticationController {
         List<Phone> phoneList = phoneService.generateValidPhoneList(userFormDTO.phoneList());
 
         adminService.create(userFormDTO, cpf, gender, address, userFormDTO.mainEmail(), userFormDTO.recoveryEmail(), phoneList);
-
         userDetailsService.create(PersonRole.ROLE_ADMIN, userFormDTO);
 
         emailService.sendRegistrationVerificationEmail(PersonRole.ROLE_ADMIN, userFormDTO.mainEmail());
@@ -94,10 +94,9 @@ public class AuthenticationController {
         List<Phone> phoneList = phoneService.generateValidPhoneList(userFormDTO.phoneList());
 
         contentModeratorService.create(userFormDTO, cpf, gender, address, userFormDTO.mainEmail(), userFormDTO.recoveryEmail(), phoneList);
-
         userDetailsService.create(PersonRole.ROLE_CONTENT_MODERATOR, userFormDTO);
 
-        emailService.sendRegistrationVerificationEmail(PersonRole.ROLE_ADMIN, userFormDTO.mainEmail());
+        emailService.sendRegistrationVerificationEmail(PersonRole.ROLE_CONTENT_MODERATOR, userFormDTO.mainEmail());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -118,6 +117,9 @@ public class AuthenticationController {
         Admin admin = adminService.findByMainEmail(email);
         adminService.updateEmailVerificationStatus(admin);
 
+        User user = userDetailsService.findByUsername(email);
+        userDetailsService.updateEmailVerificationStatus(user);
+
         return ResponseEntity.ok("Muito obrigado por confirmar seu cadastro, " + admin.getName()+ "!");
     }
 
@@ -126,6 +128,30 @@ public class AuthenticationController {
         ContentModerator contentModerator = contentModeratorService.findByMainEmail(email);
         contentModeratorService.updateEmailVerificationStatus(contentModerator);
 
+        User user = userDetailsService.findByUsername(email);
+        userDetailsService.updateEmailVerificationStatus(user);
+
         return ResponseEntity.ok("Muito obrigado por confirmar seu cadastro, " + contentModerator.getName()+ "!");
+    }
+
+    @PostMapping("/password-change/{email}")
+    public ResponseEntity<Void> requestPasswordChange(@PathVariable String email) {
+        User user = userDetailsService.findByUsername(email);
+        String resetPasswordCode = userDetailsService.generateResetPasswordCode();
+        userDetailsService.updateUserResetPasswordStatus(user, resetPasswordCode);
+
+        emailService.sendResetPasswordCodeEmail(user, resetPasswordCode);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/update-password")
+    public ResponseEntity<Void> updatePassword(@Valid @RequestBody UserResetPasswordDTO userResetPasswordDTO) {
+        User user = userDetailsService.findByUsernameAndResetPasswordCode(userResetPasswordDTO.mainEmail(), userResetPasswordDTO.resetPasswordCode());
+        userDetailsService.validateResetPasswordCodeExpireDate(user.getResetPasswordCodeExpireDate());
+
+        userDetailsService.updateUserPassword(user, userResetPasswordDTO);
+
+        return ResponseEntity.ok().build();
     }
 }

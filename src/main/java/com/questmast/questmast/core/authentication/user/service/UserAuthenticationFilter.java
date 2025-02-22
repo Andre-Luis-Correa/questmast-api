@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.authentication.user.service;
 
-import com.questmast.questmast.core.authentication.user.domain.entity.User;
+import com.questmast.questmast.core.authentication.user.domain.model.User;
 import com.questmast.questmast.core.authentication.user.repository.UserRepository;
 import com.questmast.questmast.core.authentication.utils.JwtTokenService;
 import jakarta.servlet.FilterChain;

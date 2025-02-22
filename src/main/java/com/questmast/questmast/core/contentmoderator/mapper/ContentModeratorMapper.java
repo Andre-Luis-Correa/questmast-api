@@ -17,5 +17,6 @@ public interface ContentModeratorMapper {
     @Mapping(source = "cpf", target = "cpf")
     @Mapping(source = "gender", target = "gender")
     @Mapping(source = "specificAddress", target = "specificAddress")
+    @Mapping(source = "phoneList", target = "phoneList")
     ContentModerator convertToContentModerator(UserFormDTO userFormDTO, CPF cpf, Gender gender, SpecificAddress specificAddress, String mainEmail, String recoveryEmail, List<Phone> phoneList);
 }

@@ -3,6 +3,7 @@ package com.questmast.questmast.core.authentication.user.domain.dto;
 import com.questmast.questmast.core.address.address.domain.dto.SpecificAddressFormDTO;
 import com.questmast.questmast.core.contact.phone.domain.dto.PhoneFormDTO;
 import com.questmast.questmast.core.enums.PersonRole;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -26,6 +27,7 @@ public record UserFormDTO(
         String name,
 
         @NotNull
+        @Valid
         SpecificAddressFormDTO specificAddressFormDTO,
 
         @NotBlank
@@ -35,6 +37,7 @@ public record UserFormDTO(
         String recoveryEmail,
 
         @NotNull
+        @Valid
         List<PhoneFormDTO> phoneList
 ) {
 }
