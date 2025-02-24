@@ -1,6 +1,7 @@
 package com.questmast.questmast.core.testquestioncategory.service;
 
 //import com.questmast.questmast.exceptions.type.EntityNotFoundException;
+import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.testquestioncategory.domain.dto.TestQuestionCategoryDTO;
 import com.questmast.questmast.core.testquestioncategory.domain.dto.TestQuestionCategoryFormDTO;
 import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
@@ -24,7 +25,7 @@ public class TestQuestionCategoryService {
 
     public TestQuestionCategory findById(Long id) {
         return testQuestionCategoryRepository.findById(id).orElseThrow(
-                //() -> new EntityNotFoundException("TestQuestionCategory", "id", id.toString())
+                () -> new EntityNotFoundExcpetion("TestQuestionCategory", "id", id.toString())
         );
     }
 

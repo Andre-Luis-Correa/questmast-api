@@ -1,6 +1,7 @@
 package com.questmast.questmast.core.questionalternative.service;
 
 //import com.questmast.questmast.exceptions.type.EntityNotFoundExcpetion;
+import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.questionalternative.domain.dto.QuestionAlternativeDTO;
 import com.questmast.questmast.core.questionalternative.domain.dto.QuestionAlternativeFormDTO;
 import com.questmast.questmast.core.questionalternative.domain.entity.QuestionAlternative;
@@ -9,6 +10,7 @@ import com.questmast.questmast.core.questionalternative.repository.QuestionAlter
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +25,7 @@ public class QuestionAlternativeService {
 
     public QuestionAlternative findById(Long id) {
         return questionAlternativeRepository.findById(id).orElseThrow(
-                //() -> new EntityNotFoundExcpetion("QuestionAlternative", "id", id.toString())
+                () -> new EntityNotFoundExcpetion("QuestionAlternative", "id", id.toString())
         );
     }
 
@@ -68,5 +70,9 @@ public class QuestionAlternativeService {
 
         questionAlternativeRepository.save(updatedQuestionAlternative);
         return convertEntityToDTO(updatedQuestionAlternative);
+    }
+
+    public List<QuestionAlternative> save(List<QuestionAlternative> questionAlternativeList) {
+        return questionAlternativeRepository.saveAll(questionAlternativeList);
     }
 }

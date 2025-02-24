@@ -1,6 +1,7 @@
 package com.questmast.questmast.core.professionallevel.service;
 
 //import com.questmast.questmast.exceptions.type.EntityNotFoundException;
+import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.professionallevel.domain.dto.ProfessionalLevelDTO;
 import com.questmast.questmast.core.professionallevel.domain.dto.ProfessionalLevelFormDTO;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
@@ -23,7 +24,7 @@ public class ProfessionalLevelService {
 
     public ProfessionalLevel findById(Long id) {
         return professionalLevelRepository.findById(id).orElseThrow(
-                //() -> new EntityNotFoundException("ProfessionalLevel", "id", id.toString()));
+                () -> new EntityNotFoundExcpetion("ProfessionalLevel", "id", id.toString())
         );
     }
 

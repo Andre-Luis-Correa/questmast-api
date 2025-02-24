@@ -9,11 +9,14 @@ import com.questmast.questmast.core.question.service.QuestionService;
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
 import com.questmast.questmast.core.selectionprocess.service.SelectionProcessService;
 import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFormDTO;
+import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.selectionprocesstest.service.SelectionProcessTestService;
 import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
 import com.questmast.questmast.core.testquestioncategory.service.TestQuestionCategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +47,52 @@ public class SelectionProcessTestController {
         selectionProcessTestService.create(selectionProcessTestFormDTO, function, professionalLevel, testQuestionCategory, selectionProcess, questionList);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody SelectionProcessTestFormDTO selectionProcessTestFormDTO) {
+        SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(id);
+        Function function = functionService.findById(selectionProcessTestFormDTO.functionId());
+        ProfessionalLevel professionalLevel = professionalLevelService.findById(selectionProcessTestFormDTO.professionalLevelId());
+        TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(selectionProcessTestFormDTO.testQuestionCategoryId());
+        SelectionProcess selectionProcess = selectionProcessService.findById(selectionProcessTestFormDTO.selectionProcessId());
+        List<Question> questionList = questionService.getValidQuestionList(selectionProcessTestFormDTO.questionList());
+
+        selectionProcessTestService.update(selectionProcessTestFormDTO, selectionProcessTest, function, professionalLevel, testQuestionCategory, selectionProcess, questionList);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/view-counter/{id}")
+    public ResponseEntity<Void> updateViewCounter(@PathVariable Long id) {
+        SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(id);
+
+        selectionProcessTestService.updateViewCounter(selectionProcessTest);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(id);
+
+        selectionProcessTestService.delete(selectionProcessTest);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<Page<SelectionProcessTest>> list(Pageable pageable) {
+        return ResponseEntity.ok().body(selectionProcessTestService.list(pageable));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<SelectionProcessTest>> list() {
+        return ResponseEntity.ok().body(selectionProcessTestService.list());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SelectionProcessTest> getById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(selectionProcessTestService.findById(id));
     }
 }

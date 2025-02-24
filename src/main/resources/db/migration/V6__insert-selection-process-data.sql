@@ -17,3 +17,34 @@ INSERT INTO selection_process_status (description) VALUES
                                                        ('Em Andamento'),
                                                        ('Concluído'),
                                                        ('Cancelado');
+
+INSERT INTO institution (
+    quantity_of_questions,
+    quantity_of_selection_process,
+    quantity_of_tests,
+    cnpj,
+    name,
+    site_url
+) VALUES
+      (120, 5, 10, '12.345.678/0001-90', 'Instituição Alpha', 'https://www.instituicaoalpha.com.br'),
+      (200, 8, 15, '23.456.789/0001-01', 'Instituição Beta', 'https://www.instituicaobeta.com.br'),
+      (75, 3, 5, '34.567.890/0001-12', 'Instituição Gamma', 'https://www.instituicaogamma.com.br'),
+      (150, 6, 12, '45.678.901/0001-23', 'Instituição Delta', 'https://www.instituicaodelta.com.br'),
+      (95, 4, 7, '56.789.012/0001-34', 'Instituição Epsilon', 'https://www.instituicaoepsilon.com.br');
+
+
+insert into selection_process(date, view_counter, board_examiner_id, institution_id, city_id, content_moderator_id, selection_process_status_id, name, url) values ('2025-02-24', 0, 1, 1, 1, 1, 1, 'Concurso dos Correios', 'www.correios.com.br');
+
+insert into function(name, description) values ('Fiscal de cartas', 'Fiscalizar o recebimento de cartas. Salário de R$ 3500,00.');
+
+insert into professional_level(description, name) values ('Ensino médio', 'Ensino Médio');
+
+insert into test_question_category(name) values ('objetiva');
+
+insert into subject(description, name) values ('description', 'Matemática'),
+                                              ('description', 'Português');
+
+insert into subject_topic(subject_id, description, name) values(1, 'Lorem ipsum', 'Trigonometria'),
+                                             (2, 'Coesão e coerência textual', 'Português');
+
+insert into question_difficulty_level(description, name) values ('Questões consideradas difíceis com maior números de erros', 'Difícil');

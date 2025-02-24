@@ -6,6 +6,8 @@ import com.questmast.questmast.core.boardexaminer.domain.BoardExaminer;
 import com.questmast.questmast.core.boardexaminer.service.BoardExaminerService;
 import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;
 import com.questmast.questmast.core.contentmoderator.service.ContentModeratorService;
+import com.questmast.questmast.core.institution.domain.model.Institution;
+import com.questmast.questmast.core.institution.service.InstitutionService;
 import com.questmast.questmast.core.selectionprocess.domain.dto.SelectionProcessFormDTO;
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
 import com.questmast.questmast.core.selectionprocess.service.SelectionProcessService;
@@ -29,6 +31,7 @@ public class SelectionProcessController {
 
     private final SelectionProcessService selectionProcessService;
     private final BoardExaminerService boardExaminerService;
+    private final InstitutionService institutionService;
     private final ContentModeratorService contentModeratorService;
     private final SelectionProcessStatusService selectionProcessStatusService;
     private final CityService cityService;
@@ -36,11 +39,12 @@ public class SelectionProcessController {
     @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody SelectionProcessFormDTO selectionProcessFormDTO) {
         BoardExaminer boardExaminer = boardExaminerService.findById(selectionProcessFormDTO.boardExaminerId());
+        Institution institution = institutionService.findById(selectionProcessFormDTO.institutionId());
         City city = cityService.findById(selectionProcessFormDTO.cityId());
         ContentModerator contentModerator = contentModeratorService.findById(selectionProcessFormDTO.contentModeratorId());
         SelectionProcessStatus selectionProcessStatus = selectionProcessStatusService.findById(selectionProcessFormDTO.selectionProcessStatusId());
 
-        selectionProcessService.create(selectionProcessFormDTO, boardExaminer, city, contentModerator, selectionProcessStatus);
+        selectionProcessService.create(selectionProcessFormDTO, boardExaminer, institution, city, contentModerator, selectionProcessStatus);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -64,11 +68,12 @@ public class SelectionProcessController {
     public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody SelectionProcessFormDTO selectionProcessFormDTO) {
         SelectionProcess selectionProcess = selectionProcessService.findById(id);
         BoardExaminer boardExaminer = boardExaminerService.findById(selectionProcessFormDTO.boardExaminerId());
+        Institution institution = institutionService.findById(selectionProcessFormDTO.institutionId());
         City city = cityService.findById(selectionProcessFormDTO.cityId());
         ContentModerator contentModerator = contentModeratorService.findById(selectionProcessFormDTO.contentModeratorId());
         SelectionProcessStatus selectionProcessStatus = selectionProcessStatusService.findById(selectionProcessFormDTO.selectionProcessStatusId());
 
-        selectionProcessService.update(selectionProcess, selectionProcessFormDTO, boardExaminer, city, contentModerator, selectionProcessStatus);
+        selectionProcessService.update(selectionProcess, selectionProcessFormDTO, boardExaminer, institution, city, contentModerator, selectionProcessStatus);
 
         return ResponseEntity.ok().build();
     }

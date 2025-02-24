@@ -2,8 +2,10 @@ package com.questmast.questmast.core.question.service;
 
 import com.questmast.questmast.core.question.domain.dto.QuestionFormDTO;
 import com.questmast.questmast.core.question.domain.model.Question;
+import com.questmast.questmast.core.question.repository.QuestionRepository;
 import com.questmast.questmast.core.questionalternative.domain.dto.QuestionAlternativeFormDTO;
 import com.questmast.questmast.core.questionalternative.domain.entity.QuestionAlternative;
+import com.questmast.questmast.core.questionalternative.service.QuestionAlternativeService;
 import com.questmast.questmast.core.questiondifficultylevel.domain.entity.QuestionDifficultyLevel;
 import com.questmast.questmast.core.questiondifficultylevel.service.QuestionDifficultyLevelService;
 import com.questmast.questmast.core.subject.domain.entity.Subject;
@@ -16,7 +18,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,8 @@ public class QuestionService {
     private final SubjectService subjectService;
     private final TestQuestionCategoryService testQuestionCategoryService;
     private final SubjectTopicService subjectTopicService;
+    private final QuestionAlternativeService questionAlternativeService;
+    private final QuestionRepository questionRepository;
 
     public List<Question> getValidQuestionList(List<QuestionFormDTO> questionFormDTOS) {
         List<Question> questionList = new ArrayList<>();
@@ -48,13 +54,15 @@ public class QuestionService {
             question.setQuantityOfCorrectAnswers(0);
             question.setQuantityOfWrongAnswers(0);
             question.setQuantityOfTries(0);
+            questionList.add(question);
         }
 
+        //return questionRepository.saveAll(questionList);
         return questionList;
     }
 
-    private List<SubjectTopic> generateSubjectTopicList(List<Long> ids) {
-        List<SubjectTopic> subjectTopicList = new ArrayList<>();
+    private Set<SubjectTopic> generateSubjectTopicList(Set<Long> ids) {
+        Set<SubjectTopic> subjectTopicList = new HashSet<>();
 
         for(Long id : ids) {
             subjectTopicList.add(subjectTopicService.findById(id));
@@ -76,6 +84,7 @@ public class QuestionService {
             questionAlternativeList.add(questionAlternative);
         }
 
+//        return questionAlternativeService.save(questionAlternativeList);
         return questionAlternativeList;
     }
 }

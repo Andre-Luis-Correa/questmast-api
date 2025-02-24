@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public record QuestionFormDTO(
 
@@ -37,7 +38,7 @@ public record QuestionFormDTO(
         @Valid
         @NotNull
         @NotEmpty
-        List<Long> subjectTopicList,
+        Set<Long> subjectTopicList,
 
         @NotNull
         Long testQuestionCategoryId

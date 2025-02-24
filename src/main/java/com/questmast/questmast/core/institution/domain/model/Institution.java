@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.institution;
+package com.questmast.questmast.core.institution.domain.model;
 
 import com.questmast.questmast.core.person.cnpj.CNPJ;
 import jakarta.persistence.*;

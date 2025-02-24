@@ -11,6 +11,8 @@ import com.questmast.questmast.core.selectionprocesstest.mapper.SelectionProcess
 import com.questmast.questmast.core.selectionprocesstest.repository.SelectionProcessTestRepository;
 import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,11 +21,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SelectionProcessTestService {
 
-    private final SelectionProcessTestRepository selectionProcessRepository;
+    private final SelectionProcessTestRepository selectionProcessTestRepository;
     private final SelectionProcessTestMapper selectionProcessTestMapper;
 
     public SelectionProcessTest findById(Long id) {
-        return selectionProcessRepository.findById(id).orElseThrow(
+        return selectionProcessTestRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundExcpetion("SelectionProcessTest", "id", id.toString())
         );
     }
@@ -38,6 +40,43 @@ public class SelectionProcessTestService {
         selectionProcessTest.setTestQuestionCategory(testQuestionCategory);
         selectionProcessTest.setSelectionProcess(selectionProcess);
 
-        selectionProcessRepository.save(selectionProcessTest);
+        selectionProcessTestRepository.save(selectionProcessTest);
+    }
+
+    public void update(SelectionProcessTestFormDTO selectionProcessTestFormDTO, SelectionProcessTest selectionProcessTest, Function function, ProfessionalLevel professionalLevel, TestQuestionCategory testQuestionCategory, SelectionProcess selectionProcess, List<Question> questionList) {
+        selectionProcessTest.setName(selectionProcessTestFormDTO.name());
+        selectionProcessTest.setQuestionList(questionList);
+        selectionProcessTest.setFunction(function);
+        selectionProcessTest.setProfessionalLevel(professionalLevel);
+        selectionProcessTest.setTestQuestionCategory(testQuestionCategory);
+        selectionProcessTest.setSelectionProcess(selectionProcess);
+
+        selectionProcessTestRepository.save(selectionProcessTest);
+    }
+
+    public void updateViewCounter(SelectionProcessTest selectionProcessTest) {
+        Integer viewCounter  = selectionProcessTest.getViewCounter();
+
+        if(viewCounter == null) {
+            viewCounter = 0;
+        } else {
+            viewCounter += 1;
+        }
+
+        selectionProcessTest.setViewCounter(viewCounter);
+
+        selectionProcessTestRepository.save(selectionProcessTest);
+    }
+
+    public void delete(SelectionProcessTest selectionProcessTest) {
+        selectionProcessTestRepository.delete(selectionProcessTest);
+    }
+
+    public Page<SelectionProcessTest> list(Pageable pageable) {
+        return selectionProcessTestRepository.findAll(pageable);
+    }
+
+    public List<SelectionProcessTest> list() {
+        return selectionProcessTestRepository.findAll();
     }
 }

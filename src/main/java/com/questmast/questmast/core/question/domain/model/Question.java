@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -73,5 +74,5 @@ public class Question {
 
     @NotNull
     @OneToMany
-    private List<SubjectTopic> subjectTopicList;
+    private Set<SubjectTopic> subjectTopicList;
 }
