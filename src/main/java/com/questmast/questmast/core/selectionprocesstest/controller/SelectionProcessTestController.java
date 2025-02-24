@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.selectionprocesstest.controller;
 
-import com.questmast.questmast.core.function.Function;
+import com.questmast.questmast.core.function.domain.model.Function;
 import com.questmast.questmast.core.function.service.FunctionService;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
 import com.questmast.questmast.core.professionallevel.service.ProfessionalLevelService;

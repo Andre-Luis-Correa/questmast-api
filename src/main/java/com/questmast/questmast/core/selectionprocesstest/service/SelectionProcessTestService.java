@@ -1,7 +1,7 @@
 package com.questmast.questmast.core.selectionprocesstest.service;
 
 import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
-import com.questmast.questmast.core.function.Function;
+import com.questmast.questmast.core.function.domain.model.Function;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
 import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;

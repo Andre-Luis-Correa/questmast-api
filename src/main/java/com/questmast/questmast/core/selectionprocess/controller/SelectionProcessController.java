@@ -88,6 +88,6 @@ public class SelectionProcessController {
 
         selectionProcessService.delete(selectionProcess);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

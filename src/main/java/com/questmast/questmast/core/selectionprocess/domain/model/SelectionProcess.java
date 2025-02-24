@@ -28,8 +28,6 @@ public class SelectionProcess {
     @Column(nullable = false)
     private Integer viewCounter;
 
-    @NotNull
-    @Column(nullable = false)
     private String url;
 
     @NotNull
