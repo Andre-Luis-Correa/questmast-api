@@ -23,7 +23,7 @@ public record SelectionProcessTestFormDTO(
         Long testQuestionCategoryId,
 
         @NotNull
-        Long selectionProcess,
+        Long selectionProcessId,
 
         @Valid
         @NotNull
