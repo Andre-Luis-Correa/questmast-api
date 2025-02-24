@@ -1,6 +1,7 @@
-package com.questmast.questmast.core.selectionprocess;
+package com.questmast.questmast.core.selectionprocess.domain.model;
 
-import com.questmast.questmast.core.boardexaminer.BoardExaminer;
+import com.questmast.questmast.core.address.city.domain.City;
+import com.questmast.questmast.core.boardexaminer.domain.BoardExaminer;
 import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;
 import com.questmast.questmast.core.selectionprocessstatus.domain.entity.SelectionProcessStatus;
 import jakarta.persistence.*;
@@ -26,6 +27,15 @@ public class SelectionProcess {
     @NotNull
     @Column(nullable = false)
     private Integer viewCounter;
+
+    @NotNull
+    @Column(nullable = false)
+    private String url;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "city_id ", nullable = false)
+    private City city;
 
     @NotNull
     @ManyToOne

@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.institution;
+package com.questmast.questmast.core.boardexaminer.domain;
 
 import com.questmast.questmast.core.person.cnpj.CNPJ;
 import jakarta.persistence.*;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class Institution {
+public class BoardExaminer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

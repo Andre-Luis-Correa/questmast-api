@@ -1,7 +1,6 @@
 package com.questmast.questmast.core.solvedselectionprocesstest;
 
-import com.questmast.questmast.core.questionnaire.Questionnaire;
-import com.questmast.questmast.core.selectionprocesstest.SelectionProcessTest;
+import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.solvedevaluationtest.SolvedEvaluationTest;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;

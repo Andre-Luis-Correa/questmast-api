@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.solvedevaluationtestquestion;
 
-import com.questmast.questmast.core.question.Question;
+import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.questionalternative.domain.entity.QuestionAlternative;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

@@ -1,6 +1,8 @@
 package com.questmast.questmast.core.selectionprocessstatus.service;
 
 //import com.questmast.questmast.core.exceptions.type.EntityNotFoundException;
+
+import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.selectionprocessstatus.domain.dto.SelectionProcessStatusDTO;
 import com.questmast.questmast.core.selectionprocessstatus.domain.dto.SelectionProcessStatusFormDTO;
 import com.questmast.questmast.core.selectionprocessstatus.domain.entity.SelectionProcessStatus;
@@ -23,7 +25,7 @@ public class SelectionProcessStatusService {
 
     public SelectionProcessStatus findById(Long id) {
         return selectionProcessStatusRepository.findById(id).orElseThrow(
-                //() -> new EntityNotFoundException("SelectionProcessStatus", "id", id.toString())
+                () -> new EntityNotFoundExcpetion("SelectionProcessStatus", "id", id.toString())
         );
     }
 

@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.question;
+package com.questmast.questmast.core.question.domain.model;
 
 import com.questmast.questmast.core.questionalternative.domain.entity.QuestionAlternative;
 import com.questmast.questmast.core.questiondifficultylevel.domain.entity.QuestionDifficultyLevel;

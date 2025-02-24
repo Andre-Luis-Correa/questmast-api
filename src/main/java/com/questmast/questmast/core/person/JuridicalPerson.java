@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @MappedSuperclass
 @EqualsAndHashCode(callSuper = true)
-public class JuridicalPerson extends Person{
+public class JuridicalPerson extends Person {
 
     @NotNull
     @Embedded

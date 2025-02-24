@@ -38,4 +38,10 @@ public class ContentModeratorService {
                 () -> new EntityNotFoundExcpetion("ContentModerator", "email", email)
         );
     }
+
+    public ContentModerator findById(Long id) {
+        return contentModeratorRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundExcpetion("ContentModerator", "id", id.toString())
+        );
+    }
 }

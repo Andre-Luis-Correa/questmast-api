@@ -3,7 +3,6 @@ package com.questmast.questmast.core.authentication.controller;
 import com.questmast.questmast.common.exception.type.EmailNotVerifiedException;
 import com.questmast.questmast.core.address.address.domain.entity.Address;
 import com.questmast.questmast.core.address.address.service.AddressService;
-import com.questmast.questmast.core.admin.domain.dto.AdminDTO;
 import com.questmast.questmast.core.admin.service.AdminService;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserDTO;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
@@ -57,7 +56,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AdminDTO> create(@Valid @RequestBody UserFormDTO userFormDTO) throws Exception {
+    public ResponseEntity<Void> create(@Valid @RequestBody UserFormDTO userFormDTO) throws Exception {
         CPF cpf = cpfService.getValidCPF(userFormDTO.cpf());
         Gender gender = genderService.findByAcronym(userFormDTO.genderAcronym());
         Address address = addressService.create(userFormDTO.specificAddressFormDTO());

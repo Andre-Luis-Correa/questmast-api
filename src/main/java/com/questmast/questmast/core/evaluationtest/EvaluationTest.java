@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.evaluationtest;
 
-import com.questmast.questmast.core.question.Question;
+import com.questmast.questmast.core.question.domain.model.Question;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -18,6 +18,10 @@ public class EvaluationTest {
     @NotNull
     @Column(nullable = false)
     private String name;
+
+    @NotNull
+    @Column(nullable = false)
+    private Integer viewCounter;
 
     @NotNull
     @OneToMany(cascade = CascadeType.ALL)
