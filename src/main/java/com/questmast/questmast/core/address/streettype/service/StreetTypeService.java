@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class StreetTypeService {
@@ -32,5 +34,9 @@ public class StreetTypeService {
         return streetTypeRepository.findByName(name).orElseThrow(
                 () -> new EntityNotFoundExcpetion("StreetType", "name", name)
         );
+    }
+
+    public List<StreetType> findAll() {
+        return streetTypeRepository.findAll();
     }
 }

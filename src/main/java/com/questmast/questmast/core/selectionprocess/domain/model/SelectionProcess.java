@@ -33,7 +33,7 @@ public class  SelectionProcess {
 
     @NotNull
     @Column(nullable = false)
-    private LocalDate date;
+    private LocalDate openingDate;
 
     private String url;
 

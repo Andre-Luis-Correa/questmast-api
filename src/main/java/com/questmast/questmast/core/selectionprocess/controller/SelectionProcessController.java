@@ -45,6 +45,8 @@ public class SelectionProcessController {
         SelectionProcessStatus selectionProcessStatus = selectionProcessStatusService.findById(selectionProcessFormDTO.selectionProcessStatusId());
 
         selectionProcessService.create(selectionProcessFormDTO, boardExaminer, institution, city, contentModerator, selectionProcessStatus);
+        institutionService.addQuantityOfSelectionProcess(institution);
+        boardExaminerService.addQuantityOfSelectionProcess(boardExaminer);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -90,6 +92,7 @@ public class SelectionProcessController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         SelectionProcess selectionProcess = selectionProcessService.findById(id);
+        institutionService.subQuantityOfSelectionProcess(selectionProcess.getInstitution());
 
         selectionProcessService.delete(selectionProcess);
 

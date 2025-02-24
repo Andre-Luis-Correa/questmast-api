@@ -1,7 +1,9 @@
 package com.questmast.questmast.core.selectionprocesstest.controller;
 
+import com.questmast.questmast.core.boardexaminer.service.BoardExaminerService;
 import com.questmast.questmast.core.function.domain.model.Function;
 import com.questmast.questmast.core.function.service.FunctionService;
+import com.questmast.questmast.core.institution.service.InstitutionService;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
 import com.questmast.questmast.core.professionallevel.service.ProfessionalLevelService;
 import com.questmast.questmast.core.question.domain.model.Question;
@@ -9,6 +11,7 @@ import com.questmast.questmast.core.question.service.QuestionService;
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
 import com.questmast.questmast.core.selectionprocess.service.SelectionProcessService;
 import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFormDTO;
+import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestUpdateDTO;
 import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.selectionprocesstest.service.SelectionProcessTestService;
 import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
@@ -35,6 +38,8 @@ public class SelectionProcessTestController {
     private final TestQuestionCategoryService testQuestionCategoryService;
     private final SelectionProcessService selectionProcessService;
     private final QuestionService questionService;
+    private final InstitutionService institutionService;
+    private final BoardExaminerService boardExaminerService;
 
     @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody SelectionProcessTestFormDTO selectionProcessTestFormDTO) {
@@ -42,23 +47,25 @@ public class SelectionProcessTestController {
         ProfessionalLevel professionalLevel = professionalLevelService.findById(selectionProcessTestFormDTO.professionalLevelId());
         TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(selectionProcessTestFormDTO.testQuestionCategoryId());
         SelectionProcess selectionProcess = selectionProcessService.findById(selectionProcessTestFormDTO.selectionProcessId());
-        List<Question> questionList = questionService.getValidQuestionList(selectionProcessTestFormDTO.questionList());
+        List<Question> questionList = questionService.getValidQuestionList(selectionProcessTestFormDTO.questionList(), selectionProcessTestFormDTO.applicationDate());
 
         selectionProcessTestService.create(selectionProcessTestFormDTO, function, professionalLevel, testQuestionCategory, selectionProcess, questionList);
+        institutionService.addTestsAndQuestionsCounters(selectionProcess.getInstitution(), questionList.size());
+        boardExaminerService.addTestsAndQuestionsCounters(selectionProcess.getBoardExaminer(), questionList.size());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody SelectionProcessTestFormDTO selectionProcessTestFormDTO) {
+    public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody SelectionProcessTestUpdateDTO selectionProcessTestUpdateDTO) {
         SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(id);
-        Function function = functionService.findById(selectionProcessTestFormDTO.functionId());
-        ProfessionalLevel professionalLevel = professionalLevelService.findById(selectionProcessTestFormDTO.professionalLevelId());
-        TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(selectionProcessTestFormDTO.testQuestionCategoryId());
-        SelectionProcess selectionProcess = selectionProcessService.findById(selectionProcessTestFormDTO.selectionProcessId());
-        List<Question> questionList = questionService.getValidQuestionList(selectionProcessTestFormDTO.questionList());
+        Function function = functionService.findById(selectionProcessTestUpdateDTO.functionId());
+        ProfessionalLevel professionalLevel = professionalLevelService.findById(selectionProcessTestUpdateDTO.professionalLevelId());
+        TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(selectionProcessTestUpdateDTO.testQuestionCategoryId());
+        SelectionProcess selectionProcess = selectionProcessService.findById(selectionProcessTestUpdateDTO.selectionProcessId());
+        List<Question> questionList = questionService.updateQuestionList(selectionProcessTest.getQuestionList(), selectionProcessTestUpdateDTO.questionList(), selectionProcessTestUpdateDTO);
 
-        selectionProcessTestService.update(selectionProcessTestFormDTO, selectionProcessTest, function, professionalLevel, testQuestionCategory, selectionProcess, questionList);
+        selectionProcessTestService.update(selectionProcessTestUpdateDTO, selectionProcessTest, function, professionalLevel, testQuestionCategory, selectionProcess, questionList);
 
         return ResponseEntity.ok().build();
     }
@@ -75,6 +82,8 @@ public class SelectionProcessTestController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(id);
+        institutionService.subTestsAndQuestionsCounters(selectionProcessTest.getSelectionProcess().getInstitution(), selectionProcessTest.getQuestionList().size());
+        boardExaminerService.subTestsAndQuestionsCounters(selectionProcessTest.getSelectionProcess().getBoardExaminer(), selectionProcessTest.getQuestionList().size());
 
         selectionProcessTestService.delete(selectionProcessTest);
 

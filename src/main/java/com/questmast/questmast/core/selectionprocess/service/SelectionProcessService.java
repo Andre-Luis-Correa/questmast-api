@@ -25,7 +25,7 @@ public class SelectionProcessService {
     public void create(SelectionProcessFormDTO selectionProcessFormDTO, BoardExaminer boardExaminer, Institution institution, City city, ContentModerator contentModerator, SelectionProcessStatus selectionProcessStatus) {
         SelectionProcess selectionProcess = new SelectionProcess();
         selectionProcess.setName(selectionProcessFormDTO.name());
-        selectionProcess.setDate(selectionProcessFormDTO.date());
+        selectionProcess.setOpeningDate(selectionProcessFormDTO.openingDate());
         selectionProcess.setUrl(selectionProcessFormDTO.url());
         selectionProcess.setViewCounter(0);
         selectionProcess.setBoardExaminer(boardExaminer);
@@ -45,7 +45,7 @@ public class SelectionProcessService {
 
     public void update(SelectionProcess selectionProcess, SelectionProcessFormDTO selectionProcessFormDTO, BoardExaminer boardExaminer, Institution institution, City city, ContentModerator contentModerator, SelectionProcessStatus selectionProcessStatus) {
         selectionProcess.setName(selectionProcessFormDTO.name());
-        selectionProcess.setDate(selectionProcessFormDTO.date());
+        selectionProcess.setOpeningDate(selectionProcessFormDTO.openingDate());
         selectionProcess.setUrl(selectionProcessFormDTO.url());
         selectionProcess.setBoardExaminer(boardExaminer);
         selectionProcess.setInstitution(institution);

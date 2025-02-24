@@ -33,7 +33,7 @@ INSERT INTO institution (
       (95, 4, 7, '56.789.012/0001-34', 'Instituição Epsilon', 'https://www.instituicaoepsilon.com.br');
 
 
-insert into selection_process(date, view_counter, board_examiner_id, institution_id, city_id, content_moderator_id, selection_process_status_id, name, url) values ('2025-02-24', 0, 1, 1, 1, 1, 1, 'Concurso dos Correios', 'www.correios.com.br');
+insert into selection_process(opening_date, view_counter, board_examiner_id, institution_id, city_id, content_moderator_id, selection_process_status_id, name, url) values ('2025-02-24', 0, 1, 1, 1, 1, 1, 'Concurso dos Correios', 'www.correios.com.br');
 
 insert into function(name, description) values ('Fiscal de cartas', 'Fiscalizar o recebimento de cartas. Salário de R$ 3500,00.');
 

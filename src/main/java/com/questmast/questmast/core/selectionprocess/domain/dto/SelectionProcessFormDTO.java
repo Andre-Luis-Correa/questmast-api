@@ -10,7 +10,7 @@ public record SelectionProcessFormDTO(
         String name,
 
         @NotNull
-        LocalDate date,
+        LocalDate openingDate,
 
         String url,
 

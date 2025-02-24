@@ -5,6 +5,7 @@ import com.questmast.questmast.core.function.domain.model.Function;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
 import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -14,12 +15,18 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class SelectionProcessTest extends EvaluationTest {
+
+    @NotNull
+    @Column(nullable = false)
+    private LocalDate applicationDate;
 
     @NotNull
     @ManyToOne

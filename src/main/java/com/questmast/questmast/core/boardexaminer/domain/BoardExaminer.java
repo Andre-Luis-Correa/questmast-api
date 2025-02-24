@@ -40,4 +40,5 @@ public class BoardExaminer {
     @NotNull
     @Column(nullable = false)
     private Integer quantityOfSelectionProcess;
+
 }

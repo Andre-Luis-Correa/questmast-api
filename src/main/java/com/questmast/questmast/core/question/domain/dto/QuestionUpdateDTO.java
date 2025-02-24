@@ -1,15 +1,19 @@
 package com.questmast.questmast.core.question.domain.dto;
 
-import com.questmast.questmast.core.questionalternative.domain.dto.QuestionAlternativeFormDTO;
+import com.questmast.questmast.core.questionalternative.domain.dto.QuestionAlternativeUpdateDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-public record QuestionFormDTO(
+public record QuestionUpdateDTO(
+
+        Long id,
+
         @NotBlank
         String statement,
 
@@ -22,7 +26,7 @@ public record QuestionFormDTO(
         @Valid
         @NotNull
         @NotEmpty
-        List<QuestionAlternativeFormDTO> questionAlternativeList,
+        List<QuestionAlternativeUpdateDTO> questionAlternativeList,
 
         @NotNull
         Long questionDifficultyLevelId,

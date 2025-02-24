@@ -58,6 +58,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @ExceptionHandler(QuestionException.class)
+    public ResponseEntity<ErrorDescription> handleQuestionException(QuestionException ex) {
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
     @ExceptionHandler(EmailNotVerifiedException.class)
     public ResponseEntity<ErrorDescription> handleEmailNotVerifiedException(EmailNotVerifiedException ex) {
         String message = "É necessário realizar a verificação do email " + ex.getEmail();

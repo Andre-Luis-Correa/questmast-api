@@ -227,7 +227,7 @@ CREATE TABLE selection_process (
                                    selection_process_status_id BIGINT NOT NULL,
                                    name VARCHAR(255) NOT NULL,
                                    url VARCHAR(255),
-                                   date DATE NOT NULL,
+                                   opening_date DATE NOT NULL,
                                    PRIMARY KEY (id)
 );
 
@@ -247,6 +247,7 @@ CREATE TABLE selection_process_test (
                                         selection_process_id BIGINT NOT NULL,
                                         test_question_category_id BIGINT NOT NULL,
                                         name VARCHAR(255) NOT NULL,
+                                        application_date DATE NOT NULL,
                                         PRIMARY KEY (id)
 );
 

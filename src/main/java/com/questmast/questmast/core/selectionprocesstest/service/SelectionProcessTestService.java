@@ -6,6 +6,7 @@ import com.questmast.questmast.core.professionallevel.domain.entity.Professional
 import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
 import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFormDTO;
+import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestUpdateDTO;
 import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.selectionprocesstest.mapper.SelectionProcessTestMapper;
 import com.questmast.questmast.core.selectionprocesstest.repository.SelectionProcessTestRepository;
@@ -32,6 +33,7 @@ public class SelectionProcessTestService {
 
     public void create(SelectionProcessTestFormDTO selectionProcessTestFormDTO, Function function, ProfessionalLevel professionalLevel, TestQuestionCategory testQuestionCategory, SelectionProcess selectionProcess, List<Question> questionList) {
         SelectionProcessTest selectionProcessTest = new SelectionProcessTest();
+        selectionProcessTest.setApplicationDate(selectionProcessTestFormDTO.applicationDate());
         selectionProcessTest.setName(selectionProcessTestFormDTO.name());
         selectionProcessTest.setViewCounter(0);
         selectionProcessTest.setQuestionList(questionList);
@@ -43,8 +45,9 @@ public class SelectionProcessTestService {
         selectionProcessTestRepository.save(selectionProcessTest);
     }
 
-    public void update(SelectionProcessTestFormDTO selectionProcessTestFormDTO, SelectionProcessTest selectionProcessTest, Function function, ProfessionalLevel professionalLevel, TestQuestionCategory testQuestionCategory, SelectionProcess selectionProcess, List<Question> questionList) {
-        selectionProcessTest.setName(selectionProcessTestFormDTO.name());
+    public void update(SelectionProcessTestUpdateDTO selectionProcessTestUpdateDTO, SelectionProcessTest selectionProcessTest, Function function, ProfessionalLevel professionalLevel, TestQuestionCategory testQuestionCategory, SelectionProcess selectionProcess, List<Question> questionList) {
+        selectionProcessTest.setName(selectionProcessTestUpdateDTO.name());
+        selectionProcessTest.setApplicationDate(selectionProcessTestUpdateDTO.applicationDate());
         selectionProcessTest.setQuestionList(questionList);
         selectionProcessTest.setFunction(function);
         selectionProcessTest.setProfessionalLevel(professionalLevel);
