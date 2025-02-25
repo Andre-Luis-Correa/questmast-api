@@ -274,7 +274,7 @@ CREATE TABLE question_question_alternative_list (
 
 CREATE TABLE question_subject_topic_list (
                                              question_id BIGINT NOT NULL,
-                                             subject_topic_list_id BIGINT NOT NULL UNIQUE,
+                                             subject_topic_list_id BIGINT NOT NULL,
                                              PRIMARY KEY (question_id, subject_topic_list_id)
 );
 
