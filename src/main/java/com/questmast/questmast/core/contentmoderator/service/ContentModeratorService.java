@@ -44,4 +44,8 @@ public class ContentModeratorService {
                 () -> new EntityNotFoundExcpetion("ContentModerator", "id", id.toString())
         );
     }
+
+    public List<ContentModerator> findAll() {
+        return contentModeratorRepository.findAll();
+    }
 }
