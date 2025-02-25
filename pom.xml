@@ -166,17 +166,17 @@
                 </configuration>
             </plugin>
 
-<!--            <plugin>-->
-<!--                <groupId>org.flywaydb</groupId>-->
-<!--                <artifactId>flyway-maven-plugin</artifactId>-->
-<!--                <version>10.17.3</version>-->
-<!--                <configuration>-->
-<!--                    <url>${env.SPRING_DATASOURCE_URL}</url>-->
-<!--                    <user>postgres</user>-->
-<!--                    <password>root</password>-->
-<!--                    <cleanDisabled>false</cleanDisabled>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>10.17.3</version>
+                <configuration>
+                    <url>jdbc:postgresql://localhost:5432/questmast-dev</url>
+                    <user>postgres</user>
+                    <password>root</password>
+                    <cleanDisabled>false</cleanDisabled>
+                </configuration>
+            </plugin>
 
             <!-- Plugin para compilar o MapStruct -->
             <plugin>
