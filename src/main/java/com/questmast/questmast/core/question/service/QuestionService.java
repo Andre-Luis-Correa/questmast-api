@@ -3,26 +3,22 @@ package com.questmast.questmast.core.question.service;
 import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.common.exception.type.QuestionException;
 import com.questmast.questmast.core.question.domain.dto.QuestionFormDTO;
-import com.questmast.questmast.core.question.domain.dto.QuestionUpdateDTO;
 import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.question.repository.QuestionRepository;
 import com.questmast.questmast.core.questionalternative.domain.dto.QuestionAlternativeFormDTO;
-import com.questmast.questmast.core.questionalternative.domain.dto.QuestionAlternativeUpdateDTO;
 import com.questmast.questmast.core.questionalternative.domain.entity.QuestionAlternative;
 import com.questmast.questmast.core.questionalternative.service.QuestionAlternativeService;
 import com.questmast.questmast.core.questiondifficultylevel.domain.entity.QuestionDifficultyLevel;
 import com.questmast.questmast.core.questiondifficultylevel.service.QuestionDifficultyLevelService;
-import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestUpdateDTO;
+import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFormDTO;
 import com.questmast.questmast.core.subject.domain.entity.Subject;
 import com.questmast.questmast.core.subject.service.SubjectService;
 import com.questmast.questmast.core.subjecttopic.domain.entity.SubjectTopic;
 import com.questmast.questmast.core.subjecttopic.service.SubjectTopicService;
 import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
 import com.questmast.questmast.core.testquestioncategory.service.TestQuestionCategoryService;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -30,7 +26,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
@@ -51,7 +49,7 @@ public class QuestionService {
     public List<Question> getValidQuestionList(List<QuestionFormDTO> questionFormDTOS, LocalDate applicationDate) {
         List<Question> questionList = new ArrayList<>();
 
-        for(QuestionFormDTO dto : questionFormDTOS) {
+        for (QuestionFormDTO dto : questionFormDTOS) {
             QuestionDifficultyLevel questionDifficultyLevel = questionDifficultyLevelService.findById(dto.questionDifficultyLevelId());
             Subject subject = subjectService.findById(dto.subjectId());
             TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(dto.testQuestionCategoryId());
@@ -78,7 +76,7 @@ public class QuestionService {
     private Set<SubjectTopic> generateSubjectTopicList(Set<Long> ids) {
         Set<SubjectTopic> subjectTopicList = new HashSet<>();
 
-        for(Long id : ids) {
+        for (Long id : ids) {
             subjectTopicList.add(subjectTopicService.findById(id));
         }
 
@@ -89,68 +87,75 @@ public class QuestionService {
         List<QuestionAlternative> questionAlternativeList = new ArrayList<>();
         int correctAnswerCounter = 0;
 
-        for(QuestionAlternativeFormDTO dto : questionAlternativeFormDTOS) {
+        for (QuestionAlternativeFormDTO dto : questionAlternativeFormDTOS) {
             QuestionAlternative questionAlternative = new QuestionAlternative();
 
             questionAlternative.setAlternativeLetter(dto.alternativeLetter());
             questionAlternative.setStatement(dto.statement());
             questionAlternative.setIsCorrect(dto.isCorrect());
-            if(dto.isCorrect()) {
+            if (dto.isCorrect()) {
                 correctAnswerCounter++;
             }
 
             questionAlternativeList.add(questionAlternative);
         }
 
-        if(correctAnswerCounter != 1) {
+        if (correctAnswerCounter != 1) {
             throw new QuestionException("A questão deve ter ao menos uma alternativa correta.");
         }
 
         return questionAlternativeList;
     }
 
-    public List<Question> updateQuestionList(List<Question> selectionProcessQuestions, List<QuestionUpdateDTO> questionUpdateDTOS, SelectionProcessTestUpdateDTO selectionProcessTestUpdateDTO) {
+    public List<Question> updateQuestionList(List<Question> selectionProcessQuestions, List<QuestionFormDTO> questionUpdateDTOS, SelectionProcessTestFormDTO selectionProcessTestFormDTO) {
         List<Question> questionList = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
 
-        for(QuestionUpdateDTO dto : questionUpdateDTOS) {
+        for (QuestionFormDTO dto : questionUpdateDTOS) {
             QuestionDifficultyLevel questionDifficultyLevel = questionDifficultyLevelService.findById(dto.questionDifficultyLevelId());
             Subject subject = subjectService.findById(dto.subjectId());
             TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(dto.testQuestionCategoryId());
 
             Question question = new Question();
-            if(dto.id() != null) {
+            if (dto.id() != null) {
                 question = findById(dto.id());
-                if(!selectionProcessQuestions.contains(question)) {
+
+                if (!selectionProcessQuestions.contains(question)) {
                     throw new QuestionException("Questão com id " + question.getId() + " não pertence ao processo seletivo.");
                 }
+            } else {
+                question.setQuantityOfCorrectAnswers(0);
+                question.setQuantityOfWrongAnswers(0);
+                question.setQuantityOfTries(0);
             }
 
-            question.setApplicationDate(selectionProcessTestUpdateDTO.applicationDate());
+            question.setApplicationDate(selectionProcessTestFormDTO.applicationDate());
             question.setStatement(dto.statement());
             question.setExplanation(dto.explanation());
             question.setVideoExplanationUrl(dto.videoExplanationUrl());
             question.setQuestionDifficultyLevel(questionDifficultyLevel);
             question.setSubject(subject);
             question.setTestQuestionCategory(testQuestionCategory);
-            question.setQuestionAlternativeList(updateAlternativeList(question, dto.questionAlternativeList()));
             question.setSubjectTopicList(generateSubjectTopicList(dto.subjectTopicList()));
-            question.setQuantityOfCorrectAnswers(question.getQuantityOfCorrectAnswers());
-            question.setQuantityOfWrongAnswers(question.getQuantityOfCorrectAnswers());
-            question.setQuantityOfTries(question.getQuantityOfTries());
-            questionList.add(question);
+            question.setQuestionAlternativeList(updateAlternativeList(question, dto.questionAlternativeList()));
+
+            ids.add(question.getId());
+            questionList.add(questionRepository.save(question));
         }
 
         return questionList;
     }
 
-    private List<QuestionAlternative> updateAlternativeList(Question question, List<QuestionAlternativeUpdateDTO> questionAlternativeUpdateDTOS) {
+    private List<QuestionAlternative> updateAlternativeList(Question question, List<QuestionAlternativeFormDTO> questionAlternativeFormDTOS) {
         List<QuestionAlternative> questionAlternativeList = new ArrayList<>();
 
-        for(QuestionAlternativeUpdateDTO dto : questionAlternativeUpdateDTOS) {
+        for (QuestionAlternativeFormDTO dto : questionAlternativeFormDTOS) {
             QuestionAlternative questionAlternative = new QuestionAlternative();
-            if(dto.id() != null) {
+
+            if (dto.id() != null) {
                 questionAlternative = questionAlternativeService.findById(dto.id());
-                if(question.getId() != null && !question.getQuestionAlternativeList().contains(questionAlternative)) {
+
+                if (question.getId() != null && !question.getQuestionAlternativeList().contains(questionAlternative)) {
                     throw new QuestionException("Alternativa com id " + questionAlternative.getId() + " não pertence a questão com id " + question.getId() + ".");
                 }
             }
@@ -159,7 +164,7 @@ public class QuestionService {
             questionAlternative.setStatement(dto.statement());
             questionAlternative.setIsCorrect(dto.isCorrect());
 
-            questionAlternativeList.add(questionAlternative);
+            questionAlternativeList.add(questionAlternativeService.save(questionAlternative));
         }
 
         return questionAlternativeList;

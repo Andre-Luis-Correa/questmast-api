@@ -6,18 +6,19 @@ import com.questmast.questmast.core.professionallevel.domain.entity.Professional
 import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
 import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFormDTO;
-import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestUpdateDTO;
 import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.selectionprocesstest.mapper.SelectionProcessTestMapper;
 import com.questmast.questmast.core.selectionprocesstest.repository.SelectionProcessTestRepository;
 import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class SelectionProcessTestService {
@@ -45,7 +46,7 @@ public class SelectionProcessTestService {
         selectionProcessTestRepository.save(selectionProcessTest);
     }
 
-    public void update(SelectionProcessTestUpdateDTO selectionProcessTestUpdateDTO, SelectionProcessTest selectionProcessTest, Function function, ProfessionalLevel professionalLevel, TestQuestionCategory testQuestionCategory, SelectionProcess selectionProcess, List<Question> questionList) {
+    public void update(SelectionProcessTestFormDTO selectionProcessTestUpdateDTO, SelectionProcessTest selectionProcessTest, Function function, ProfessionalLevel professionalLevel, TestQuestionCategory testQuestionCategory, SelectionProcess selectionProcess, List<Question> questionList) {
         selectionProcessTest.setName(selectionProcessTestUpdateDTO.name());
         selectionProcessTest.setApplicationDate(selectionProcessTestUpdateDTO.applicationDate());
         selectionProcessTest.setQuestionList(questionList);

@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record QuestionAlternativeFormDTO(
 
+        Long id,
+
         @NotBlank
         String alternativeLetter,
 

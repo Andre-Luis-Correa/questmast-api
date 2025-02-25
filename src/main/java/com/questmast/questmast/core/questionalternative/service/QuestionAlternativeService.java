@@ -75,4 +75,12 @@ public class QuestionAlternativeService {
     public List<QuestionAlternative> save(List<QuestionAlternative> questionAlternativeList) {
         return questionAlternativeRepository.saveAll(questionAlternativeList);
     }
+
+    public void deleteById(Long id) {
+        questionAlternativeRepository.deleteById(id);
+    }
+
+    public QuestionAlternative save(QuestionAlternative questionAlternative) {
+        return questionAlternativeRepository.save(questionAlternative);
+    }
 }

@@ -11,7 +11,6 @@ import com.questmast.questmast.core.question.service.QuestionService;
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
 import com.questmast.questmast.core.selectionprocess.service.SelectionProcessService;
 import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFormDTO;
-import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestUpdateDTO;
 import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.selectionprocesstest.service.SelectionProcessTestService;
 import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
@@ -57,15 +56,15 @@ public class SelectionProcessTestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody SelectionProcessTestUpdateDTO selectionProcessTestUpdateDTO) {
+    public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody SelectionProcessTestFormDTO selectionProcessTestFormDTO) {
         SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(id);
-        Function function = functionService.findById(selectionProcessTestUpdateDTO.functionId());
-        ProfessionalLevel professionalLevel = professionalLevelService.findById(selectionProcessTestUpdateDTO.professionalLevelId());
-        TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(selectionProcessTestUpdateDTO.testQuestionCategoryId());
-        SelectionProcess selectionProcess = selectionProcessService.findById(selectionProcessTestUpdateDTO.selectionProcessId());
-        List<Question> questionList = questionService.updateQuestionList(selectionProcessTest.getQuestionList(), selectionProcessTestUpdateDTO.questionList(), selectionProcessTestUpdateDTO);
+        Function function = functionService.findById(selectionProcessTestFormDTO.functionId());
+        ProfessionalLevel professionalLevel = professionalLevelService.findById(selectionProcessTestFormDTO.professionalLevelId());
+        TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(selectionProcessTestFormDTO.testQuestionCategoryId());
+        SelectionProcess selectionProcess = selectionProcessService.findById(selectionProcessTestFormDTO.selectionProcessId());
+        List<Question> questionList = questionService.updateQuestionList(selectionProcessTest.getQuestionList(), selectionProcessTestFormDTO.questionList(), selectionProcessTestFormDTO);
 
-        selectionProcessTestService.update(selectionProcessTestUpdateDTO, selectionProcessTest, function, professionalLevel, testQuestionCategory, selectionProcess, questionList);
+        selectionProcessTestService.update(selectionProcessTestFormDTO, selectionProcessTest, function, professionalLevel, testQuestionCategory, selectionProcess, questionList);
 
         return ResponseEntity.ok().build();
     }

@@ -6,6 +6,7 @@ import com.questmast.questmast.core.subject.domain.entity.Subject;
 import com.questmast.questmast.core.subjecttopic.domain.entity.SubjectTopic;
 import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -53,7 +54,7 @@ public class Question {
     @Column(nullable = false)
     private String videoExplanationUrl;
 
-    @NotNull
+    @NotEmpty
     @OneToMany(cascade = CascadeType.ALL)
     private List<QuestionAlternative> questionAlternativeList;
 
@@ -72,7 +73,7 @@ public class Question {
     @JoinColumn(name = "test_question_category_id", nullable = false)
     private TestQuestionCategory testQuestionCategory;
 
-    @NotNull
+    @NotEmpty
     @OneToMany
     private Set<SubjectTopic> subjectTopicList;
 }

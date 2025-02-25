@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 public record QuestionFormDTO(
+
+        Long id,
+
         @NotBlank
         String statement,
 
