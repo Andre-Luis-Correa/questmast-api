@@ -6,6 +6,8 @@ import com.questmast.questmast.core.contact.ddi.repository.DDIRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DDIService {
@@ -16,5 +18,9 @@ public class DDIService {
         return ddiRepository.findByDdi(ddi).orElseThrow(
                 () -> new EntityNotFoundExcpetion("DDI", "ddi", ddi.toString())
         );
+    }
+
+    public List<DDI> findAll() {
+        return ddiRepository.findAll();
     }
 }

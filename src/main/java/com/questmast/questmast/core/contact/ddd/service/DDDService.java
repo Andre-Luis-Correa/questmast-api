@@ -6,6 +6,8 @@ import com.questmast.questmast.core.contact.ddd.repository.DDDRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DDDService {
@@ -16,5 +18,9 @@ public class DDDService {
         return dddRepository.findByDdd(ddd).orElseThrow(
                 () -> new EntityNotFoundExcpetion("DDD", "ddd", ddd.toString())
         );
+    }
+
+    public List<DDD> findAll() {
+        return dddRepository.findAll();
     }
 }

@@ -6,6 +6,8 @@ import com.questmast.questmast.core.gender.repository.GenderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class GenderService {
@@ -18,4 +20,7 @@ public class GenderService {
         );
     }
 
+    public List<Gender> findAll() {
+        return genderRepository.findAll();
+    }
 }
