@@ -1,5 +1,7 @@
 package com.questmast.questmast.common.exception.controller;
 
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.questmast.questmast.common.exception.config.ErrorDescription;
 import com.questmast.questmast.common.exception.type.*;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -51,6 +53,24 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(JwtTokenException.class)
     public ResponseEntity<ErrorDescription> handleJwtTokenException(JwtTokenException ex) {
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(JWTVerificationException.class)
+    public ResponseEntity<ErrorDescription> handleJWTVerificationException(JWTVerificationException ex) {
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(JWTCreationException.class)
+    public ResponseEntity<ErrorDescription> handleJWTCreationException(JWTCreationException ex) {
         ErrorDescription errorResponse = new ErrorDescription(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getMessage()
