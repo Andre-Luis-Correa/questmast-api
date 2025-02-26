@@ -132,4 +132,18 @@ public class ChatGPTApiService {
             throw new ChatGPTApiException("realizar remoção de arquivo.");
         }
     }
+
+    public String getFileContent(String fileId) {
+        try {
+            String url = apiFileUrl + "/" + fileId + "/content";
+
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+            return response.getBody();
+        } catch (Exception e) {
+            log.error("Error getting content from pdf file: {}", e.getMessage());
+            throw new ChatGPTApiException("obter conteúdo do arquivo pdf.");
+        }
+    }
+
 }

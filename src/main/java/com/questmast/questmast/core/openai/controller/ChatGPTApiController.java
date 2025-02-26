@@ -33,6 +33,27 @@ public class ChatGPTApiController {
         return ResponseEntity.ok(iTextService.getTextFromPDF(file));
     }
 
+    @GetMapping("/file-content")
+    public ResponseEntity<String> fileContent(@RequestParam("file") MultipartFile multipartFile) {
+        String fileId;
+        try {
+            File file = File.createTempFile("upload-", multipartFile.getOriginalFilename());
+            multipartFile.transferTo(file);
+
+            String response = chatGPTApiService.uploadFile(file);
+            fileId = chatGPTApiService.extractFileIdFromResponse(response);
+
+            String fileContent = chatGPTApiService.getFileContent(fileId);
+            //chatGPTApiService.deleteFile(fileId);
+
+            return ResponseEntity.ok(fileContent);
+        } catch (IOException e) {
+            log.error("Erro ao processar arquivo: {}", e.getMessage());
+            return ResponseEntity.internalServerError().body("Erro ao processar o arquivo.");
+        }
+
+    }
+
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile multipartFile) {
         try {
@@ -55,26 +76,5 @@ public class ChatGPTApiController {
         Boolean isDeleted = chatGPTApiService.deleteFile(fileId);
         return ResponseEntity.ok(isDeleted);
     }
-
-//    @PostMapping("/upload-extract")
-//    public ResponseEntity<ChatResponse> uploadAndExtractQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) {
-//        try {
-//            File file = File.createTempFile("upload-", multipartFile.getOriginalFilename());
-//            multipartFile.transferTo(file);
-//
-//            String response = chatGPTApiService.uploadFile(file);
-//            String fileId = chatGPTApiService.extractFileIdFromResponse(response);
-//            ChatResponse response = chatGPTApiService.uploadAndExtractQuestions(file);
-//            chatGPTApiService.deleteFile(fileId);
-//
-//
-//            file.delete();
-//
-//            return ResponseEntity.ok(response);
-//        } catch (IOException e) {
-//            log.error("Error processing file with Chat GPT: {}", e.getMessage());
-//           throw new ChatGPTApiException("realizar upload do pdf e extrair questões");
-//        }
-//    }
 
 }
