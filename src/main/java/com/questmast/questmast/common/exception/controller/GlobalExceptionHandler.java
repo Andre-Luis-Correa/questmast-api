@@ -69,11 +69,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @ExceptionHandler(PDFException.class)
+    public ResponseEntity<ErrorDescription> handlePDFException(PDFException ex) {
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.NOT_FOUND.value(),
+                "Não foi possível ler o PDF."
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
     @ExceptionHandler(ChatGPTApiException.class)
     public ResponseEntity<ErrorDescription> handleChatGPTApiException(ChatGPTApiException ex) {
         ErrorDescription errorResponse = new ErrorDescription(
                 HttpStatus.NOT_FOUND.value(),
-                "Não foi possível obter a resposta do Chat GPT."
+                "Não foi possível conectar-se ao Chat GPT para " + ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }

@@ -26,6 +26,11 @@ spring:
           starttls:
             enable: true
 
+  servlet:
+    multipart:
+      max-file-size: 512MB
+      max-request-size: 512MB
+
 jwt:
   private:
     key: classpath:app.key
@@ -45,7 +50,8 @@ openai:
   temperature: 0
   api:
     key: ${OPEN_AI_API_KEY}
-    url: https://api.openai.com/v1/chat/completions
+    url-chat: https://api.openai.com/v1/chat/completions
+    url-file: https://api.openai.com/v1/files
 
 server:
   servlet:

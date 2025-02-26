@@ -1,4 +1,4 @@
-package com.questmast.questmast.common.doc;
+package com.questmast.questmast.common.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
