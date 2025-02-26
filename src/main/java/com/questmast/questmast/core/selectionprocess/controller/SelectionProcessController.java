@@ -37,18 +37,18 @@ public class SelectionProcessController {
     private final CityService cityService;
 
     @PostMapping
-    public ResponseEntity<Void> create(@Valid @RequestBody SelectionProcessFormDTO selectionProcessFormDTO) {
+    public ResponseEntity<Long> create(@Valid @RequestBody SelectionProcessFormDTO selectionProcessFormDTO) {
         BoardExaminer boardExaminer = boardExaminerService.findById(selectionProcessFormDTO.boardExaminerId());
         Institution institution = institutionService.findById(selectionProcessFormDTO.institutionId());
         City city = cityService.findById(selectionProcessFormDTO.cityId());
         ContentModerator contentModerator = contentModeratorService.findById(selectionProcessFormDTO.contentModeratorId());
         SelectionProcessStatus selectionProcessStatus = selectionProcessStatusService.findById(selectionProcessFormDTO.selectionProcessStatusId());
 
-        selectionProcessService.create(selectionProcessFormDTO, boardExaminer, institution, city, contentModerator, selectionProcessStatus);
+        SelectionProcess selectionProcess = selectionProcessService.create(selectionProcessFormDTO, boardExaminer, institution, city, contentModerator, selectionProcessStatus);
         institutionService.addQuantityOfSelectionProcess(institution);
         boardExaminerService.addQuantityOfSelectionProcess(boardExaminer);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(selectionProcess.getId());
     }
 
     @GetMapping("/all")

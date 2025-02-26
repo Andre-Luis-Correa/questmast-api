@@ -41,7 +41,7 @@ public class SelectionProcessTestController {
     private final BoardExaminerService boardExaminerService;
 
     @PostMapping
-    public ResponseEntity<Void> create(@Valid @RequestBody SelectionProcessTestFormDTO selectionProcessTestFormDTO) {
+    public ResponseEntity<Long> create(@Valid @RequestBody SelectionProcessTestFormDTO selectionProcessTestFormDTO) {
         Function function = functionService.findById(selectionProcessTestFormDTO.functionId());
         ProfessionalLevel professionalLevel = professionalLevelService.findById(selectionProcessTestFormDTO.professionalLevelId());
         TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(selectionProcessTestFormDTO.testQuestionCategoryId());

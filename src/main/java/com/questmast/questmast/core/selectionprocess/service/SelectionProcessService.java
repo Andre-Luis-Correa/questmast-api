@@ -22,7 +22,7 @@ public class SelectionProcessService {
 
     private final SelectionProcessRepository selectionProcessRepository;
 
-    public void create(SelectionProcessFormDTO selectionProcessFormDTO, BoardExaminer boardExaminer, Institution institution, City city, ContentModerator contentModerator, SelectionProcessStatus selectionProcessStatus) {
+    public SelectionProcess create(SelectionProcessFormDTO selectionProcessFormDTO, BoardExaminer boardExaminer, Institution institution, City city, ContentModerator contentModerator, SelectionProcessStatus selectionProcessStatus) {
         SelectionProcess selectionProcess = new SelectionProcess();
         selectionProcess.setName(selectionProcessFormDTO.name());
         selectionProcess.setOpeningDate(selectionProcessFormDTO.openingDate());
@@ -34,7 +34,7 @@ public class SelectionProcessService {
         selectionProcess.setContentModerator(contentModerator);
         selectionProcess.setSelectionProcessStatus(selectionProcessStatus);
 
-        selectionProcessRepository.save(selectionProcess);
+        return selectionProcessRepository.save(selectionProcess);
     }
 
     public SelectionProcess findById(Long id) {
