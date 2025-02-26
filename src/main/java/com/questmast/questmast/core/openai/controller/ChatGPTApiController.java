@@ -16,7 +16,7 @@ public class ChatGPTApiController {
 
     private final ChatGPTApiService chatGPTApiService;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ChatResponse> chat(@RequestParam("prompt") String prompt) {
         return ResponseEntity.ok(chatGPTApiService.chat(prompt));
     }
