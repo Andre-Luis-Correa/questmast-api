@@ -58,11 +58,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public void updateMainEmailVerificationStatus(User user) {
         user.setIsMainEmailVerified(true);
+        user.setVerificationEmailCode(null);
         userRepository.save(user);
     }
 
     public void updateRecoveryEmailVerificationStatus(User user) {
         user.setIsRecoveryEmailVerified(true);
+        user.setVerificationEmailCode(null);
         userRepository.save(user);
     }
 
