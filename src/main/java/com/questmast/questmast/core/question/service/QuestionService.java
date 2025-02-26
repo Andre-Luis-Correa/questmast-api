@@ -17,6 +17,7 @@ import com.questmast.questmast.core.subjecttopic.domain.entity.SubjectTopic;
 import com.questmast.questmast.core.subjecttopic.service.SubjectTopicService;
 import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
 import com.questmast.questmast.core.testquestioncategory.service.TestQuestionCategoryService;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -90,7 +91,6 @@ public class QuestionService {
         for (QuestionAlternativeFormDTO dto : questionAlternativeFormDTOS) {
             QuestionAlternative questionAlternative = new QuestionAlternative();
 
-            questionAlternative.setAlternativeLetter(dto.alternativeLetter());
             questionAlternative.setStatement(dto.statement());
             questionAlternative.setIsCorrect(dto.isCorrect());
             if (dto.isCorrect()) {
@@ -160,7 +160,6 @@ public class QuestionService {
                 }
             }
 
-            questionAlternative.setAlternativeLetter(dto.alternativeLetter());
             questionAlternative.setStatement(dto.statement());
             questionAlternative.setIsCorrect(dto.isCorrect());
 
@@ -168,5 +167,17 @@ public class QuestionService {
         }
 
         return questionAlternativeList;
+    }
+
+    public void deleteUnusedQuestions(@NotEmpty List<Question> questionList, List<Question> questionListUpdated) {
+        log.info(questionList);
+        log.info(questionListUpdated);
+        List<Long> ids = questionListUpdated.stream().map(Question::getId).toList();
+        for(Question question : questionList) {
+            if(!ids.contains(question.getId())) {
+                log.info("Question being deleted: {}", question.getId());
+                questionRepository.delete(question);
+            }
+        }
     }
 }

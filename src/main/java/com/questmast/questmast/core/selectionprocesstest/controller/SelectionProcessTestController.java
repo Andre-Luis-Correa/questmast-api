@@ -58,6 +58,7 @@ public class SelectionProcessTestController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody SelectionProcessTestFormDTO selectionProcessTestFormDTO) {
         SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(id);
+        List<Question> oldQuestionList = selectionProcessTest.getQuestionList();
         Function function = functionService.findById(selectionProcessTestFormDTO.functionId());
         ProfessionalLevel professionalLevel = professionalLevelService.findById(selectionProcessTestFormDTO.professionalLevelId());
         TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(selectionProcessTestFormDTO.testQuestionCategoryId());
@@ -65,6 +66,7 @@ public class SelectionProcessTestController {
         List<Question> questionList = questionService.updateQuestionList(selectionProcessTest.getQuestionList(), selectionProcessTestFormDTO.questionList(), selectionProcessTestFormDTO);
 
         selectionProcessTestService.update(selectionProcessTestFormDTO, selectionProcessTest, function, professionalLevel, testQuestionCategory, selectionProcess, questionList);
+        questionService.deleteUnusedQuestions(oldQuestionList, questionList);
 
         return ResponseEntity.ok().build();
     }

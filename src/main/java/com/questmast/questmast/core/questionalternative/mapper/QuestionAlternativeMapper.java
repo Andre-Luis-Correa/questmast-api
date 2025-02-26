@@ -5,6 +5,6 @@ import com.questmast.questmast.core.questionalternative.domain.dto.QuestionAlter
 
 public class QuestionAlternativeMapper {
     public static QuestionAlternativeDTO convertFromEntityToDTO(QuestionAlternative questionAlternative) {
-        return new QuestionAlternativeDTO(questionAlternative.getId(), questionAlternative.getAlternativeLetter(), questionAlternative.getStatement(), questionAlternative.getIsCorrect());
+        return new QuestionAlternativeDTO(questionAlternative.getId(), questionAlternative.getStatement(), questionAlternative.getIsCorrect());
     }
 }

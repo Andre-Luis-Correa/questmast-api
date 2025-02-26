@@ -9,9 +9,6 @@ public record QuestionAlternativeDTO(
         Long id,
 
         @NotBlank
-        String alternativeLetter,
-
-        @NotBlank
         String statement,
 
         @NotNull

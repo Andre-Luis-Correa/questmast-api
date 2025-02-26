@@ -18,10 +18,6 @@ public class QuestionAlternative {
 
     @NotNull
     @Column(nullable = false)
-    private String alternativeLetter;
-
-    @NotNull
-    @Column(nullable = false)
     private String statement;
 
     @NotNull
