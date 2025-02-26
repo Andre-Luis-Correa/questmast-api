@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -49,6 +50,34 @@ public class GlobalExceptionHandler {
                 message
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(NotAuthorizedException.class)
+    public ResponseEntity<ErrorDescription> handleNotAuthorizedException(NotAuthorizedException ex) {
+        String message = "Usuário com email "+ ex.getEmail() + " não possui permissão para realizar a ação " + ex.getAction() + ".";
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.NOT_FOUND.value(),
+                message
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorDescription> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
+        String parameterName = ex.getParameterName();
+        String parameterType = ex.getParameterType();
+
+        String message = String.format(
+                "O parâmetro obrigatório '%s' do tipo '%s' está faltando na requisição.",
+                parameterName, parameterType
+        );
+
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.BAD_REQUEST.value(),
+                message
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(JwtTokenException.class)

@@ -24,9 +24,9 @@ public class EmailService {
                         <p>Olá,</p>
                         <p>Clique no botão abaixo para verificar seu e-mail:</p>
                         
-                        <a href="%s" 
-                           style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; 
-                                  text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; 
+                        <a href="%s"\s
+                           style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center;\s
+                                  text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px;\s
                                   cursor: pointer; border-radius: 4px;">
                             Verificar E-mail
                         </a>

@@ -22,7 +22,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByResetPasswordCode(String resetPasswordCode);
 
-    Optional<User> findByCpf(CPF cpf);
+    Optional<User> findByCpf(String cpf);
 
     Optional<User> findByUsernameAndVerificationEmailCode(String email, String verificationEmailCode);
 

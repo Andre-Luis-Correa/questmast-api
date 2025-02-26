@@ -29,6 +29,9 @@ public record  SelectionProcessTestFormDTO(
         @NotNull
         Long selectionProcessId,
 
+        @NotBlank
+        String contentModeratorEmail,
+
         @Valid
         @NotNull
         @NotEmpty

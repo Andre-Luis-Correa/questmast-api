@@ -87,8 +87,16 @@ public class CityService {
     }
 
     public City getValidCity(CityFormDTO cityFormDTO, FederateUnit federateUnit) {
-        return cityRepository.findByNameAndFederateUnit(cityFormDTO.city(), federateUnit).orElseThrow(
-                () -> new EntityNotFoundExcpetion("City", "name e federateUnit", cityFormDTO.city() + " e " + federateUnit.getName())
-        );
+        City city = cityRepository.findByName(cityFormDTO.city()).orElse(null);
+
+        if(city == null) {
+            city = new City();
+            city.setName(cityFormDTO.city());
+            city.setFederateUnit(federateUnit);
+        } else {
+            return city;
+        }
+
+        return cityRepository.save(city);
     }
 }

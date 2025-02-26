@@ -1,5 +1,6 @@
 package com.questmast.questmast.core.selectionprocesstest.domain.model;
 
+import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;
 import com.questmast.questmast.core.evaluationtest.EvaluationTest;
 import com.questmast.questmast.core.function.domain.model.Function;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
@@ -47,4 +48,9 @@ public class SelectionProcessTest extends EvaluationTest {
     @ManyToOne
     @JoinColumn(name = "selection_process_id", nullable = false)
     private SelectionProcess selectionProcess;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "content_moderator_id", nullable = false)
+    private ContentModerator contentModerator;
 }

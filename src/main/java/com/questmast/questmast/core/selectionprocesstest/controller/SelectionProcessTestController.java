@@ -1,6 +1,9 @@
 package com.questmast.questmast.core.selectionprocesstest.controller;
 
+import com.questmast.questmast.common.exception.type.NotAuthorizedException;
 import com.questmast.questmast.core.boardexaminer.service.BoardExaminerService;
+import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;
+import com.questmast.questmast.core.contentmoderator.service.ContentModeratorService;
 import com.questmast.questmast.core.function.domain.model.Function;
 import com.questmast.questmast.core.function.service.FunctionService;
 import com.questmast.questmast.core.institution.service.InstitutionService;
@@ -39,13 +42,20 @@ public class SelectionProcessTestController {
     private final QuestionService questionService;
     private final InstitutionService institutionService;
     private final BoardExaminerService boardExaminerService;
+    private final ContentModeratorService contentModeratorService;
 
     @PostMapping
     public ResponseEntity<Long> create(@Valid @RequestBody SelectionProcessTestFormDTO selectionProcessTestFormDTO) {
+        ContentModerator contentModerator = contentModeratorService.findByMainEmail(selectionProcessTestFormDTO.contentModeratorEmail());
+        SelectionProcess selectionProcess = selectionProcessService.findById(selectionProcessTestFormDTO.selectionProcessId());
+
+        if(!contentModerator.equals(selectionProcess.getContentModerator())) {
+            throw new NotAuthorizedException(contentModerator.getMainEmail(), "cadastrar prova do processo seletivo");
+        }
+
         Function function = functionService.findById(selectionProcessTestFormDTO.functionId());
         ProfessionalLevel professionalLevel = professionalLevelService.findById(selectionProcessTestFormDTO.professionalLevelId());
         TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(selectionProcessTestFormDTO.testQuestionCategoryId());
-        SelectionProcess selectionProcess = selectionProcessService.findById(selectionProcessTestFormDTO.selectionProcessId());
         List<Question> questionList = questionService.getValidQuestionList(selectionProcessTestFormDTO.questionList(), selectionProcessTestFormDTO.applicationDate());
 
         selectionProcessTestService.create(selectionProcessTestFormDTO, function, professionalLevel, testQuestionCategory, selectionProcess, questionList);
@@ -58,6 +68,12 @@ public class SelectionProcessTestController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody SelectionProcessTestFormDTO selectionProcessTestFormDTO) {
         SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(id);
+        ContentModerator contentModerator = contentModeratorService.findByMainEmail(selectionProcessTestFormDTO.contentModeratorEmail());
+
+        if(!contentModerator.equals(selectionProcessTest.getContentModerator())) {
+            throw new NotAuthorizedException(contentModerator.getMainEmail(), "atualizar prova do processo seletivo");
+        }
+
         List<Question> oldQuestionList = selectionProcessTest.getQuestionList();
         Function function = functionService.findById(selectionProcessTestFormDTO.functionId());
         ProfessionalLevel professionalLevel = professionalLevelService.findById(selectionProcessTestFormDTO.professionalLevelId());
@@ -81,8 +97,14 @@ public class SelectionProcessTestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestParam String email) {
+        ContentModerator contentModerator = contentModeratorService.findByMainEmail(email);
         SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(id);
+
+        if(!contentModerator.equals(selectionProcessTest.getContentModerator())) {
+            throw new NotAuthorizedException(contentModerator.getMainEmail(), "remover prova do processo seletivo");
+        }
+
         institutionService.subTestsAndQuestionsCounters(selectionProcessTest.getSelectionProcess().getInstitution(), selectionProcessTest.getQuestionList().size());
         boardExaminerService.subTestsAndQuestionsCounters(selectionProcessTest.getSelectionProcess().getBoardExaminer(), selectionProcessTest.getQuestionList().size());
 

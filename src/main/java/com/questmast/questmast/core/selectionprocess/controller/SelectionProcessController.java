@@ -1,5 +1,6 @@
 package com.questmast.questmast.core.selectionprocess.controller;
 
+import com.questmast.questmast.common.exception.type.NotAuthorizedException;
 import com.questmast.questmast.core.address.city.domain.model.City;
 import com.questmast.questmast.core.address.city.service.CityService;
 import com.questmast.questmast.core.address.federateUnit.domain.FederateUnit;
@@ -73,11 +74,16 @@ public class SelectionProcessController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody SelectionProcessFormDTO selectionProcessFormDTO) {
         SelectionProcess selectionProcess = selectionProcessService.findById(id);
+        ContentModerator contentModerator = contentModeratorService.findByMainEmail(selectionProcessFormDTO.contentModeratorEmail());
+
+        if(!contentModerator.equals(selectionProcess.getContentModerator())) {
+            throw new NotAuthorizedException(contentModerator.getMainEmail(), "atualizar processo seletivo");
+        }
+
         BoardExaminer boardExaminer = boardExaminerService.findById(selectionProcessFormDTO.boardExaminerId());
         Institution institution = institutionService.findById(selectionProcessFormDTO.institutionId());
         FederateUnit federateUnit = federateUnitService.findByName(selectionProcessFormDTO.cityFormDTO().federateUnit());
         City city = cityService.getValidCity(selectionProcessFormDTO.cityFormDTO(), federateUnit);
-        ContentModerator contentModerator = contentModeratorService.findByMainEmail(selectionProcessFormDTO.contentModeratorEmail());
         SelectionProcessStatus selectionProcessStatus = selectionProcessStatusService.findById(selectionProcessFormDTO.selectionProcessStatusId());
 
         selectionProcessService.update(selectionProcess, selectionProcessFormDTO, boardExaminer, institution, city, contentModerator, selectionProcessStatus);
@@ -95,8 +101,14 @@ public class SelectionProcessController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestParam String email) {
         SelectionProcess selectionProcess = selectionProcessService.findById(id);
+        ContentModerator contentModerator = contentModeratorService.findByMainEmail(email);
+
+        if(!contentModerator.equals(selectionProcess.getContentModerator())) {
+            throw new NotAuthorizedException(contentModerator.getMainEmail(), "remover processo seletivo");
+        }
+
         institutionService.subQuantityOfSelectionProcess(selectionProcess.getInstitution());
 
         selectionProcessService.delete(selectionProcess);

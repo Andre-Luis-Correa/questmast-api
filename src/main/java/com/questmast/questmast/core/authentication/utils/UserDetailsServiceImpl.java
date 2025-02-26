@@ -120,7 +120,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public User findUserByCPF(String cpf) {
-        return userRepository.findByCpf(new CPF(cpf)).orElseThrow(
+        return userRepository.findByCpf(cpf).orElseThrow(
                 () -> new EntityNotFoundExcpetion("User", "cpf", cpf)
         );
     }
