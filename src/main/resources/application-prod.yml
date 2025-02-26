@@ -39,6 +39,10 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+openai:
+  api:
+    key: ${OPEN_AI_API_KEY}
+
 server:
   servlet:
     context-path: /api

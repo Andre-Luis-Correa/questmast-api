@@ -69,6 +69,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @ExceptionHandler(ChatGPTApiException.class)
+    public ResponseEntity<ErrorDescription> handleChatGPTApiException(ChatGPTApiException ex) {
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.NOT_FOUND.value(),
+                "Não foi possível obter a resposta do Chat GPT."
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
     @ExceptionHandler(JWTCreationException.class)
     public ResponseEntity<ErrorDescription> handleJWTCreationException(JWTCreationException ex) {
         ErrorDescription errorResponse = new ErrorDescription(

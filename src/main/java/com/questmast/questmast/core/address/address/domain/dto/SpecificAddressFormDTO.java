@@ -6,7 +6,6 @@ public record SpecificAddressFormDTO(
         @NotBlank
         String number,
 
-        @NotBlank
         String complement,
 
         @NotBlank

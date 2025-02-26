@@ -16,8 +16,6 @@ public class SpecificAddress {
     @Column(nullable = false)
     private String number;
 
-    @NotNull
-    @Column(nullable = false)
     private String complement;
 
     @ManyToOne(cascade = CascadeType.ALL)
