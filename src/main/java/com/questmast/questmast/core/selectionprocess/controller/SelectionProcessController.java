@@ -41,7 +41,7 @@ public class SelectionProcessController {
         BoardExaminer boardExaminer = boardExaminerService.findById(selectionProcessFormDTO.boardExaminerId());
         Institution institution = institutionService.findById(selectionProcessFormDTO.institutionId());
         City city = cityService.findById(selectionProcessFormDTO.cityId());
-        ContentModerator contentModerator = contentModeratorService.findById(selectionProcessFormDTO.contentModeratorId());
+        ContentModerator contentModerator = contentModeratorService.findByMainEmail(selectionProcessFormDTO.contentModeratorEmail());
         SelectionProcessStatus selectionProcessStatus = selectionProcessStatusService.findById(selectionProcessFormDTO.selectionProcessStatusId());
 
         SelectionProcess selectionProcess = selectionProcessService.create(selectionProcessFormDTO, boardExaminer, institution, city, contentModerator, selectionProcessStatus);
@@ -72,7 +72,7 @@ public class SelectionProcessController {
         BoardExaminer boardExaminer = boardExaminerService.findById(selectionProcessFormDTO.boardExaminerId());
         Institution institution = institutionService.findById(selectionProcessFormDTO.institutionId());
         City city = cityService.findById(selectionProcessFormDTO.cityId());
-        ContentModerator contentModerator = contentModeratorService.findById(selectionProcessFormDTO.contentModeratorId());
+        ContentModerator contentModerator = contentModeratorService.findByMainEmail(selectionProcessFormDTO.contentModeratorEmail());
         SelectionProcessStatus selectionProcessStatus = selectionProcessStatusService.findById(selectionProcessFormDTO.selectionProcessStatusId());
 
         selectionProcessService.update(selectionProcess, selectionProcessFormDTO, boardExaminer, institution, city, contentModerator, selectionProcessStatus);

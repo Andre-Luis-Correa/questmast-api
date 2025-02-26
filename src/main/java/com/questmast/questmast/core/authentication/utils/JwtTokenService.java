@@ -27,7 +27,6 @@ public class JwtTokenService {
                     .withExpiresAt(expirationDate())
                     .withSubject(user.getUsername())
                     .withClaim("role", user.getPersonRole())
-                    .withClaim("cpf", user.getUser().getCpf())
                     .withClaim("name", user.getUser().getName())
                     .withClaim("email", user.getUser().getUsername())
                     .sign(algorithm);

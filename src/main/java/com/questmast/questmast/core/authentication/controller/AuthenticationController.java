@@ -4,10 +4,7 @@ import com.questmast.questmast.common.exception.type.EmailNotVerifiedException;
 import com.questmast.questmast.core.address.address.domain.entity.Address;
 import com.questmast.questmast.core.address.address.service.AddressService;
 import com.questmast.questmast.core.admin.service.AdminService;
-import com.questmast.questmast.core.authentication.user.domain.dto.UserDTO;
-import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
-import com.questmast.questmast.core.authentication.user.domain.dto.UserLoginDTO;
-import com.questmast.questmast.core.authentication.user.domain.dto.UserResetPasswordDTO;
+import com.questmast.questmast.core.authentication.user.domain.dto.*;
 import com.questmast.questmast.core.authentication.user.domain.model.User;
 import com.questmast.questmast.core.authentication.user.service.UserService;
 import com.questmast.questmast.core.authentication.utils.UserDetailsServiceImpl;
@@ -22,7 +19,6 @@ import com.questmast.questmast.core.person.cpf.domain.CPF;
 import com.questmast.questmast.core.person.cpf.service.CPFService;
 import com.questmast.questmast.core.student.service.StudentService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -70,42 +66,51 @@ public class AuthenticationController {
             studentService.create(userFormDTO, cpf, gender, address, userFormDTO.mainEmail(), phoneList);
         }
 
-        userDetailsService.create(userFormDTO);
+        String verificationEmailCode = userDetailsService.generateVerificationCode();
+        userDetailsService.create(userFormDTO, verificationEmailCode);
 
-        emailService.sendRegistrationVerificationEmail(userFormDTO.mainEmail(), true);
+        emailService.sendRegistrationVerificationEmail(userFormDTO.mainEmail(), verificationEmailCode);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/recovery-email/{email}")
-    public ResponseEntity<Void> addRecoveryEmail(@PathVariable String email, @Valid @NotNull String recoveryEmail) {
-        User user = userDetailsService.findByUsername(email);
-        userDetailsService.updateUserRecoveryEmail(user, recoveryEmail);
+    @PostMapping("/recovery-email")
+    public ResponseEntity<Void> addRecoveryEmail(@Valid @RequestBody UserRecoveryEmailFormDTO userRecoveryEmailFormDTO) {
+        User user = userDetailsService.findByUsername(userRecoveryEmailFormDTO.mainEmail());
+        userDetailsService.updateUserRecoveryEmail(user, userRecoveryEmailFormDTO.recoveryEmail());
 
-        emailService.sendRegistrationVerificationEmail(recoveryEmail, false);
+        if(userRecoveryEmailFormDTO.personRole().equals(PersonRole.ROLE_ADMIN)) {
+            adminService.updateRecoveryEmail(userRecoveryEmailFormDTO);
+        } else if (userRecoveryEmailFormDTO.personRole().equals(PersonRole.ROLE_CONTENT_MODERATOR)) {
+            contentModeratorService.updateRecoveryEmail(userRecoveryEmailFormDTO);
+        } else {
+            studentService.updateRecoveryEmail(userRecoveryEmailFormDTO);
+        }
+
+        String verificationEmailCode = userDetailsService.generateVerificationCode();
+        userDetailsService.updateUserVerificationEmailCode(user, verificationEmailCode);
+
+        emailService.sendRegistrationVerificationEmail(userRecoveryEmailFormDTO.recoveryEmail(), verificationEmailCode);
 
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/verify-main-email/{email}")
-    public ResponseEntity<String> verifyMainEmail(@PathVariable String email) {
-        User user = userDetailsService.findByUsername(email);
-        userDetailsService.updateMainEmailVerificationStatus(user);
+    @PostMapping("/verify-email/{email}")
+    public ResponseEntity<String> verifyEmail(@PathVariable String email, @RequestParam String verificationEmailCode) {
+        User user = userDetailsService.getOrNullByUsernameAndVerificationEmailCode(email, verificationEmailCode);
+        if(user == null) {
+            user = userDetailsService.findByRecoveryEmailAndVerificationEmailCode(email, verificationEmailCode);
+            userDetailsService.updateRecoveryEmailVerificationStatus(user);
+        } else {
+            userDetailsService.updateMainEmailVerificationStatus(user);
+        }
 
-        return ResponseEntity.ok("Muito obrigado por confirmar seu email principal!");
+        return ResponseEntity.ok("Muito obrigado por confirmar o email " + email + ".");
     }
 
-    @PostMapping("/verify-recovery-email/{email}")
-    public ResponseEntity<String> verifyRecoveryMainEmail(@PathVariable String email) {
-        User user = userDetailsService.findByRecoveryEmail(email);
-        userDetailsService.updateRecoveryEmailVerificationStatus(user);
-
-        return ResponseEntity.ok("Muito obrigado por confirmar seu email de recuperação!");
-    }
-
-    @GetMapping("/{email}")
-    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable String email) {
-        User user = userDetailsService.findByUsernameOrRecoveryEmail(email);
+    @GetMapping("/{cpf}")
+    public ResponseEntity<UserDTO> getUserByCPF(@PathVariable String cpf) {
+        User user = userDetailsService.findUserByCPF(cpf);
         return ResponseEntity.ok(userDetailsService.convertUserToUserDTO(user));
     }
 
@@ -117,7 +122,7 @@ public class AuthenticationController {
             throw new EmailNotVerifiedException(email);
         }
 
-        String resetPasswordCode = userDetailsService.generateResetPasswordCode();
+        String resetPasswordCode = userDetailsService.generateVerificationCode();
         userDetailsService.updateUserResetPasswordStatus(user, resetPasswordCode);
 
         emailService.sendResetPasswordCodeEmail(email, resetPasswordCode);

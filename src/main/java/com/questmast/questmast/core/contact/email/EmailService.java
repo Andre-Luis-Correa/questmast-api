@@ -15,27 +15,26 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
 
-    public void sendRegistrationVerificationEmail(String dstEmail, Boolean isMainEmail) {
-        String apiEndpointUrl = "/api/authentication/verify-main-email/" + dstEmail;
-
-        if(isMainEmail.equals(Boolean.FALSE)) {
-            apiEndpointUrl = "/api/authentication/verify-recovery-email/" + dstEmail;
-        }
-
-        String link = "http://localhost:8080" + apiEndpointUrl;
+    public void sendRegistrationVerificationEmail(String dstEmail, String verificationEmailCode) {
+        String link = "http://localhost:5173/register-verification/" + dstEmail + ":" + verificationEmailCode;
 
         String emailBody = """
-        <html>
-            <body>
-                <p>Olá,</p>
-                <p>Clique no botão abaixo para verificar seu e-mail:</p>
-                <form action="%s" method="POST">
-                    <button type="submit" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">Verificar E-mail</button>
-                </form>
-                <p>Se você não solicitou este e-mail, pode ignorá-lo.</p>
-            </body>
-        </html>
-        """.formatted(link);
+                <html>
+                    <body>
+                        <p>Olá,</p>
+                        <p>Clique no botão abaixo para verificar seu e-mail:</p>
+                        
+                        <a href="%s" 
+                           style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; 
+                                  text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; 
+                                  cursor: pointer; border-radius: 4px;">
+                            Verificar E-mail
+                        </a>
+
+                        <p>Se você não solicitou este e-mail, pode ignorá-lo.</p>
+                    </body>
+                </html>
+                """.formatted(link);
 
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -53,34 +52,33 @@ public class EmailService {
     }
 
     public void sendResetPasswordCodeEmail(String email, String resetPasswordCode) {
-        String frontEndUrl = "http://localhost:3000/reset-password?token=" + resetPasswordCode;
+        String frontEndUrl = "http://localhost:5173/reset-password/" + email + ":" + resetPasswordCode;
 
         String emailBody = """
-        <html>
-            <body>
-                <p>Olá,</p>
-                <p>Clique no botão abaixo para redefinir sua senha (o link expira em 20 minutos):</p>
-                
-                <form action="%s" method="GET">
-                    <button type="submit" style="background-color: #4CAF50; 
-                                                color: white; 
-                                                border: none; 
-                                                padding: 10px 20px; 
-                                                text-align: center; 
-                                                text-decoration: none; 
-                                                display: inline-block; 
-                                                font-size: 16px; 
-                                                margin: 4px 2px; 
-                                                cursor: pointer;">
-                        Redefinir Senha
-                    </button>
-                </form>
-                
-                <p>Se você não solicitou uma redefinição de senha, ignore este e-mail.</p>
-                <p>Este link é válido por 20 minutos.</p>
-            </body>
-        </html>
-        """.formatted(frontEndUrl);
+                <html>
+                    <body>
+                        <p>Olá,</p>
+                        <p>Clique no botão abaixo para redefinir sua senha (o link expira em 20 minutos):</p>
+                        
+                        <a href="%s"
+                           style="background-color: #4CAF50;
+                                  color: white;
+                                  padding: 10px 20px;
+                                  text-align: center;
+                                  text-decoration: none;
+                                  display: inline-block;
+                                  font-size: 16px;
+                                  margin: 4px 2px;
+                                  cursor: pointer;">
+                            Redefinir Senha
+                        </a>
+                        
+                        <p>Se você não solicitou uma redefinição de senha, ignore este e-mail.</p>
+                        <p>Este link é válido por 20 minutos.</p>
+                    </body>
+                </html>
+                """.formatted(frontEndUrl);
+
 
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -94,7 +92,8 @@ public class EmailService {
             log.info("Email sent!");
         } catch (Exception e) {
             log.error("Email not sent! {}", e.getMessage());
-            throw new EmailException(email);        }
+            throw new EmailException(email);
+        }
     }
 
 }

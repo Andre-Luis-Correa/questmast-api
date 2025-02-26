@@ -14,8 +14,11 @@ public record SelectionProcessFormDTO(
 
         String url,
 
-        @NotNull
-        Long cityId,
+        @NotBlank
+        String city,
+
+        @NotBlank
+        String federateUnit,
 
         @NotNull
         Long boardExaminerId,
@@ -23,8 +26,8 @@ public record SelectionProcessFormDTO(
         @NotNull
         Long institutionId,
 
-        @NotNull
-        Long contentModeratorId,
+        @NotBlank
+        String contentModeratorEmail,
 
         @NotNull
         Long selectionProcessStatusId

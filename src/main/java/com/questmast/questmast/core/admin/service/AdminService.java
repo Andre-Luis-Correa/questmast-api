@@ -8,6 +8,7 @@ import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
 import com.questmast.questmast.core.admin.domain.model.Admin;
 import com.questmast.questmast.core.admin.mapper.AdminMapper;
 import com.questmast.questmast.core.admin.repository.AdminRepository;
+import com.questmast.questmast.core.authentication.user.domain.dto.UserRecoveryEmailFormDTO;
 import com.questmast.questmast.core.contact.phone.domain.model.Phone;
 import com.questmast.questmast.core.gender.domain.Gender;
 import com.questmast.questmast.core.person.cpf.domain.CPF;
@@ -42,5 +43,12 @@ public class AdminService {
         return adminRepository.findByMainEmail(email).orElseThrow(
                 () -> new EntityNotFoundExcpetion("Admin", "email", email)
         );
+    }
+
+    public void updateRecoveryEmail(UserRecoveryEmailFormDTO userRecoveryEmailFormDTO) {
+        Admin admin = findByMainEmail(userRecoveryEmailFormDTO.mainEmail());
+        admin.setRecoveryEmail(userRecoveryEmailFormDTO.recoveryEmail());
+
+        adminRepository.save(admin);
     }
 }

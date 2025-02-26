@@ -4,6 +4,7 @@ import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.address.address.domain.entity.Address;
 import com.questmast.questmast.core.address.address.domain.entity.SpecificAddress;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
+import com.questmast.questmast.core.authentication.user.domain.dto.UserRecoveryEmailFormDTO;
 import com.questmast.questmast.core.contact.phone.domain.model.Phone;
 import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;
 import com.questmast.questmast.core.contentmoderator.mapper.ContentModeratorMapper;
@@ -47,5 +48,12 @@ public class ContentModeratorService {
 
     public List<ContentModerator> findAll() {
         return contentModeratorRepository.findAll();
+    }
+
+    public void updateRecoveryEmail(UserRecoveryEmailFormDTO userRecoveryEmailFormDTO) {
+        ContentModerator contentModerator = findByMainEmail(userRecoveryEmailFormDTO.mainEmail());
+        contentModerator.setRecoveryEmail(userRecoveryEmailFormDTO.recoveryEmail());
+
+        contentModeratorRepository.save(contentModerator);
     }
 }

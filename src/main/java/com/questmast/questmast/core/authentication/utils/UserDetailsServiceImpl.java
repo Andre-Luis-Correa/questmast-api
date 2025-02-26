@@ -1,6 +1,5 @@
 package com.questmast.questmast.core.authentication.utils;
 
-import com.questmast.questmast.common.exception.type.DuplicatedFieldValueException;
 import com.questmast.questmast.common.exception.type.EmailNotVerifiedException;
 import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.common.exception.type.ResetPasswordException;
@@ -11,6 +10,7 @@ import com.questmast.questmast.core.authentication.user.domain.model.User;
 import com.questmast.questmast.core.authentication.user.mapper.UserMapper;
 import com.questmast.questmast.core.authentication.user.repository.UserRepository;
 import com.questmast.questmast.core.authentication.user.service.UserDetailsImpl;
+import com.questmast.questmast.core.person.cpf.domain.CPF;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,9 +38,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new UserDetailsImpl(user);
     }
 
-    public void create(UserFormDTO userFormDTO) {
+    public void create(UserFormDTO userFormDTO, String verificationCode) {
         String encodedPassword = new BCryptPasswordEncoder().encode(userFormDTO.password());
-        User user = new User(userFormDTO.mainEmail(), userFormDTO.name(), userFormDTO.cpf(), encodedPassword, userFormDTO.personRole(), false);
+        User user = new User(userFormDTO.mainEmail(), userFormDTO.name(), userFormDTO.cpf(), encodedPassword, userFormDTO.personRole(), false, verificationCode);
         userRepository.save(user);
     }
 
@@ -66,7 +66,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public String generateResetPasswordCode() {
+    public String generateVerificationCode() {
         return UUID.randomUUID().toString();
     }
 
@@ -115,5 +115,27 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return userRepository.findByResetPasswordCode(resetPasswordCode).orElseThrow(
                 () -> new EntityNotFoundExcpetion("User", "resetPasswordCode", resetPasswordCode)
         );
+    }
+
+    public User findUserByCPF(String cpf) {
+        return userRepository.findByCpf(new CPF(cpf)).orElseThrow(
+                () -> new EntityNotFoundExcpetion("User", "cpf", cpf)
+        );
+    }
+
+    public User getOrNullByUsernameAndVerificationEmailCode(String email, String verificationEmailCode) {
+        return userRepository.findByUsernameAndVerificationEmailCode(email, verificationEmailCode).orElse(null);
+    }
+
+    public User findByRecoveryEmailAndVerificationEmailCode(String email, String verificationEmailCode) {
+        return userRepository.findByRecoveryEmailAndVerificationEmailCode(email, verificationEmailCode).orElseThrow(
+                () -> new EntityNotFoundExcpetion("User", "email e verificationEmailCode", email + " e " + verificationEmailCode)
+        );
+    }
+
+    public void updateUserVerificationEmailCode(User user, String verificationEmailCode) {
+        user.setVerificationEmailCode(verificationEmailCode);
+
+        userRepository.save(user);
     }
 }

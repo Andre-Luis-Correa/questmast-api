@@ -4,6 +4,7 @@ import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.address.address.domain.entity.Address;
 import com.questmast.questmast.core.address.address.domain.entity.SpecificAddress;
 import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
+import com.questmast.questmast.core.authentication.user.domain.dto.UserRecoveryEmailFormDTO;
 import com.questmast.questmast.core.contact.phone.domain.model.Phone;
 import com.questmast.questmast.core.gender.domain.Gender;
 import com.questmast.questmast.core.person.cpf.domain.CPF;
@@ -43,5 +44,12 @@ public class StudentService {
         return studentRepository.findByRecoveryEmail(email).orElseThrow(
                 () -> new EntityNotFoundExcpetion("Student", "recoveryEmail", email)
         );
+    }
+
+    public void updateRecoveryEmail(UserRecoveryEmailFormDTO userRecoveryEmailFormDTO) {
+        Student student = findByMainEmail(userRecoveryEmailFormDTO.mainEmail());
+        student.setRecoveryEmail(userRecoveryEmailFormDTO.recoveryEmail());
+
+        studentRepository.save(student);
     }
 }

@@ -45,16 +45,19 @@ public class User {
 
     private Boolean isRecoveryEmailVerified;
 
+    private String verificationEmailCode;
+
     private String resetPasswordCode;
 
     private LocalDateTime resetPasswordCodeExpireDate;
 
-    public User(String username, String name, String cpf, String password, PersonRole personRole, Boolean isMainEmailVerified) {
+    public User(String username, String name, String cpf, String password, PersonRole personRole, Boolean isMainEmailVerified, String verificationEmailCode) {
         this.username = username;
         this.name = name;
         this.cpf = cpf;
         this.password = password;
         this.personRole = personRole;
         this.isMainEmailVerified = isMainEmailVerified;
+        this.verificationEmailCode = verificationEmailCode;
     }
 }
