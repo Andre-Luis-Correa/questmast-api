@@ -1,7 +1,9 @@
 package com.questmast.questmast.core.selectionprocess.controller;
 
-import com.questmast.questmast.core.address.city.domain.City;
+import com.questmast.questmast.core.address.city.domain.model.City;
 import com.questmast.questmast.core.address.city.service.CityService;
+import com.questmast.questmast.core.address.federateUnit.domain.FederateUnit;
+import com.questmast.questmast.core.address.federateUnit.service.FederateUnitService;
 import com.questmast.questmast.core.boardexaminer.domain.BoardExaminer;
 import com.questmast.questmast.core.boardexaminer.service.BoardExaminerService;
 import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;
@@ -35,12 +37,14 @@ public class SelectionProcessController {
     private final ContentModeratorService contentModeratorService;
     private final SelectionProcessStatusService selectionProcessStatusService;
     private final CityService cityService;
+    private final FederateUnitService federateUnitService;
 
     @PostMapping
     public ResponseEntity<Long> create(@Valid @RequestBody SelectionProcessFormDTO selectionProcessFormDTO) {
         BoardExaminer boardExaminer = boardExaminerService.findById(selectionProcessFormDTO.boardExaminerId());
         Institution institution = institutionService.findById(selectionProcessFormDTO.institutionId());
-        City city = cityService.findById(selectionProcessFormDTO.cityId());
+        FederateUnit federateUnit = federateUnitService.findByName(selectionProcessFormDTO.cityFormDTO().federateUnit());
+        City city = cityService.getValidCity(selectionProcessFormDTO.cityFormDTO(), federateUnit);
         ContentModerator contentModerator = contentModeratorService.findByMainEmail(selectionProcessFormDTO.contentModeratorEmail());
         SelectionProcessStatus selectionProcessStatus = selectionProcessStatusService.findById(selectionProcessFormDTO.selectionProcessStatusId());
 
@@ -71,7 +75,8 @@ public class SelectionProcessController {
         SelectionProcess selectionProcess = selectionProcessService.findById(id);
         BoardExaminer boardExaminer = boardExaminerService.findById(selectionProcessFormDTO.boardExaminerId());
         Institution institution = institutionService.findById(selectionProcessFormDTO.institutionId());
-        City city = cityService.findById(selectionProcessFormDTO.cityId());
+        FederateUnit federateUnit = federateUnitService.findByName(selectionProcessFormDTO.cityFormDTO().federateUnit());
+        City city = cityService.getValidCity(selectionProcessFormDTO.cityFormDTO(), federateUnit);
         ContentModerator contentModerator = contentModeratorService.findByMainEmail(selectionProcessFormDTO.contentModeratorEmail());
         SelectionProcessStatus selectionProcessStatus = selectionProcessStatusService.findById(selectionProcessFormDTO.selectionProcessStatusId());
 

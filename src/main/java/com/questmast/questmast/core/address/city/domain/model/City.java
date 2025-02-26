@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.address.city.domain;
+package com.questmast.questmast.core.address.city.domain.model;
 
 import com.questmast.questmast.core.address.federateUnit.domain.FederateUnit;
 import jakarta.persistence.*;

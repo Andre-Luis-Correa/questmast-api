@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.address.address.domain.entity;
 
-import com.questmast.questmast.core.address.city.domain.City;
+import com.questmast.questmast.core.address.city.domain.model.City;
 import com.questmast.questmast.core.address.street.domain.Street;
 import com.questmast.questmast.core.address.neighborhood.domain.Neighborhood;
 import jakarta.persistence.*;

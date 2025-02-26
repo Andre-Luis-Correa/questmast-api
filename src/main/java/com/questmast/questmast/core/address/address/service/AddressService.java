@@ -7,7 +7,7 @@ import com.questmast.questmast.core.address.address.domain.dto.SpecificAddressFo
 import com.questmast.questmast.core.address.address.domain.entity.Address;
 import com.questmast.questmast.core.address.address.mapper.AddressMapper;
 import com.questmast.questmast.core.address.address.repository.AddressRepository;
-import com.questmast.questmast.core.address.city.domain.City;
+import com.questmast.questmast.core.address.city.domain.model.City;
 import com.questmast.questmast.core.address.city.service.CityService;
 import com.questmast.questmast.core.address.federateUnit.domain.FederateUnit;
 import com.questmast.questmast.core.address.federateUnit.service.FederateUnitService;
