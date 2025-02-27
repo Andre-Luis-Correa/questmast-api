@@ -33,28 +33,6 @@ public class ChatGPTApiController {
         return ResponseEntity.ok(iTextService.getTextFromPDF(file));
     }
 
-    @GetMapping("/file-content")
-    public ResponseEntity<String> fileContent(@RequestParam("file") MultipartFile multipartFile) {
-        String fileId;
-        try {
-            File file = File.createTempFile("upload-", multipartFile.getOriginalFilename());
-            multipartFile.transferTo(file);
-
-            String response = chatGPTApiService.uploadFile(file);
-            fileId = chatGPTApiService.extractFileIdFromResponse(response);
-
-            String fileContent = chatGPTApiService.getFileContent(fileId);
-            //chatGPTApiService.deleteFile(fileId);
-
-            return ResponseEntity.ok(fileContent);
-        } catch (IOException e) {
-            log.error("Erro ao processar arquivo: {}", e.getMessage());
-            return ResponseEntity.internalServerError().body("Erro ao processar o arquivo.");
-        }
-
-    }
-
-
     @PostMapping("/upload-and-ask")
     public ResponseEntity<String> uploadFileAndAskQuestion(
             @RequestParam("file") MultipartFile multipartFile,
@@ -72,7 +50,7 @@ public class ChatGPTApiController {
             log.info("Arquivo enviado com sucesso! file_id: {}", fileId);
 
             // 2️⃣ Criar o assistente vinculado ao arquivo
-            String assistantId = chatGPTApiService.createAssistant();
+            String assistantId = chatGPTApiService.createAssistant(fileId);
             if (assistantId == null) {
                 return ResponseEntity.internalServerError().body("Erro ao criar assistente.");
             }
@@ -93,8 +71,10 @@ public class ChatGPTApiController {
             log.info("Mensagem enviada com sucesso! message_id: {}", messageId);
 
             // 5️⃣ Executar a thread e obter resposta
-            String response = chatGPTApiService.runThread(threadId, assistantId);
-            log.info("Resposta da IA: {}", response);
+            String runId = chatGPTApiService.runThread(threadId, assistantId);
+            log.info("Resposta da IA: {}", runId);
+
+            String response = chatGPTApiService.processChatResponse(threadId, runId);
 
             chatGPTApiService.deleteFile(fileId);
 
@@ -102,6 +82,8 @@ public class ChatGPTApiController {
         } catch (IOException e) {
             log.error("Erro ao processar arquivo: {}", e.getMessage());
             return ResponseEntity.internalServerError().body("Erro ao processar o arquivo.");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -123,9 +105,9 @@ public class ChatGPTApiController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Boolean> deleteFile(@RequestParam String fileId) {
-        Boolean isDeleted = chatGPTApiService.deleteFile(fileId);
-        return ResponseEntity.ok(isDeleted);
+    public ResponseEntity<Void> deleteFile(@RequestParam String fileId) throws IOException {
+        chatGPTApiService.deleteFile(fileId);
+        return ResponseEntity.ok().build();
     }
 
 }

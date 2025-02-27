@@ -25,8 +25,6 @@ public class Institution {
     @Embedded
     private CNPJ cnpj;
 
-    @NotNull
-    @Column(nullable = false)
     private String siteUrl;
 
     @NotNull

@@ -9,7 +9,6 @@ public record InstitutionFormDTO(
         @NotBlank
         String cnpj,
 
-        @NotBlank
         String siteUrl
 ) {
 }
