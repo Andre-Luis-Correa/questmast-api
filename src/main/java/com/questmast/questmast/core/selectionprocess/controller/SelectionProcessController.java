@@ -44,7 +44,7 @@ public class SelectionProcessController {
     public ResponseEntity<Long> create(@Valid @RequestBody SelectionProcessFormDTO selectionProcessFormDTO) {
         BoardExaminer boardExaminer = boardExaminerService.findById(selectionProcessFormDTO.boardExaminerId());
         Institution institution = institutionService.findById(selectionProcessFormDTO.institutionId());
-        FederateUnit federateUnit = federateUnitService.findByName(selectionProcessFormDTO.cityFormDTO().federateUnit());
+        FederateUnit federateUnit = federateUnitService.findByAcronym(selectionProcessFormDTO.cityFormDTO().federateUnit());
         City city = cityService.getValidCity(selectionProcessFormDTO.cityFormDTO(), federateUnit);
         ContentModerator contentModerator = contentModeratorService.findByMainEmail(selectionProcessFormDTO.contentModeratorEmail());
         SelectionProcessStatus selectionProcessStatus = selectionProcessStatusService.findById(selectionProcessFormDTO.selectionProcessStatusId());
@@ -82,7 +82,7 @@ public class SelectionProcessController {
 
         BoardExaminer boardExaminer = boardExaminerService.findById(selectionProcessFormDTO.boardExaminerId());
         Institution institution = institutionService.findById(selectionProcessFormDTO.institutionId());
-        FederateUnit federateUnit = federateUnitService.findByName(selectionProcessFormDTO.cityFormDTO().federateUnit());
+        FederateUnit federateUnit = federateUnitService.findByAcronym(selectionProcessFormDTO.cityFormDTO().federateUnit());
         City city = cityService.getValidCity(selectionProcessFormDTO.cityFormDTO(), federateUnit);
         SelectionProcessStatus selectionProcessStatus = selectionProcessStatusService.findById(selectionProcessFormDTO.selectionProcessStatusId());
 
