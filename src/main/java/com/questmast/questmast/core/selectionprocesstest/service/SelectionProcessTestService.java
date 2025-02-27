@@ -1,6 +1,7 @@
 package com.questmast.questmast.core.selectionprocesstest.service;
 
 import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
+import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;
 import com.questmast.questmast.core.function.domain.model.Function;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
 import com.questmast.questmast.core.question.domain.model.Question;
@@ -32,8 +33,9 @@ public class SelectionProcessTestService {
         );
     }
 
-    public void create(SelectionProcessTestFormDTO selectionProcessTestFormDTO, Function function, ProfessionalLevel professionalLevel, TestQuestionCategory testQuestionCategory, SelectionProcess selectionProcess, List<Question> questionList) {
+    public void create(SelectionProcessTestFormDTO selectionProcessTestFormDTO, ContentModerator contentModerator, Function function, ProfessionalLevel professionalLevel, TestQuestionCategory testQuestionCategory, SelectionProcess selectionProcess, List<Question> questionList) {
         SelectionProcessTest selectionProcessTest = new SelectionProcessTest();
+        selectionProcessTest.setContentModerator(contentModerator);
         selectionProcessTest.setApplicationDate(selectionProcessTestFormDTO.applicationDate());
         selectionProcessTest.setName(selectionProcessTestFormDTO.name());
         selectionProcessTest.setViewCounter(0);

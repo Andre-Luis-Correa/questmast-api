@@ -58,7 +58,7 @@ public class SelectionProcessTestController {
         TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(selectionProcessTestFormDTO.testQuestionCategoryId());
         List<Question> questionList = questionService.getValidQuestionList(selectionProcessTestFormDTO.questionList(), selectionProcessTestFormDTO.applicationDate());
 
-        selectionProcessTestService.create(selectionProcessTestFormDTO, function, professionalLevel, testQuestionCategory, selectionProcess, questionList);
+        selectionProcessTestService.create(selectionProcessTestFormDTO, contentModerator, function, professionalLevel, testQuestionCategory, selectionProcess, questionList);
         institutionService.addTestsAndQuestionsCounters(selectionProcess.getInstitution(), questionList.size());
         boardExaminerService.addTestsAndQuestionsCounters(selectionProcess.getBoardExaminer(), questionList.size());
 

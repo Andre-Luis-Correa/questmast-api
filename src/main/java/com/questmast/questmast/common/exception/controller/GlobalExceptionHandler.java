@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.questmast.questmast.common.exception.config.ErrorDescription;
 import com.questmast.questmast.common.exception.type.*;
 import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Hidden
 @ControllerAdvice
@@ -71,6 +73,28 @@ public class GlobalExceptionHandler {
                 "O parâmetro obrigatório '%s' do tipo '%s' está faltando na requisição.",
                 parameterName, parameterType
         );
+
+        ErrorDescription errorResponse = new ErrorDescription(
+                HttpStatus.BAD_REQUEST.value(),
+                message
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorDescription> handleConstraintViolationException(ConstraintViolationException ex) {
+
+        List<String> violationMessages = ex.getConstraintViolations().stream()
+                .map(violation -> String.format(
+                        "Campo '%s': %s (valor fornecido: '%s')",
+                        violation.getPropertyPath(),
+                        violation.getMessage(),
+                        violation.getInvalidValue()
+                ))
+                .collect(Collectors.toList());
+
+        String message = "Erro de validação: " + String.join("; ", violationMessages);
 
         ErrorDescription errorResponse = new ErrorDescription(
                 HttpStatus.BAD_REQUEST.value(),

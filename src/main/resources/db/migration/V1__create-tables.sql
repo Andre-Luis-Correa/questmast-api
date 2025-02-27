@@ -197,7 +197,7 @@ create table question_question_alternative_list (
 -- Tabela QUESTION_SUBJECT_TOPIC_LIST
 create table question_subject_topic_list (
                                              question_id bigint not null,
-                                             subject_topic_list_id bigint not null unique,
+                                             subject_topic_list_id bigint not null,
                                              primary key (question_id, subject_topic_list_id)
 );
 
