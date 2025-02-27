@@ -13,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -83,7 +80,7 @@ public class CityService {
             cityList.add(dto);
         }
 
-        return cityList;
+        return cityList.stream().sorted(Comparator.comparing(CityFormDTO::city)).toList();
     }
 
     public City getValidCity(CityFormDTO cityFormDTO, FederateUnit federateUnit) {

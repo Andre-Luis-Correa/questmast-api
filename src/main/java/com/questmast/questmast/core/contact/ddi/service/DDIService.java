@@ -21,6 +21,6 @@ public class DDIService {
     }
 
     public List<DDI> findAll() {
-        return ddiRepository.findAll();
+        return ddiRepository.findAllByOrderByDdi();
     }
 }

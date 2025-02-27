@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -33,6 +34,7 @@ public class SelectionProcessService {
         selectionProcess.setCity(city);
         selectionProcess.setContentModerator(contentModerator);
         selectionProcess.setSelectionProcessStatus(selectionProcessStatus);
+        selectionProcess.setCreationDate(LocalDateTime.now());
 
         return selectionProcessRepository.save(selectionProcess);
     }
@@ -75,10 +77,10 @@ public class SelectionProcessService {
     }
 
     public List<SelectionProcess> list() {
-        return selectionProcessRepository.findAll();
+        return selectionProcessRepository.findAllByOrderByCreationDate();
     }
 
     public Page<SelectionProcess> list(Pageable pageable) {
-        return selectionProcessRepository.findAll(pageable);
+        return selectionProcessRepository.findAllByOrderByCreationDate(pageable);
     }
 }

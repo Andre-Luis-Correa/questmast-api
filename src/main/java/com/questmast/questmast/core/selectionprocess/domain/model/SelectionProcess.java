@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -30,6 +31,10 @@ public class  SelectionProcess {
     @NotNull
     @Column(nullable = false)
     private Integer viewCounter;
+
+    @NotNull
+    @Column(nullable = false)
+    private LocalDateTime creationDate;
 
     @NotNull
     @Column(nullable = false)

@@ -6,6 +6,7 @@ import com.questmast.questmast.core.contact.ddd.repository.DDDRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -21,6 +22,6 @@ public class DDDService {
     }
 
     public List<DDD> findAll() {
-        return dddRepository.findAll();
+        return dddRepository.findAllByOrderByDdd();
     }
 }
