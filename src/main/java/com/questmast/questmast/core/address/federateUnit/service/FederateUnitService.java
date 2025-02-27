@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class FederateUnitService {
@@ -27,5 +29,9 @@ public class FederateUnitService {
         return federateUnitRepository.findByName(name).orElseThrow(
                 () -> new EntityNotFoundExcpetion("FederateUnit", "name", name)
         );
+    }
+
+    public List<FederateUnit> findAll() {
+        return federateUnitRepository.findAll();
     }
 }

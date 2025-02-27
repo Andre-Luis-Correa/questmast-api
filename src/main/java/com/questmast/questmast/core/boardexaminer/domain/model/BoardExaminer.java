@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.boardexaminer.domain;
+package com.questmast.questmast.core.boardexaminer.domain.model;
 
 import com.questmast.questmast.core.person.cnpj.CNPJ;
 import jakarta.persistence.*;
@@ -25,8 +25,6 @@ public class BoardExaminer {
     @Embedded
     private CNPJ cnpj;
 
-    @NotNull
-    @Column(nullable = false)
     private String siteUrl;
 
     @NotNull

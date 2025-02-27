@@ -54,6 +54,57 @@ public class ChatGPTApiController {
 
     }
 
+
+    @PostMapping("/upload-and-ask")
+    public ResponseEntity<String> uploadFileAndAskQuestion(
+            @RequestParam("file") MultipartFile multipartFile,
+            @RequestParam("question") String question) {
+        try {
+            // Criar arquivo temporário
+            File file = File.createTempFile("upload-", multipartFile.getOriginalFilename());
+            multipartFile.transferTo(file);
+
+            // 1️⃣ Upload do arquivo e obtenção do file_id
+            String fileId = chatGPTApiService.uploadFile(file);
+            if (fileId == null) {
+                return ResponseEntity.internalServerError().body("Erro ao fazer upload do arquivo.");
+            }
+            log.info("Arquivo enviado com sucesso! file_id: {}", fileId);
+
+            // 2️⃣ Criar o assistente vinculado ao arquivo
+            String assistantId = chatGPTApiService.createAssistant();
+            if (assistantId == null) {
+                return ResponseEntity.internalServerError().body("Erro ao criar assistente.");
+            }
+            log.info("Assistente criado com sucesso! assistant_id: {}", assistantId);
+
+            // 3️⃣ Criar uma thread para a interação
+            String threadId = chatGPTApiService.createThread();
+            if (threadId == null) {
+                return ResponseEntity.internalServerError().body("Erro ao criar thread.");
+            }
+            log.info("Thread criada com sucesso! thread_id: {}", threadId);
+
+            // 4️⃣ Enviar mensagem com a pergunta
+            String messageId = chatGPTApiService.sendMessage(threadId, fileId, question);
+            if (messageId == null) {
+                return ResponseEntity.internalServerError().body("Erro ao enviar mensagem.");
+            }
+            log.info("Mensagem enviada com sucesso! message_id: {}", messageId);
+
+            // 5️⃣ Executar a thread e obter resposta
+            String response = chatGPTApiService.runThread(threadId, assistantId);
+            log.info("Resposta da IA: {}", response);
+
+            chatGPTApiService.deleteFile(fileId);
+
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            log.error("Erro ao processar arquivo: {}", e.getMessage());
+            return ResponseEntity.internalServerError().body("Erro ao processar o arquivo.");
+        }
+    }
+
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile multipartFile) {
         try {

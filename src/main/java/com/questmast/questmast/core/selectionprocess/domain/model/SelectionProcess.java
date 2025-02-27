@@ -1,7 +1,7 @@
 package com.questmast.questmast.core.selectionprocess.domain.model;
 
 import com.questmast.questmast.core.address.city.domain.model.City;
-import com.questmast.questmast.core.boardexaminer.domain.BoardExaminer;
+import com.questmast.questmast.core.boardexaminer.domain.model.BoardExaminer;
 import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;
 import com.questmast.questmast.core.institution.domain.model.Institution;
 import com.questmast.questmast.core.selectionprocessstatus.domain.entity.SelectionProcessStatus;

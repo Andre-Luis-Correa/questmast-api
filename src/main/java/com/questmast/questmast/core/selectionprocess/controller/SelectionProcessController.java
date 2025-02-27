@@ -5,7 +5,7 @@ import com.questmast.questmast.core.address.city.domain.model.City;
 import com.questmast.questmast.core.address.city.service.CityService;
 import com.questmast.questmast.core.address.federateUnit.domain.FederateUnit;
 import com.questmast.questmast.core.address.federateUnit.service.FederateUnitService;
-import com.questmast.questmast.core.boardexaminer.domain.BoardExaminer;
+import com.questmast.questmast.core.boardexaminer.domain.model.BoardExaminer;
 import com.questmast.questmast.core.boardexaminer.service.BoardExaminerService;
 import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;
 import com.questmast.questmast.core.contentmoderator.service.ContentModeratorService;
