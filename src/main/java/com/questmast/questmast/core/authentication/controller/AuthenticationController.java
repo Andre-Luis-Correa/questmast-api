@@ -1,6 +1,7 @@
 package com.questmast.questmast.core.authentication.controller;
 
 import com.questmast.questmast.common.exception.type.EmailNotVerifiedException;
+import com.questmast.questmast.common.exception.type.FieldNotValidException;
 import com.questmast.questmast.core.address.address.domain.entity.Address;
 import com.questmast.questmast.core.address.address.service.AddressService;
 import com.questmast.questmast.core.admin.service.AdminService;
@@ -52,7 +53,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> create(@Valid @RequestBody UserFormDTO userFormDTO) throws Exception {
+    public ResponseEntity<String> create(@Valid @RequestBody UserFormDTO userFormDTO) throws FieldNotValidException {
         CPF cpf = cpfService.getValidCPF(userFormDTO.cpf());
         Gender gender = genderService.findByAcronym(userFormDTO.genderAcronym());
         Address address = addressService.create(userFormDTO.specificAddressFormDTO());
@@ -71,7 +72,7 @@ public class AuthenticationController {
 
         emailService.sendRegistrationVerificationEmail(userFormDTO.mainEmail(), verificationEmailCode);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body("Usuário cadastrado com sucesso!");
     }
 
     @PostMapping("/recovery-email")

@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Log4j2
 @Service
@@ -48,8 +50,7 @@ public class ChatGPTApiService {
     @Value("${openai.api.url-chat}")
     private String apiChatUrl;
 
-    @Value("${openai.api.url-file}")
-    private String apiFileUrl;
+    private static final String BASE_URL = "https://api.openai.com/v1";
 
     public ChatResponse chat(String prompt) {
         ChatResponse chatResponse;
@@ -75,52 +76,6 @@ public class ChatGPTApiService {
         return chatResponse;
     }
 
-//    public String uploadFile(File file) {
-//        try {
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-//
-//            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-//            body.add("file", new FileSystemResource(file));
-//            body.add("purpose", "assistants");
-//
-//            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-//
-//            ResponseEntity<String> response = restTemplate.exchange(
-//                    apiFileUrl, HttpMethod.POST, requestEntity, String.class
-//            );
-//
-//            return extractFileIdFromResponse(response.getBody());
-//        } catch (Exception e) {
-//            log.error("Erro ao fazer upload de arquivo para o ChatGPT: {}", e.getMessage());
-//            throw new ChatGPTApiException("realizar upload de arquivo.");
-//        }
-//    }
-
-
-    public String extractFileIdFromResponse(String response) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode root = objectMapper.readTree(response);
-
-            return root.get("id").asText();
-        } catch (Exception e) {
-            throw new ChatGPTApiException("ao extrair o campo file_id da resposta.");
-        }
-    }
-
-    public Boolean extractFileDeletedStatusFromResponse(String response) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode root = objectMapper.readTree(response);
-
-            return root.get("deleted").asBoolean();
-        } catch (Exception e) {
-            throw new ChatGPTApiException("ao extrair o campo deleted da resposta.");
-        }
-    }
-
-
     public String deleteFile(String fileId) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
@@ -134,28 +89,15 @@ public class ChatGPTApiService {
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
 
-        log.info("Resposta da OpenAI ao deletar arquivo: {}", responseBody);
-
-        return responseBody; // Retorna a resposta da API sobre a remoção
-    }
-
-    public String getFileContent(String fileId) {
-        try {
-            String url = apiFileUrl + "/" + fileId + "/content";
-
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-
-            return response.getBody();
-        } catch (Exception e) {
-            log.error("Error getting content from pdf file: {}", e.getMessage());
-            throw new ChatGPTApiException("obter conteúdo do arquivo pdf.");
+        if (!response.isSuccessful()) {
+            throw new ChatGPTApiException("remover arquivo.");
         }
+
+        JSONObject jsonResponse = new JSONObject(responseBody);
+
+        return String.valueOf(jsonResponse.getBoolean("deleted"));
     }
 
-    private static final String BASE_URL = "https://api.openai.com/v1";
-
-
-    // Método para fazer upload de um arquivo e obter o file_id
     public String uploadFile(File file) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
@@ -176,14 +118,13 @@ public class ChatGPTApiService {
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
 
-        log.info("Resposta da OpenAI ao fazer upload : {}", responseBody);
-
-        if (response.isSuccessful()) {
-            JSONObject jsonResponse = new JSONObject(responseBody);
-            return jsonResponse.getString("id");
+        if (!response.isSuccessful()) {
+            throw new ChatGPTApiException("realizar upload do arquivo.");
         }
 
-        return null;
+        JSONObject jsonResponse = new JSONObject(responseBody);
+
+        return jsonResponse.getString("id");
     }
 
     public String createAssistant(String fileId) throws IOException {
@@ -191,21 +132,19 @@ public class ChatGPTApiService {
 
         JSONObject json = new JSONObject();
         json.put("name", "Leitor de PDF");
-        json.put("instructions", "Responda perguntas com base no conteúdo do PDF.");
-        json.put("model", "gpt-4-turbo");
+        json.put("instructions", "Extrair todas as questões que estão no arquivo PDF.");
+        json.put("model", "gpt-3.5-turbo");
 
-        // Definição da ferramenta file_search
         JSONArray tools = new JSONArray();
         tools.put(new JSONObject().put("type", "file_search"));
         json.put("tools", tools);
 
-        // Definição do tool_resources com vector_stores e file_ids
         JSONObject toolResources = new JSONObject();
         JSONObject fileSearch = new JSONObject();
         JSONArray vectorStores = new JSONArray();
 
         JSONObject vectorStore = new JSONObject();
-        vectorStore.put("file_ids", new JSONArray().put(fileId)); // Associa o arquivo ao assistente
+        vectorStore.put("file_ids", new JSONArray().put(fileId));
         vectorStores.put(vectorStore);
 
         fileSearch.put("vector_stores", vectorStores);
@@ -226,22 +165,15 @@ public class ChatGPTApiService {
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
 
-        log.info("Resposta da OpenAI ao criar assistente: {}", responseBody);
-
-        if (response.isSuccessful()) {
-            JSONObject jsonResponse = new JSONObject(responseBody);
-            return jsonResponse.getString("id");
-        } else {
-            log.error("Erro ao criar assistente: {}", responseBody);
-            return null;
+        if (!response.isSuccessful()) {
+            throw new ChatGPTApiException("criar assistente.");
         }
+
+        JSONObject jsonResponse = new JSONObject(responseBody);
+
+        return jsonResponse.getString("id");
     }
 
-
-
-
-
-    // Método para criar uma thread
     public String createThread() throws IOException {
         OkHttpClient client = new OkHttpClient();
 
@@ -250,72 +182,33 @@ public class ChatGPTApiService {
         Request request = new Request.Builder()
                 .url(BASE_URL + "/threads")
                 .header("Authorization", "Bearer " + apiKey)
-                .header("OpenAI-Beta", "assistants=v2") // ✅ Cabeçalho correto
+                .header("OpenAI-Beta", "assistants=v2")
                 .post(body)
                 .build();
 
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
 
-        log.info("Resposta da OpenAI ao criar thread: {}", responseBody);
-
-        if (response.isSuccessful()) {
-            JSONObject jsonResponse = new JSONObject(responseBody);
-            return jsonResponse.getString("id");
+        if (!response.isSuccessful()) {
+            throw new ChatGPTApiException("criar thread.");
         }
-        return null;
+
+        JSONObject jsonResponse = new JSONObject(responseBody);
+
+        return jsonResponse.getString("id");
     }
 
-
-//    // Método para enviar uma mensagem dentro de uma thread
-//    public String sendMessage(String threadId, String fileId, String question) throws IOException {
-//        OkHttpClient client = new OkHttpClient();
-//
-//        JSONObject json = new JSONObject();
-//        json.put("role", "user");
-//        json.put("content", question);
-//
-//        // Anexa o arquivo à mensagem (correto para Assistants v2)
-//        JSONArray attachments = new JSONArray();
-//        attachments.put(new JSONObject().put("file_id", fileId));
-//        json.put("attachments", attachments);
-//
-//        RequestBody body = RequestBody.create(json.toString(), okhttp3.MediaType.parse("application/json"));
-//
-//        Request request = new Request.Builder()
-//                .url(BASE_URL + "/threads/" + threadId + "/messages")
-//                .header("Authorization", "Bearer " + apiKey)
-//                .header("OpenAI-Beta", "assistants=v2") // ✅ Cabeçalho correto
-//                .post(body)
-//                .build();
-//
-//        Response response = client.newCall(request).execute();
-//        String responseBody = response.body().string();
-//
-//        log.info("Resposta da OpenAI ao enviar mensagem: {}", responseBody);
-//
-//        if (response.isSuccessful()) {
-//            JSONObject jsonResponse = new JSONObject(responseBody);
-//            return jsonResponse.getString("id");
-//        }
-//        return null;
-//    }
-
-    // Método para enviar uma mensagem dentro de uma thread
-    public String sendMessage(String threadId, String fileId, String question) throws IOException {
+    public String sendMessage(String threadId, String fileId) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
-        // Criação do JSON da mensagem
         JSONObject json = new JSONObject();
         json.put("role", "user");
-        json.put("content", question);
+        json.put("content", "Extraia todas as questões, sem excessão, incluindo enunciado e alternativas completas..");
 
-        // Criação da estrutura de attachments com file_id e ferramentas necessárias
         JSONArray attachments = new JSONArray();
         JSONObject attachment = new JSONObject();
         attachment.put("file_id", fileId);
 
-        // A ferramenta file_search precisa ser adicionada dentro dos attachments
         JSONArray tools = new JSONArray();
         tools.put(new JSONObject().put("type", "file_search"));
         attachment.put("tools", tools);
@@ -323,34 +216,27 @@ public class ChatGPTApiService {
         attachments.put(attachment);
         json.put("attachments", attachments);
 
-        // Corpo da requisição
         RequestBody body = RequestBody.create(json.toString(), okhttp3.MediaType.parse("application/json"));
 
-        // Construção da requisição HTTP
         Request request = new Request.Builder()
                 .url(BASE_URL + "/threads/" + threadId + "/messages")
                 .header("Authorization", "Bearer " + apiKey)
-                .header("OpenAI-Beta", "assistants=v2")  // Cabeçalho necessário para Assistants v2
+                .header("OpenAI-Beta", "assistants=v2")
                 .post(body)
                 .build();
 
-        // Envio da requisição e processamento da resposta
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
 
-        log.info("Resposta da OpenAI ao enviar mensagem: {}", responseBody);
-
-        if (response.isSuccessful()) {
-            JSONObject jsonResponse = new JSONObject(responseBody);
-            return jsonResponse.getString("id");
-        } else {
-            log.error("Erro ao enviar mensagem: {}", responseBody);
-            return null;
+        if (!response.isSuccessful()) {
+            throw new ChatGPTApiException("enviar mensagem.");
         }
+
+        JSONObject jsonResponse = new JSONObject(responseBody);
+
+        return jsonResponse.getString("id");
     }
 
-
-    // Método para executar a thread e obter a resposta
     public String runThread(String threadId, String assistantId) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
@@ -369,13 +255,13 @@ public class ChatGPTApiService {
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
 
-        log.info("Resposta da OpenAI ao rodar thread: {}", responseBody);
-
-        if (response.isSuccessful()) {
-            JSONObject jsonResponse = new JSONObject(responseBody);
-            return jsonResponse.getString("id");
+        if (!response.isSuccessful()) {
+            throw new ChatGPTApiException("executar thread.");
         }
-        return null;
+
+        JSONObject jsonResponse = new JSONObject(responseBody);
+
+        return jsonResponse.getString("id");
     }
 
     public String checkRunStatus(String threadId, String runId) throws IOException {
@@ -391,39 +277,45 @@ public class ChatGPTApiService {
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
 
-        log.info("Status do run: {}", responseBody);
+        if(!response.isSuccessful()) {
+            throw new ChatGPTApiException("verificar status da execução da thread.");
+        }
 
         JSONObject jsonResponse = new JSONObject(responseBody);
-        return jsonResponse.getString("status"); // Retorna o status do run
+
+        return jsonResponse.getString("status");
     }
 
-    public String processChatResponse(String threadId, String runId) throws InterruptedException, IOException {
-        int maxAttempts = 30; // Limite de tentativas para evitar loop infinito
+    public String processChatResponse(String threadId, String runId) throws InterruptedException, IOException, ExecutionException {
+        int maxAttempts = 30;
         int attempt = 0;
-        int waitTimeMillis = 2000; // Espera de 2 segundos entre as verificações
+        int waitTimeMillis = 2000;
 
-        String runStatus = checkRunStatus(threadId, runId);
+        AtomicReference<String> runStatus = new AtomicReference<>(checkRunStatus(threadId, runId));
 
-        // Enquanto o status não for "completed" e não atingirmos o número máximo de tentativas
-        while (!runStatus.equals("completed") && attempt < maxAttempts) {
-            if (runStatus.equals("failed") || runStatus.equals("cancelled")) {
-                log.error("Erro: O processamento falhou ou foi cancelado.");
-                return "Erro no processamento.";
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+        while (!runStatus.get().equals("completed") && attempt < maxAttempts) {
+            if (runStatus.get().equals("failed") || runStatus.get().equals("cancelled")) {
+                throw new ChatGPTApiException("processamento da resposta falhou ou foi cancelado.");
             }
 
-            log.info("Run ainda não concluído. Status atual: {}", runStatus);
-            Thread.sleep(waitTimeMillis); // Aguarda um tempo antes de checar novamente
-            runStatus = checkRunStatus(threadId, runId);
+            ScheduledFuture<?> future = scheduler.schedule(() -> {
+                try {
+                    runStatus.set(checkRunStatus(threadId, runId));
+                } catch (IOException e) {
+                    throw new ChatGPTApiException("processamento da resposta falhou ou foi cancelado.");
+                }
+            }, waitTimeMillis, TimeUnit.MILLISECONDS);
+
+            future.get();
             attempt++;
         }
 
-        // Se passamos do limite de tentativas e o status ainda não é "completed"
-        if (!runStatus.equals("completed")) {
-            log.error("Timeout: O processamento demorou muito para ser concluído.");
-            return "Timeout ao processar.";
+        if (!runStatus.get().equals("completed")) {
+            throw new ChatGPTApiException("processamento da resposta demorou além do esperado.");
         }
 
-        // Agora podemos buscar a mensagem de resposta
         return getMessages(threadId);
     }
 
@@ -440,9 +332,50 @@ public class ChatGPTApiService {
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
 
-        log.info("Mensagens na thread: {}", responseBody);
+        if (!response.isSuccessful()) {
+            throw new ChatGPTApiException("obter mensagens da resposta.");
+        }
 
-        return responseBody; // Retorna todas as mensagens
+        JSONObject jsonResponse = new JSONObject(responseBody);
+        JSONArray messages = jsonResponse.getJSONArray("data");
+
+        // Agora estamos construindo uma string com todas as mensagens, não apenas a primeira
+        StringBuilder allMessages = new StringBuilder();
+        log.info(messages.length());
+        for (int i = 0; i < messages.length(); i++) {
+            JSONObject message = messages.getJSONObject(i);
+            if (message.has("content")) {
+                JSONObject content = message.getJSONArray("content").getJSONObject(0).getJSONObject("text");
+                allMessages.append(content.getString("value")).append("\n\n");
+            }
+        }
+
+        return allMessages.toString();
     }
 
+    public String processPDF(MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
+        File file = File.createTempFile("upload-", multipartFile.getOriginalFilename());
+        multipartFile.transferTo(file);
+
+        String fileId = uploadFile(file);
+        log.info("Arquivo enviado com sucesso! file_id: {}", fileId);
+
+        String assistantId = createAssistant(fileId);
+        log.info("Assistente criado com sucesso! assistant_id: {}", assistantId);
+
+        String threadId = createThread();
+        log.info("Thread criada com sucesso! thread_id: {}", threadId);
+
+        String messageId = sendMessage(threadId, fileId);
+        log.info("Mensagem enviada com sucesso! message_id: {}", messageId);
+
+        String runId = runThread(threadId, assistantId);
+        log.info("Resposta da IA: {}", runId);
+
+        String response = processChatResponse(threadId, runId);
+
+        deleteFile(fileId);
+
+        return response;
+    }
 }

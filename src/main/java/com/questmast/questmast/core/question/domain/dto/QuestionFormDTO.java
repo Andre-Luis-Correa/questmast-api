@@ -14,6 +14,9 @@ public record QuestionFormDTO(
         Long id,
 
         @NotBlank
+        String name,
+
+        @NotBlank
         String statement,
 
         @NotBlank

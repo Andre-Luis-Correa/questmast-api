@@ -68,6 +68,7 @@ public class QuestionService {
             question.setQuantityOfCorrectAnswers(0);
             question.setQuantityOfWrongAnswers(0);
             question.setQuantityOfTries(0);
+            question.setName(dto.name());
             questionList.add(question);
         }
 
@@ -109,7 +110,6 @@ public class QuestionService {
 
     public List<Question> updateQuestionList(List<Question> selectionProcessQuestions, List<QuestionFormDTO> questionUpdateDTOS, SelectionProcessTestFormDTO selectionProcessTestFormDTO) {
         List<Question> questionList = new ArrayList<>();
-        List<Long> ids = new ArrayList<>();
 
         for (QuestionFormDTO dto : questionUpdateDTOS) {
             QuestionDifficultyLevel questionDifficultyLevel = questionDifficultyLevelService.findById(dto.questionDifficultyLevelId());
@@ -138,8 +138,8 @@ public class QuestionService {
             question.setTestQuestionCategory(testQuestionCategory);
             question.setSubjectTopicList(generateSubjectTopicList(dto.subjectTopicList()));
             question.setQuestionAlternativeList(updateAlternativeList(question, dto.questionAlternativeList()));
+            question.setName(dto.name());
 
-            ids.add(question.getId());
             questionList.add(questionRepository.save(question));
         }
 

@@ -32,6 +32,10 @@ public class Question {
 
     @NotNull
     @Column(nullable = false)
+    private String name;
+
+    @NotNull
+    @Column(nullable = false)
     private String statement;
 
     @NotNull
