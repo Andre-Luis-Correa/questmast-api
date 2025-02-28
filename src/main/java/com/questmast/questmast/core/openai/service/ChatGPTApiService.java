@@ -12,19 +12,20 @@ import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.*;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -132,8 +133,10 @@ public class ChatGPTApiService {
 
         JSONObject json = new JSONObject();
         json.put("name", "Leitor de PDF");
-        json.put("instructions", "Extrair todas as questões que estão no arquivo PDF.");
+        json.put("instructions", "You are a specialized PDF reader trained to extract detailed questions from documents. Your primary task is to scan the provided PDF files and return all questions in a structured and comprehensive manner");
         json.put("model", "gpt-3.5-turbo");
+        json.put("temperature", 0);
+        //json.put("response_format", createJsonFormat());
 
         JSONArray tools = new JSONArray();
         tools.put(new JSONObject().put("type", "file_search"));
@@ -166,12 +169,77 @@ public class ChatGPTApiService {
         String responseBody = response.body().string();
 
         if (!response.isSuccessful()) {
+            log.error(responseBody);
             throw new ChatGPTApiException("criar assistente.");
         }
 
         JSONObject jsonResponse = new JSONObject(responseBody);
 
         return jsonResponse.getString("id");
+    }
+
+    private JSONObject createJsonFormat() {
+        JSONObject responseFormat = new JSONObject();
+        responseFormat.put("type", "json_schema");
+
+        JSONObject jsonSchema = new JSONObject();
+        jsonSchema.put("name", "question_form_dto");
+        jsonSchema.put("strict", true);
+
+        JSONObject schema = new JSONObject();
+        schema.put("type", "object");
+
+        JSONObject properties = new JSONObject();
+        properties.put("id", new JSONObject().put("type", "number"));
+        properties.put("name", new JSONObject().put("type", "string"));
+        properties.put("statement", new JSONObject().put("type", "string"));
+        properties.put("explanation", new JSONObject().put("type", "string"));
+        properties.put("videoExplanationUrl", new JSONObject().put("type", "string"));
+
+        // Schema para questionAlternativeList
+        JSONObject altItem = new JSONObject();
+        altItem.put("type", "object");
+        JSONObject altProps = new JSONObject();
+        altProps.put("id", new JSONObject().put("type", "number"));
+        altProps.put("statement", new JSONObject().put("type", "string"));
+        altProps.put("isCorrect", new JSONObject().put("type", "boolean"));
+        altItem.put("properties", altProps);
+        altItem.put("required", new JSONArray().put("statement").put("isCorrect"));
+        altItem.put("additionalProperties", false);
+
+        JSONObject questionAlternativeList = new JSONObject();
+        questionAlternativeList.put("type", "array");
+        questionAlternativeList.put("items", altItem);
+        properties.put("questionAlternativeList", questionAlternativeList);
+
+        properties.put("questionDifficultyLevelId", new JSONObject().put("type", "number"));
+        properties.put("subjectId", new JSONObject().put("type", "number"));
+
+        JSONObject subjectTopicList = new JSONObject();
+        subjectTopicList.put("type", "array");
+        subjectTopicList.put("items", new JSONObject().put("type", "number"));
+        properties.put("subjectTopicList", subjectTopicList);
+
+        properties.put("testQuestionCategoryId", new JSONObject().put("type", "number"));
+
+        schema.put("properties", properties);
+        schema.put("required", new JSONArray()
+                //.put("id")
+                .put("name")
+                .put("statement")
+                .put("explanation")
+                //.put("videoExplanationUrl")
+                .put("questionAlternativeList"));
+                //.put("questionDifficultyLevelId")
+                //.put("subjectId")
+                //.put("subjectTopicList")
+                //.put("testQuestionCategoryId"));
+        schema.put("additionalProperties", false);
+
+        jsonSchema.put("schema", schema);
+        responseFormat.put("json_schema", jsonSchema);
+
+        return responseFormat;
     }
 
     public String createThread() throws IOException {
@@ -203,7 +271,7 @@ public class ChatGPTApiService {
 
         JSONObject json = new JSONObject();
         json.put("role", "user");
-        json.put("content", "Extraia todas as questões, sem excessão, incluindo enunciado e alternativas completas..");
+        json.put("content", "Read the PDF file and return question 1, 2, 3, 4, 5, 6, 7 and 8 in detail, including the wording and alternatives.");
 
         JSONArray attachments = new JSONArray();
         JSONObject attachment = new JSONObject();
@@ -248,7 +316,7 @@ public class ChatGPTApiService {
         Request request = new Request.Builder()
                 .url(BASE_URL + "/threads/" + threadId + "/runs")
                 .header("Authorization", "Bearer " + apiKey)
-                .header("OpenAI-Beta", "assistants=v2") // ✅ Cabeçalho correto
+                .header("OpenAI-Beta", "assistants=v2")
                 .post(body)
                 .build();
 
@@ -256,6 +324,7 @@ public class ChatGPTApiService {
         String responseBody = response.body().string();
 
         if (!response.isSuccessful()) {
+            log.error(responseBody);
             throw new ChatGPTApiException("executar thread.");
         }
 
@@ -276,8 +345,10 @@ public class ChatGPTApiService {
 
         Response response = client.newCall(request).execute();
         String responseBody = response.body().string();
+        log.info(responseBody);
 
-        if(!response.isSuccessful()) {
+        if (!response.isSuccessful()) {
+            log.error(responseBody);
             throw new ChatGPTApiException("verificar status da execução da thread.");
         }
 
@@ -297,6 +368,7 @@ public class ChatGPTApiService {
 
         while (!runStatus.get().equals("completed") && attempt < maxAttempts) {
             if (runStatus.get().equals("failed") || runStatus.get().equals("cancelled")) {
+                log.error(runStatus);
                 throw new ChatGPTApiException("processamento da resposta falhou ou foi cancelado.");
             }
 
@@ -304,7 +376,7 @@ public class ChatGPTApiService {
                 try {
                     runStatus.set(checkRunStatus(threadId, runId));
                 } catch (IOException e) {
-                    throw new ChatGPTApiException("processamento da resposta falhou ou foi cancelado.");
+                    throw new ChatGPTApiException("processamento da resposta foi interrompido.");
                 }
             }, waitTimeMillis, TimeUnit.MILLISECONDS);
 
@@ -333,19 +405,20 @@ public class ChatGPTApiService {
         String responseBody = response.body().string();
 
         if (!response.isSuccessful()) {
+            log.error(responseBody);
             throw new ChatGPTApiException("obter mensagens da resposta.");
         }
 
         JSONObject jsonResponse = new JSONObject(responseBody);
         JSONArray messages = jsonResponse.getJSONArray("data");
 
-        // Agora estamos construindo uma string com todas as mensagens, não apenas a primeira
         StringBuilder allMessages = new StringBuilder();
         log.info(messages.length());
         for (int i = 0; i < messages.length(); i++) {
             JSONObject message = messages.getJSONObject(i);
             if (message.has("content")) {
                 JSONObject content = message.getJSONArray("content").getJSONObject(0).getJSONObject("text");
+                log.info(content.getString("value"));
                 allMessages.append(content.getString("value")).append("\n\n");
             }
         }
@@ -377,5 +450,153 @@ public class ChatGPTApiService {
         deleteFile(fileId);
 
         return response;
+    }
+
+    public String sendRequest(String prompt) throws IOException, InterruptedException {
+        Map<String, Object> requestBody = Map.of(
+                "contents", List.of(
+                        Map.of(
+                                "parts", List.of(
+                                        Map.of("text", prompt)
+                                )
+                        )
+                )
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonInput = objectMapper.writeValueAsString(requestBody);
+
+        String geminiQuestionUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDhKrfuZx3t3Mb_Dv39P2dJ33-tlQ2-70c";
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(geminiQuestionUrl))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonInput))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return extractTextFromJson(response.body());
+    }
+
+    public String uploadPdfFile(MultipartFile pdfFile) {
+        String mimeType = "application/pdf";
+        long fileLength = pdfFile.getSize();
+        String fileName = pdfFile.getOriginalFilename();
+
+        String geminiUploadUrl = "https://generativelanguage.googleapis.com/upload/v1beta/files?key=AIzaSyC4-mIS6YajEfklY8AuIpNEFtMbixkQKrw";
+
+        try {
+            URL url = new URL(geminiUploadUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setRequestProperty("X-Goog-Upload-Command", "start, upload, finalize");
+            connection.setRequestProperty("X-Goog-Upload-Header-Content-Length", String.valueOf(fileLength));
+            connection.setRequestProperty("X-Goog-Upload-Header-Content-Type", mimeType);
+            connection.setRequestProperty("Content-Type", mimeType);
+
+            String jsonMetadata = String.format("{\"file\": {\"display_name\": \"%s\"}}", fileName);
+
+            try (OutputStream outputStream = connection.getOutputStream()) {
+                outputStream.write(jsonMetadata.getBytes());
+                pdfFile.getInputStream().transferTo(outputStream);
+                outputStream.flush();
+            }
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            log.info(response);
+
+            return extractFileUriFromJson(response.toString());
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String extractFileUriFromJson(String jsonString) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            JsonNode rootNode = objectMapper.readTree(jsonString);
+
+            JsonNode uriNode = rootNode
+                    .path("file")
+                    .path("uri");
+
+            return uriNode.asText();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String getPdfFileContent(String pdfFileUri) throws IOException, InterruptedException {
+        String requestBody = String.format("""
+            {
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [
+                            {
+                                "fileData": {
+                                    "mimeType": "aplication/pdf",
+                                    "fileUri": "%s"
+                                }
+                            },
+                            {
+                                "text": "Extraia as questões desse pdf em forma de json com os campos enunciado, lista de alternativas, alternativa correta."
+                            }
+                        ]
+                    }
+                ],
+                "generationConfig": {
+                    "temperature": 1,
+                    "topK": 40,
+                    "topP": 0.95,
+                    "maxOutputTokens": 8192,
+                    "responseMimeType": "text/plain"
+                }
+            }
+            """, pdfFileUri);
+
+        String geminiQuestionUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyC4-mIS6YajEfklY8AuIpNEFtMbixkQKrw";
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(geminiQuestionUrl))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        log.info(response.body());
+        return extractTextFromJson(response.body());
+    }
+
+    public static String extractTextFromJson(String response) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            JsonNode rootNode = objectMapper.readTree(response);
+
+            JsonNode textNode = rootNode
+                    .path("candidates")
+                    .get(0)
+                    .path("content")
+                    .path("parts")
+                    .get(0)
+                    .path("text");
+            return textNode.asText();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

@@ -23,12 +23,21 @@ public class ChatGPTApiController {
     private final ITextService iTextService;
 
     @PostMapping
-    public ResponseEntity<ChatResponse> chat(@RequestParam("prompt") String prompt) {
-        return ResponseEntity.ok(chatGPTApiService.chat(prompt));
+    public ResponseEntity<String> ask(@RequestParam String prompt) throws IOException, InterruptedException {
+        return ResponseEntity.ok(chatGPTApiService.sendRequest(prompt));
     }
 
     @PostMapping("/upload-and-ask")
     public ResponseEntity<String> uploadFileAndAskQuestion(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
         return ResponseEntity.ok(chatGPTApiService.processPDF(multipartFile));
+    }
+
+    @PostMapping("/pdf")
+    public ResponseEntity<String> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
+        String fileUri = chatGPTApiService.uploadPdfFile(multipartFile);
+        log.info(fileUri);
+        String content = chatGPTApiService.getPdfFileContent(fileUri);
+
+        return ResponseEntity.ok(content);
     }
 }
