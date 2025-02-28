@@ -53,6 +53,10 @@ openai:
     url-chat: https://api.openai.com/v1/chat/completions
     url-file: https://api.openai.com/v1/files
 
+gemini:
+  api:
+    key: AIzaSyC4-mIS6YajEfklY8AuIpNEFtMbixkQKrw
+
 server:
   servlet:
     context-path: /api

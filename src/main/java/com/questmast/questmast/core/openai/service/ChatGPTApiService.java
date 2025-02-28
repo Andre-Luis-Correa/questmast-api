@@ -36,6 +36,9 @@ public class ChatGPTApiService {
 
     private final RestTemplate restTemplate;
 
+    @Value("${gemini.api.key}")
+    private String geminiApiKey;
+
     @Value("${openai.api.key}")
     private String apiKey;
 
@@ -466,7 +469,7 @@ public class ChatGPTApiService {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonInput = objectMapper.writeValueAsString(requestBody);
 
-        String geminiQuestionUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDhKrfuZx3t3Mb_Dv39P2dJ33-tlQ2-70c";
+        String geminiQuestionUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -485,7 +488,7 @@ public class ChatGPTApiService {
         long fileLength = pdfFile.getSize();
         String fileName = pdfFile.getOriginalFilename();
 
-        String geminiUploadUrl = "https://generativelanguage.googleapis.com/upload/v1beta/files?key=AIzaSyC4-mIS6YajEfklY8AuIpNEFtMbixkQKrw";
+        String geminiUploadUrl = "https://generativelanguage.googleapis.com/upload/v1beta/files?key=" + geminiApiKey;
 
         try {
             URL url = new URL(geminiUploadUrl);
@@ -534,7 +537,7 @@ public class ChatGPTApiService {
 
             return uriNode.asText();
         } catch (Exception e) {
-            return null;
+            throw new ChatGPTApiException("obter link do arquivo.");
         }
     }
 
@@ -567,7 +570,7 @@ public class ChatGPTApiService {
             }
             """, pdfFileUri);
 
-        String geminiQuestionUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyC4-mIS6YajEfklY8AuIpNEFtMbixkQKrw";
+        String geminiQuestionUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(geminiQuestionUrl))
@@ -596,7 +599,7 @@ public class ChatGPTApiService {
                     .path("text");
             return textNode.asText();
         } catch (Exception e) {
-            return null;
+            throw new ChatGPTApiException("obter resposta.");
         }
     }
 }

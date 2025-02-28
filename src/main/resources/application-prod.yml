@@ -48,6 +48,10 @@ openai:
   api:
     key: ${OPEN_AI_API_KEY}
 
+gemini:
+  api:
+    key: AIzaSyC4-mIS6YajEfklY8AuIpNEFtMbixkQKrw
+
 server:
   servlet:
     context-path: /api
