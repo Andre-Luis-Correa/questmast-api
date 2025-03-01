@@ -129,53 +129,63 @@ public class GeminiService {
                                 }
                             },
                             {
-                                "text": "Extraia as questões desse pdf em forma de json com os campos nome da questão, enunciado, lista de alternativas, alternativa correta."
+                                "text": "Extract all questions from the provided PDF and return them in JSON format. The `statement` field must contain the full question text, including any auxiliary content. The `explanation` field must explain the question of the test"
                             }
                         ]
                     }
                 ],
                 "generationConfig": {
-                    "temperature": 1,
-                    "topK": 40,
-                    "topP": 0.95,
-                    "maxOutputTokens": 8192,
-                    "responseMimeType": "application/json",
-                    "responseSchema": {
-                        {
-                              "type": "object",
-                              "properties": {
-                                "questionList": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "name": {
-                                        "type": "string"
-                                      },
-                                      "statement": {
-                                        "type": "string"
-                                      },
-                                      "explanation": {
-                                        "type": "string"
-                                      },
-                                      "questionAlternativeList": {
-                                        "type": "array",
-                                        "items": {
-                                          "type": "object",
-                                          "properties": {
-                                            "statement": {
-                                              "type": "string"
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                    }
-                }
+                       "temperature": 1,
+                       "topK": 40,
+                       "topP": 0.95,
+                       "maxOutputTokens": 8192,
+                       "responseMimeType": "application/json",
+                       "responseSchema": {
+                         "type": "object",
+                         "properties": {
+                           "questionList": {
+                             "type": "array",
+                             "items": {
+                               "type": "object",
+                               "properties": {
+                                 "name": {
+                                   "type": "string"
+                                 },
+                                 "statement": {
+                                   "type": "string"
+                                 },
+                                 "explanation": {
+                                   "type": "string"
+                                 },
+                                 "questionAlternativeList": {
+                                   "type": "array",
+                                   "items": {
+                                     "type": "object",
+                                     "properties": {
+                                       "statement": {
+                                         "type": "string"
+                                       }
+                                     },
+                                     "required": [
+                                       "statement"
+                                     ]
+                                   }
+                                 }
+                               },
+                               "required": [
+                                 "name",
+                                 "statement",
+                                 "explanation",
+                                 "questionAlternativeList"
+                               ]
+                             }
+                           }
+                         },
+                         "required": [
+                           "questionList"
+                         ]
+                       }
+                     }
             }
             """, pdfFileUri);
 
@@ -194,26 +204,33 @@ public class GeminiService {
         return extractQuestionsFromJson(response.body());
     }
 
-    public static List<QuestionFormGeminiDTO> extractQuestionsFromJson(String body) {
+    public List<QuestionFormGeminiDTO> extractQuestionsFromJson(String responseJson) {
         ObjectMapper objectMapper = new ObjectMapper();
-        List<QuestionFormGeminiDTO> questions = new ArrayList<>();
 
         try {
-            JsonNode rootNode = objectMapper.readTree(body);
+            JsonNode rootNode = objectMapper.readTree(responseJson);
 
-            JsonNode questionListNode = rootNode.path("questionList");
+            JsonNode candidatesNode = rootNode.path("candidates");
+            if (candidatesNode.isArray() && candidatesNode.size() > 0) {
+                JsonNode textNode = candidatesNode.get(0)
+                        .path("content")
+                        .path("parts")
+                        .get(0)
+                        .path("text");
 
-            if (questionListNode.isArray()) {
-                for (JsonNode questionNode : questionListNode) {
-                    QuestionFormGeminiDTO question = objectMapper.treeToValue(questionNode, QuestionFormGeminiDTO.class);
-                    questions.add(question);
-                }
+                JsonNode extractedJson = objectMapper.readTree(textNode.asText());
+
+                return objectMapper.readValue(
+                        extractedJson.path("questionList").toString(),
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, QuestionFormGeminiDTO.class)
+                );
             }
+
         } catch (Exception e) {
-            throw new AiApiException("Erro ao processar JSON de questões.");
+            throw new AiApiException("Erro ao converter JSON para DTOs de questões.");
         }
 
-        return questions;
+        return List.of();
     }
 
     public  String extractTextFromJson(String response) {
