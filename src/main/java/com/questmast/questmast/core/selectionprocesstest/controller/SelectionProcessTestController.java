@@ -132,12 +132,4 @@ public class SelectionProcessTestController {
     public ResponseEntity<SelectionProcessTest> getById(@PathVariable Long id) {
         return ResponseEntity.ok().body(selectionProcessTestService.findById(id));
     }
-
-    @GetMapping("/ai-question")
-    public ResponseEntity<String> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
-        String fileUri = geminiService.uploadPdfFile(multipartFile);
-        String content = geminiService.getPdfFileContent(fileUri);
-
-        return ResponseEntity.ok(content);
-    }
 }
