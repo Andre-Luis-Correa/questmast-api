@@ -55,7 +55,7 @@ openai:
 
 gemini:
   api:
-    key: AIzaSyC4-mIS6YajEfklY8AuIpNEFtMbixkQKrw
+    key: AIzaSyBn4PQZtfo_xQXWncegjCk2HSl0tVKH0l0
 
 server:
   servlet:

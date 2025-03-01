@@ -550,12 +550,12 @@ public class ChatGPTApiService {
                         "parts": [
                             {
                                 "fileData": {
-                                    "mimeType": "aplication/pdf",
+                                    "mimeType": "application/pdf",
                                     "fileUri": "%s"
                                 }
                             },
                             {
-                                "text": "Extraia as questões desse pdf em forma de json com os campos enunciado, lista de alternativas, alternativa correta."
+                                "text": "Extraia as questões desse pdf em forma de json com os campos nome da questão, enunciado, lista de alternativas, alternativa correta."
                             }
                         ]
                     }
