@@ -7,6 +7,7 @@ import com.questmast.questmast.core.contentmoderator.service.ContentModeratorSer
 import com.questmast.questmast.core.function.domain.model.Function;
 import com.questmast.questmast.core.function.service.FunctionService;
 import com.questmast.questmast.core.institution.service.InstitutionService;
+import com.questmast.questmast.core.google.service.GeminiService;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
 import com.questmast.questmast.core.professionallevel.service.ProfessionalLevelService;
 import com.questmast.questmast.core.question.domain.model.Question;
@@ -25,8 +26,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,6 +47,7 @@ public class SelectionProcessTestController {
     private final InstitutionService institutionService;
     private final BoardExaminerService boardExaminerService;
     private final ContentModeratorService contentModeratorService;
+    private final GeminiService geminiService;
 
     @PostMapping
     public ResponseEntity<Long> create(@Valid @RequestBody SelectionProcessTestFormDTO selectionProcessTestFormDTO) {
@@ -126,5 +131,13 @@ public class SelectionProcessTestController {
     @GetMapping("/{id}")
     public ResponseEntity<SelectionProcessTest> getById(@PathVariable Long id) {
         return ResponseEntity.ok().body(selectionProcessTestService.findById(id));
+    }
+
+    @GetMapping("/ai-question")
+    public ResponseEntity<String> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
+        String fileUri = geminiService.uploadPdfFile(multipartFile);
+        String content = geminiService.getPdfFileContent(fileUri);
+
+        return ResponseEntity.ok(content);
     }
 }

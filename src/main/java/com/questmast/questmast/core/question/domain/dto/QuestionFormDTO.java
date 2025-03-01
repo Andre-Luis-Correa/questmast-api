@@ -16,6 +16,8 @@ public record QuestionFormDTO(
         @NotBlank
         String name,
 
+        String statementImage,
+
         @NotBlank
         String statement,
 

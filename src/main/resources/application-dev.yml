@@ -44,18 +44,13 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
-openai:
-  model: gpt-3.5-turbo
-  max-completions: 1
-  temperature: 0
-  api:
-    key: ${OPEN_AI_API_KEY}
-    url-chat: https://api.openai.com/v1/chat/completions
-    url-file: https://api.openai.com/v1/files
-
 gemini:
   api:
     key: AIzaSyBn4PQZtfo_xQXWncegjCk2HSl0tVKH0l0
+
+gcp:
+  bucket-id: questmast-bucket
+  dir: images
 
 server:
   servlet:

@@ -44,13 +44,9 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
-openai:
-  api:
-    key: ${OPEN_AI_API_KEY}
-
 gemini:
   api:
-    key: AIzaSyC4-mIS6YajEfklY8AuIpNEFtMbixkQKrw
+    key: AIzaSyBn4PQZtfo_xQXWncegjCk2HSl0tVKH0l0
 
 server:
   servlet:

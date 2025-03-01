@@ -1,8 +1,8 @@
-package com.questmast.questmast.core.openai.controller;
+package com.questmast.questmast.core.google.controller;
 
 import com.questmast.questmast.common.config.ITextService;
-import com.questmast.questmast.core.openai.domain.ChatResponse;
-import com.questmast.questmast.core.openai.service.ChatGPTApiService;
+import com.questmast.questmast.core.google.service.GeminiService;
+import com.questmast.questmast.core.google.service.GoogleStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -16,27 +16,28 @@ import java.util.concurrent.ExecutionException;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping("/chat-gpt")
-public class ChatGPTApiController {
+@RequestMapping("/google")
+public class GeminiController {
 
-    private final ChatGPTApiService chatGPTApiService;
+    private final GeminiService geminiService;
+    private final GoogleStorageService googleStorageService;
     private final ITextService iTextService;
 
+    @GetMapping("/image")
+    public ResponseEntity<String> getEncodedImage(@RequestParam MultipartFile file) {
+        return ResponseEntity.ok(googleStorageService.convertMultipartFileToBase64(file));
+
+    }
     @PostMapping
     public ResponseEntity<String> ask(@RequestParam String prompt) throws IOException, InterruptedException {
-        return ResponseEntity.ok(chatGPTApiService.sendRequest(prompt));
-    }
-
-    @PostMapping("/upload-and-ask")
-    public ResponseEntity<String> uploadFileAndAskQuestion(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
-        return ResponseEntity.ok(chatGPTApiService.processPDF(multipartFile));
+        return ResponseEntity.ok(geminiService.sendRequest(prompt));
     }
 
     @PostMapping("/pdf")
     public ResponseEntity<String> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
-        String fileUri = chatGPTApiService.uploadPdfFile(multipartFile);
+        String fileUri = geminiService.uploadPdfFile(multipartFile);
         log.info(fileUri);
-        String content = chatGPTApiService.getPdfFileContent(fileUri);
+        String content = geminiService.getPdfFileContent(fileUri);
 
         return ResponseEntity.ok(content);
     }

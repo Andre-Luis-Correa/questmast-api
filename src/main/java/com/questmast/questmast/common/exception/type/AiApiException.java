@@ -3,11 +3,11 @@ package com.questmast.questmast.common.exception.type;
 import lombok.Data;
 
 @Data
-public class ChatGPTApiException extends RuntimeException{
+public class AiApiException extends RuntimeException{
 
     private String message;
 
-    public ChatGPTApiException(String message) {
+    public AiApiException(String message) {
         super();
         this.message = message;
     }

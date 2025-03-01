@@ -34,6 +34,8 @@ public class Question {
     @Column(nullable = false)
     private String name;
 
+    private String statementImageUrl;
+
     @NotNull
     @Column(nullable = false)
     private String statement;

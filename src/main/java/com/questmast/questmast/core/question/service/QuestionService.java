@@ -2,6 +2,7 @@ package com.questmast.questmast.core.question.service;
 
 import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.common.exception.type.QuestionException;
+import com.questmast.questmast.core.google.service.GoogleStorageService;
 import com.questmast.questmast.core.question.domain.dto.QuestionFormDTO;
 import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.question.repository.QuestionRepository;
@@ -21,13 +22,13 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -40,6 +41,7 @@ public class QuestionService {
     private final SubjectTopicService subjectTopicService;
     private final QuestionAlternativeService questionAlternativeService;
     private final QuestionRepository questionRepository;
+    private final GoogleStorageService googleStorageService;
 
     public Question findById(Long id) {
         return questionRepository.findById(id).orElseThrow(
@@ -69,6 +71,13 @@ public class QuestionService {
             question.setQuantityOfWrongAnswers(0);
             question.setQuantityOfTries(0);
             question.setName(dto.name());
+
+            if(dto.statementImage() != null && !dto.statementImage().isBlank()) {
+                MultipartFile questionImage = googleStorageService.convertBase64ToMultipartFile(dto.statementImage(), "question_image.png");
+                String uploadedFileName = googleStorageService.uploadImage(questionImage);
+                question.setStatementImageUrl(uploadedFileName);
+            }
+
             questionList.add(question);
         }
 
@@ -129,6 +138,19 @@ public class QuestionService {
                 question.setQuantityOfTries(0);
             }
 
+            if(dto.statementImage() != null) {
+                if(question.getStatementImageUrl() != null) {
+                    googleStorageService.removeOldImage(question.getStatementImageUrl());
+                }
+                MultipartFile questionImage = googleStorageService.convertBase64ToMultipartFile(dto.statementImage(), "question_image.png");
+                String uploadedFileName = googleStorageService.uploadImage(questionImage);
+                question.setStatementImageUrl(uploadedFileName);
+            } else {
+                if(question.getStatementImageUrl() != null) {
+                    googleStorageService.removeOldImage(question.getStatementImageUrl());
+                }
+            }
+
             question.setApplicationDate(selectionProcessTestFormDTO.applicationDate());
             question.setStatement(dto.statement());
             question.setExplanation(dto.explanation());
@@ -176,6 +198,10 @@ public class QuestionService {
         for(Question question : questionList) {
             if(!ids.contains(question.getId())) {
                 log.info("Question being deleted: {}", question.getId());
+
+                if(question.getStatementImageUrl() != null && !question.getStatementImageUrl().isBlank()) {
+                    googleStorageService.removeOldImage(question.getStatementImageUrl());
+                }
                 questionRepository.delete(question);
             }
         }

@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.openai.domain;
+package com.questmast.questmast.core.google.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
