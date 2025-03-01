@@ -3,6 +3,7 @@ package com.questmast.questmast.core.google.controller;
 import com.questmast.questmast.common.config.ITextService;
 import com.questmast.questmast.core.google.service.GeminiService;
 import com.questmast.questmast.core.google.service.GoogleStorageService;
+import com.questmast.questmast.core.question.domain.dto.QuestionFormGeminiDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -10,13 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Log4j2
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping("/google")
+@RequestMapping("/gemini")
 public class GeminiController {
 
     private final GeminiService geminiService;
@@ -34,10 +36,10 @@ public class GeminiController {
     }
 
     @PostMapping("/pdf")
-    public ResponseEntity<String> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
+    public ResponseEntity<List<QuestionFormGeminiDTO>> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
         String fileUri = geminiService.uploadPdfFile(multipartFile);
         log.info(fileUri);
-        String content = geminiService.getPdfFileContent(fileUri);
+        List<QuestionFormGeminiDTO> content = geminiService.getPdfFileContent(fileUri);
 
         return ResponseEntity.ok(content);
     }

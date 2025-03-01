@@ -3,6 +3,7 @@ package com.questmast.questmast.core.google.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.questmast.questmast.common.exception.type.AiApiException;
+import com.questmast.questmast.core.question.domain.dto.QuestionFormGeminiDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -97,7 +99,7 @@ public class GeminiService {
         }
     }
 
-    public static String extractFileUriFromJson(String jsonString) {
+    public  String extractFileUriFromJson(String jsonString) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -113,7 +115,7 @@ public class GeminiService {
         }
     }
 
-    public String getPdfFileContent(String pdfFileUri) throws IOException, InterruptedException {
+    public List<QuestionFormGeminiDTO> getPdfFileContent(String pdfFileUri) throws IOException, InterruptedException {
         String requestBody = String.format("""
             {
                 "contents": [
@@ -137,7 +139,42 @@ public class GeminiService {
                     "topK": 40,
                     "topP": 0.95,
                     "maxOutputTokens": 8192,
-                    "responseMimeType": "text/plain"
+                    "responseMimeType": "application/json",
+                    "responseSchema": {
+                        {
+                              "type": "object",
+                              "properties": {
+                                "questionList": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "statement": {
+                                        "type": "string"
+                                      },
+                                      "explanation": {
+                                        "type": "string"
+                                      },
+                                      "questionAlternativeList": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "statement": {
+                                              "type": "string"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                    }
                 }
             }
             """, pdfFileUri);
@@ -153,10 +190,33 @@ public class GeminiService {
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         log.info(response.body());
-        return extractTextFromJson(response.body());
+        
+        return extractQuestionsFromJson(response.body());
     }
 
-    public static String extractTextFromJson(String response) {
+    public static List<QuestionFormGeminiDTO> extractQuestionsFromJson(String body) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<QuestionFormGeminiDTO> questions = new ArrayList<>();
+
+        try {
+            JsonNode rootNode = objectMapper.readTree(body);
+
+            JsonNode questionListNode = rootNode.path("questionList");
+
+            if (questionListNode.isArray()) {
+                for (JsonNode questionNode : questionListNode) {
+                    QuestionFormGeminiDTO question = objectMapper.treeToValue(questionNode, QuestionFormGeminiDTO.class);
+                    questions.add(question);
+                }
+            }
+        } catch (Exception e) {
+            throw new AiApiException("Erro ao processar JSON de questões.");
+        }
+
+        return questions;
+    }
+
+    public  String extractTextFromJson(String response) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
