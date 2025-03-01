@@ -38,7 +38,7 @@ VALUES (120, 5, 10, '12.345.678/0001-90', 'Instituição Alpha', 'https://www.in
 
 insert into selection_process(creation_date, opening_date, view_counter, board_examiner_id, institution_id, city_id,
                               content_moderator_id, selection_process_status_id, name, url)
-values ('27/02/2025 10:30:00', '2025-02-24', 0, 1, 1, 1, 1, 1, 'Concurso dos Correios', 'www.correios.com.br');
+values ('2025-03-01 14:30:45', '2025-02-24', 0, 1, 1, 1, 1, 1, 'Concurso dos Correios', 'www.correios.com.br');
 
 -- Inserindo funções
 INSERT INTO function(name, description) VALUES

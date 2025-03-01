@@ -48,6 +48,10 @@ gemini:
   api:
     key: AIzaSyBn4PQZtfo_xQXWncegjCk2HSl0tVKH0l0
 
+gcp:
+  bucket-id: questmast-bucket
+  dir: images
+
 server:
   servlet:
     context-path: /api
