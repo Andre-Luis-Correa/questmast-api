@@ -3,21 +3,23 @@ package com.questmast.questmast.core.google.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.questmast.questmast.common.exception.type.AiApiException;
-import com.questmast.questmast.core.question.domain.dto.QuestionFormGeminiDTO;
+import com.questmast.questmast.core.question.domain.dto.QuestionFormDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -115,7 +117,7 @@ public class GeminiService {
         }
     }
 
-    public List<QuestionFormGeminiDTO> getPdfFileContent(String pdfFileUri) throws IOException, InterruptedException {
+    public List<QuestionFormDTO> getPdfFileContent(String pdfFileUri) throws IOException, InterruptedException {
         String requestBody = String.format("""
             {
                 "contents": [
@@ -204,7 +206,7 @@ public class GeminiService {
         return extractQuestionsFromJson(response.body());
     }
 
-    public List<QuestionFormGeminiDTO> extractQuestionsFromJson(String responseJson) {
+    public List<QuestionFormDTO> extractQuestionsFromJson(String responseJson) {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
@@ -222,7 +224,7 @@ public class GeminiService {
 
                 return objectMapper.readValue(
                         extractedJson.path("questionList").toString(),
-                        objectMapper.getTypeFactory().constructCollectionType(List.class, QuestionFormGeminiDTO.class)
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, QuestionFormDTO.class)
                 );
             }
 

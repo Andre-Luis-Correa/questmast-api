@@ -3,7 +3,7 @@ package com.questmast.questmast.core.google.controller;
 import com.questmast.questmast.common.config.ITextService;
 import com.questmast.questmast.core.google.service.GeminiService;
 import com.questmast.questmast.core.google.service.GoogleStorageService;
-import com.questmast.questmast.core.question.domain.dto.QuestionFormGeminiDTO;
+import com.questmast.questmast.core.question.domain.dto.QuestionFormDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +36,10 @@ public class GeminiController {
     }
 
     @PostMapping("/pdf")
-    public ResponseEntity<List<QuestionFormGeminiDTO>> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
+    public ResponseEntity<List<QuestionFormDTO>> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
         String fileUri = geminiService.uploadPdfFile(multipartFile);
         log.info(fileUri);
-        List<QuestionFormGeminiDTO> content = geminiService.getPdfFileContent(fileUri);
+        List<QuestionFormDTO> content = geminiService.getPdfFileContent(fileUri);
 
         return ResponseEntity.ok(content);
     }
