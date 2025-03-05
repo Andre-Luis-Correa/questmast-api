@@ -10,6 +10,7 @@ import com.questmast.questmast.core.institution.service.InstitutionService;
 import com.questmast.questmast.core.google.service.GeminiService;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
 import com.questmast.questmast.core.professionallevel.service.ProfessionalLevelService;
+import com.questmast.questmast.core.question.domain.dto.QuestionFormDTO;
 import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.question.service.QuestionService;
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
@@ -131,5 +132,13 @@ public class SelectionProcessTestController {
     @GetMapping("/{id}")
     public ResponseEntity<SelectionProcessTest> getById(@PathVariable Long id) {
         return ResponseEntity.ok().body(selectionProcessTestService.findById(id));
+    }
+
+    @PostMapping("/pdf")
+    public ResponseEntity<List<QuestionFormDTO>> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
+        String fileUri = geminiService.uploadPdfFile(multipartFile);
+        List<QuestionFormDTO> content = geminiService.getPdfFileContent(fileUri);
+
+        return ResponseEntity.ok(content);
     }
 }

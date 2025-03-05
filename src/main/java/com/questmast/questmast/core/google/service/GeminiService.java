@@ -131,13 +131,13 @@ public class GeminiService {
                                 }
                             },
                             {
-                                "text": "Extract all questions from the provided PDF and return them in JSON format. The `statement` field must contain the full question text, including any auxiliary content. The `explanation` field must be in portuguese and explain the question of the test"
+                                "text": "Extract the first twenty questions from the provided PDF and return them in JSON format. The `statement` field must contain the full question text, including any auxiliary content. The `explanation` field must be in portuguese and explain the question of the test"
                             }
                         ]
                     }
                 ],
                 "generationConfig": {
-                       "temperature": 1,
+                       "temperature": 2,
                        "topK": 40,
                        "topP": 0.95,
                        "maxOutputTokens": 8192,
