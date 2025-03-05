@@ -265,7 +265,7 @@ public class GeminiService {
               "role": "user",
               "parts": [
                 {
-                  "text": "%s. O campo `statement` deve conter o enunciado da questão. O campo `explanation` deve conter uma breve explicação da questão. Retorne o texto com a acentuação correta."
+                  "text": "%s. O campo `statement` deve conter o enunciado da questão. O campo `explanation` deve conter uma breve explicação sobre a resposta correta da questão. Retorne o texto com a acentuação correta."
                 }
               ]
             }
