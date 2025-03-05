@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -30,9 +31,12 @@ public class SelectionProcessTestService {
     private final GoogleStorageService googleStorageService;
 
     public SelectionProcessTest findById(Long id) {
-        return selectionProcessTestRepository.findById(id).orElseThrow(
+        SelectionProcessTest selectionProcessTest = selectionProcessTestRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundExcpetion("SelectionProcessTest", "id", id.toString())
         );
+        insertEncodedImages(new ArrayList<>(List.of(selectionProcessTest)));
+
+        return selectionProcessTest;
     }
 
     public void create(SelectionProcessTestFormDTO selectionProcessTestFormDTO, ContentModerator contentModerator, Function function, ProfessionalLevel professionalLevel, TestQuestionCategory testQuestionCategory, SelectionProcess selectionProcess, List<Question> questionList) {
