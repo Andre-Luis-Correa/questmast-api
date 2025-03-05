@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.solvedquestionnaire;
 
-import com.questmast.questmast.core.questionnaire.Questionnaire;
+import com.questmast.questmast.core.questionnaire.domain.model.Questionnaire;
 import com.questmast.questmast.core.solvedevaluationtest.SolvedEvaluationTest;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;

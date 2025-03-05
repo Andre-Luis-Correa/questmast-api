@@ -3,6 +3,7 @@ package com.questmast.questmast.core.selectionprocesstest.service;
 import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;
 import com.questmast.questmast.core.function.domain.model.Function;
+import com.questmast.questmast.core.google.service.GoogleStorageService;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
 import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
@@ -26,6 +27,7 @@ public class SelectionProcessTestService {
 
     private final SelectionProcessTestRepository selectionProcessTestRepository;
     private final SelectionProcessTestMapper selectionProcessTestMapper;
+    private final GoogleStorageService googleStorageService;
 
     public SelectionProcessTest findById(Long id) {
         return selectionProcessTestRepository.findById(id).orElseThrow(
@@ -83,6 +85,27 @@ public class SelectionProcessTestService {
     }
 
     public List<SelectionProcessTest> list() {
-        return selectionProcessTestRepository.findAll();
+        List<SelectionProcessTest> selectionProcessTests = selectionProcessTestRepository.findAll();
+        insertEncodedImages(selectionProcessTests);
+
+        return selectionProcessTests;
+    }
+
+    private void insertEncodedImages(List<SelectionProcessTest> selectionProcessTests) {
+        for(SelectionProcessTest selectionProcessTest : selectionProcessTests) {
+            for(Question question : selectionProcessTest.getQuestionList()) {
+                if(question.getStatementImageUrl() != null) {
+                    String encodedImage = googleStorageService.encodeImageToBase64(question.getStatementImageUrl());
+                    question.setStatementImageUrl(encodedImage);
+                }
+            }
+        }
+    }
+
+    public List<SelectionProcessTest> findAllBySelectionProcessAndFunction(List<SelectionProcess> selectionProcesseList, List<Long> functionIds) {
+        if(functionIds == null || functionIds.isEmpty()) {
+            return selectionProcessTestRepository.findBySelectionProcessIn(selectionProcesseList);
+        }
+        return selectionProcessTestRepository.findBySelectionProcessInAndFunction_IdIn(selectionProcesseList, functionIds);
     }
 }

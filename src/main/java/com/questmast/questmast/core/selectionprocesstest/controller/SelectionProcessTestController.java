@@ -134,7 +134,7 @@ public class SelectionProcessTestController {
         return ResponseEntity.ok().body(selectionProcessTestService.findById(id));
     }
 
-    @PostMapping("/pdf")
+    @PostMapping("/gemini")
     public ResponseEntity<List<QuestionFormDTO>> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
         String fileUri = geminiService.uploadPdfFile(multipartFile);
         List<QuestionFormDTO> content = geminiService.getPdfFileContent(fileUri);

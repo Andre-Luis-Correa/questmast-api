@@ -9,12 +9,15 @@ import com.questmast.questmast.core.selectionprocess.domain.dto.SelectionProcess
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
 import com.questmast.questmast.core.selectionprocess.repository.SelectionProcessRepository;
 import com.questmast.questmast.core.selectionprocessstatus.domain.entity.SelectionProcessStatus;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -83,4 +86,14 @@ public class SelectionProcessService {
     public Page<SelectionProcess> list(Pageable pageable) {
         return selectionProcessRepository.findAllByOrderByCreationDate(pageable);
     }
+
+    public List<SelectionProcess> findAllByBoardExaminerAndInstitution(List<Long> boardExaminerIds, List<Long> institutionIds) {
+        if ((boardExaminerIds == null || boardExaminerIds.isEmpty()) && (institutionIds == null || institutionIds.isEmpty())) {
+            return selectionProcessRepository.findAll();
+        }
+
+        return selectionProcessRepository.findByBoardExaminer_IdInAndInstitution_IdIn(boardExaminerIds, institutionIds);
+    }
+
+
 }

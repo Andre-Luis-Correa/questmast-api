@@ -12,6 +12,7 @@ import com.questmast.questmast.core.questionalternative.service.QuestionAlternat
 import com.questmast.questmast.core.questiondifficultylevel.domain.entity.QuestionDifficultyLevel;
 import com.questmast.questmast.core.questiondifficultylevel.service.QuestionDifficultyLevelService;
 import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFormDTO;
+import com.questmast.questmast.core.subject.domain.dto.SubjectFilterDTO;
 import com.questmast.questmast.core.subject.domain.entity.Subject;
 import com.questmast.questmast.core.subject.service.SubjectService;
 import com.questmast.questmast.core.subjecttopic.domain.entity.SubjectTopic;
@@ -25,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -66,7 +64,7 @@ public class QuestionService {
             question.setSubject(subject);
             question.setTestQuestionCategory(testQuestionCategory);
             question.setQuestionAlternativeList(generateQuestionAlternativeList(dto.questionAlternativeList()));
-            question.setSubjectTopicList(generateSubjectTopicList(dto.subjectTopicList()));
+            question.setSubjectTopicList(generateSubjectTopicList(subject, dto.subjectTopicList()));
             question.setQuantityOfCorrectAnswers(0);
             question.setQuantityOfWrongAnswers(0);
             question.setQuantityOfTries(0);
@@ -84,10 +82,16 @@ public class QuestionService {
         return questionList;
     }
 
-    private Set<SubjectTopic> generateSubjectTopicList(Set<Long> ids) {
+    private Set<SubjectTopic> generateSubjectTopicList(Subject subject, Set<Long> ids) {
         Set<SubjectTopic> subjectTopicList = new HashSet<>();
 
         for (Long id : ids) {
+            SubjectTopic subjectTopic = subjectTopicService.findById(id);
+
+            if(!subjectTopic.getSubject().equals(subject)) {
+                throw new QuestionException("O tópico " + subjectTopic.getName() + " não pertence a disciplina " + subject.getName() + ".");
+            }
+
             subjectTopicList.add(subjectTopicService.findById(id));
         }
 
@@ -158,7 +162,7 @@ public class QuestionService {
             question.setQuestionDifficultyLevel(questionDifficultyLevel);
             question.setSubject(subject);
             question.setTestQuestionCategory(testQuestionCategory);
-            question.setSubjectTopicList(generateSubjectTopicList(dto.subjectTopicList()));
+            question.setSubjectTopicList(generateSubjectTopicList(subject, dto.subjectTopicList()));
             question.setQuestionAlternativeList(updateAlternativeList(question, dto.questionAlternativeList()));
             question.setName(dto.name());
 
@@ -206,4 +210,58 @@ public class QuestionService {
             }
         }
     }
+
+    public List<Question> findAllByQuestionsAndDifficultyLevelAndSubjectAndSubjectTopic(List<Question> questionList, List<Long> questionDifficultyLevelIds, List<SubjectFilterDTO> subjectFilterDTOS) {
+        if (questionList == null) {
+            return Collections.emptyList();
+        }
+        if (questionDifficultyLevelIds == null) {
+            questionDifficultyLevelIds = Collections.emptyList();
+        }
+        if (subjectFilterDTOS == null) {
+            subjectFilterDTOS = Collections.emptyList();
+        }
+
+        final List<Long> finalQuestionDifficultyLevelIds = questionDifficultyLevelIds;
+        final List<SubjectFilterDTO> finalSubjectFilterDTOS = subjectFilterDTOS;
+
+        return questionList.stream()
+                .filter(q -> filterByDifficulty(q, finalQuestionDifficultyLevelIds))
+                .filter(q -> filterBySubjectAndTopics(q, finalSubjectFilterDTOS))
+                .toList();
+    }
+
+    private boolean filterByDifficulty(Question question, List<Long> difficultyIds) {
+        if (difficultyIds.isEmpty()) {
+            return true;
+        }
+        return difficultyIds.contains(question.getQuestionDifficultyLevel().getId());
+    }
+
+    private boolean filterBySubjectAndTopics(Question question, List<SubjectFilterDTO> subjectFilters) {
+        if (subjectFilters.isEmpty()) {
+            return true;
+        }
+
+        return subjectFilters.stream().anyMatch(sf -> matchesSubjectFilter(question, sf));
+    }
+
+    private boolean matchesSubjectFilter(Question question, SubjectFilterDTO sf) {
+        if (sf.subjectId() != null && !sf.subjectId().equals(question.getSubject().getId())) {
+            return false;
+        }
+
+        if (sf.subjectTopicIds() != null && !sf.subjectTopicIds().isEmpty()) {
+            boolean foundAtLeastOne =
+                    question.getSubjectTopicList().stream()
+                            .anyMatch(st -> sf.subjectTopicIds().contains(st.getId()));
+            if (!foundAtLeastOne) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
 }

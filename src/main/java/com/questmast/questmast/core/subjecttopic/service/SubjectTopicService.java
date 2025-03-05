@@ -68,4 +68,8 @@ public class SubjectTopicService {
         subjectTopicRepository.save(updatedSubjectTopic);
         return convertSubjectTopicToSubjectTopicDetailsDTO(updatedSubjectTopic);
     }
+
+    public List<SubjectTopic> findAllByIdIn(List<Long> ids) {
+        return subjectTopicRepository.findAllByIdIn(ids);
+    }
 }
