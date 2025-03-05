@@ -24,20 +24,9 @@ import java.util.stream.Collectors;
 public class QuestionController {
 
     private final QuestionService questionService;
-    private final SelectionProcessService selectionProcessService;
-    private final SelectionProcessTestService selectionProcessTestService;
 
     @PostMapping
     public ResponseEntity<List<Question>> findAll(@RequestBody QuestionFilterDTO questionFilterDTO) {
-        List<Question> questionList = new ArrayList<>();
-        List<SelectionProcess> selectionProcesseList = selectionProcessService.findAllByBoardExaminerAndInstitution(questionFilterDTO.boardExaminerIds(), questionFilterDTO.institutionIds());
-
-        if(!selectionProcesseList.isEmpty()) {
-            List<SelectionProcessTest> selectionProcessTestList = selectionProcessTestService.findAllBySelectionProcessAndFunction(selectionProcesseList, questionFilterDTO.functionIds());
-            questionList = selectionProcessTestList.stream().map(SelectionProcessTest::getQuestionList).flatMap(List::stream).toList();
-            questionList = questionService.findAllByQuestionsAndDifficultyLevelAndSubjectAndSubjectTopic(questionList, questionFilterDTO.questionDifficultyLevelIds(), questionFilterDTO.subjectFilterDTOList());
-        }
-
-        return ResponseEntity.ok(questionList);
+        return ResponseEntity.ok(questionService.filter(questionFilterDTO));
     }
 }

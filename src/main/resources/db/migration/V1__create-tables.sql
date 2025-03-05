@@ -170,7 +170,7 @@ create table question (
                           statement varchar(255) not null,
                           name varchar(255) not null,
                           statement_image_url varchar(255),
-                          video_explanation_url varchar(255) not null,
+                          video_explanation_url varchar(255),
                           primary key (id)
 );
 

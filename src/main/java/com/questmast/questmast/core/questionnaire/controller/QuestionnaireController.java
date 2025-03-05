@@ -1,23 +1,21 @@
 package com.questmast.questmast.core.questionnaire.controller;
 
-import com.questmast.questmast.core.google.service.GeminiService;
-import com.questmast.questmast.core.question.domain.dto.QuestionFormDTO;
-import com.questmast.questmast.core.questiondifficultylevel.domain.entity.QuestionDifficultyLevel;
-import com.questmast.questmast.core.questiondifficultylevel.service.QuestionDifficultyLevelService;
+import com.questmast.questmast.common.exception.type.QuestionException;
+import com.questmast.questmast.core.question.domain.model.Question;
+import com.questmast.questmast.core.question.service.QuestionService;
 import com.questmast.questmast.core.questionnaire.domain.dto.QuestionnaireFormDTO;
-import com.questmast.questmast.core.questionnaire.domain.dto.QuestionnaireQuestionFormDTO;
+import com.questmast.questmast.core.questionnaire.domain.model.Questionnaire;
 import com.questmast.questmast.core.questionnaire.service.QuestionnaireService;
-import com.questmast.questmast.core.subject.domain.entity.Subject;
-import com.questmast.questmast.core.subject.service.SubjectService;
-import com.questmast.questmast.core.subjecttopic.domain.entity.SubjectTopic;
-import com.questmast.questmast.core.subjecttopic.service.SubjectTopicService;
+import com.questmast.questmast.core.student.domain.Student;
+import com.questmast.questmast.core.student.service.StudentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 @Log4j2
@@ -28,24 +26,19 @@ import java.util.List;
 public class QuestionnaireController {
 
     private final QuestionnaireService questionnaireService;
-    private final GeminiService geminiService;
-    private final SubjectService subjectService;
-    private final SubjectTopicService subjectTopicService;
-    private final QuestionDifficultyLevelService questionDifficultyLevelService;
+    private final QuestionService questionService;
+    private final StudentService studentService;
 
-//    @PostMapping("/gemini")
-//    public ResponseEntity<List<QuestionFormDTO>> getQuestionsFromGemini(@Valid @RequestBody QuestionnaireFormDTO questionnaireFormDTO) {
-//        List<QuestionFormDTO> questionFormDTOList = new ArrayList<>();
-//
-//
-//
-//        for(QuestionnaireQuestionFormDTO questionnaireQuestionFormDTO : questionnaireFormDTO.questionnaireQuestionFormDTOList()) {
-//            Subject subject = subjectService.findById(questionnaireQuestionFormDTO.subjectId());
-//            List<SubjectTopic> subjectTopicList = subjectTopicService.findAllByIdIn(questionnaireQuestionFormDTO.subjectTopicIds());
-//            QuestionDifficultyLevel questionDifficultyLevel = questionDifficultyLevelService.findById(questionnaireQuestionFormDTO.questionDifficultyLevelId());
-//
-//            List<QuestionFormDTO> questionFormDTOS = geminiService.getQuestionsByContentAndProvidedStyle();
-//        }
-//    }
+    @PostMapping("/gemini")
+    public ResponseEntity<Questionnaire> createWithGemini(@Valid @RequestBody QuestionnaireFormDTO questionnaireFormDTO) throws IOException, InterruptedException {
+        List<Question> questionList = questionService.filter(questionnaireFormDTO.questionFilterDTO());
+        if(questionnaireFormDTO.questionFilterDTO() != null && questionList.isEmpty()) throw new QuestionException("Não foi possível gerar o questionário com os filtros aplicados, pois nenhuma questão foi encontrada para replicar o estilo.");
 
+        Student student = studentService.findByMainEmail(questionnaireFormDTO.studentEmail());
+        questionList = questionService.getValidQuestionListForQuestionnaire(questionList, questionnaireFormDTO);
+        log.info(questionList);
+        Questionnaire questionnaire = questionnaireService.create(questionnaireFormDTO, student, questionList);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(questionnaire);
+    }
 }

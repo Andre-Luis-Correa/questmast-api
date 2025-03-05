@@ -2,7 +2,9 @@ package com.questmast.questmast.core.question.service;
 
 import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.common.exception.type.QuestionException;
+import com.questmast.questmast.core.google.service.GeminiService;
 import com.questmast.questmast.core.google.service.GoogleStorageService;
+import com.questmast.questmast.core.question.domain.dto.QuestionFilterDTO;
 import com.questmast.questmast.core.question.domain.dto.QuestionFormDTO;
 import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.question.repository.QuestionRepository;
@@ -11,7 +13,13 @@ import com.questmast.questmast.core.questionalternative.domain.entity.QuestionAl
 import com.questmast.questmast.core.questionalternative.service.QuestionAlternativeService;
 import com.questmast.questmast.core.questiondifficultylevel.domain.entity.QuestionDifficultyLevel;
 import com.questmast.questmast.core.questiondifficultylevel.service.QuestionDifficultyLevelService;
+import com.questmast.questmast.core.questionnaire.domain.dto.QuestionnaireFormDTO;
+import com.questmast.questmast.core.questionnaire.domain.dto.QuestionnaireQuestionFormDTO;
+import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
+import com.questmast.questmast.core.selectionprocess.service.SelectionProcessService;
 import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFormDTO;
+import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
+import com.questmast.questmast.core.selectionprocesstest.service.SelectionProcessTestService;
 import com.questmast.questmast.core.subject.domain.dto.SubjectFilterDTO;
 import com.questmast.questmast.core.subject.domain.entity.Subject;
 import com.questmast.questmast.core.subject.service.SubjectService;
@@ -25,6 +33,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -40,6 +49,9 @@ public class QuestionService {
     private final QuestionAlternativeService questionAlternativeService;
     private final QuestionRepository questionRepository;
     private final GoogleStorageService googleStorageService;
+    private final SelectionProcessService selectionProcessService;
+    private final SelectionProcessTestService selectionProcessTestService;
+    private final GeminiService geminiService;
 
     public Question findById(Long id) {
         return questionRepository.findById(id).orElseThrow(
@@ -211,7 +223,7 @@ public class QuestionService {
         }
     }
 
-    public List<Question> findAllByQuestionsAndDifficultyLevelAndSubjectAndSubjectTopic(List<Question> questionList, List<Long> questionDifficultyLevelIds, List<SubjectFilterDTO> subjectFilterDTOS) {
+    public List<Question> filterByDifficultyLevelAndSubjectAndSubjectTopic(List<Question> questionList, List<Long> questionDifficultyLevelIds, List<SubjectFilterDTO> subjectFilterDTOS) {
         if (questionList == null) {
             return Collections.emptyList();
         }
@@ -263,5 +275,194 @@ public class QuestionService {
         return true;
     }
 
+
+    public List<Question> filter(QuestionFilterDTO questionFilterDTO) {
+        if(questionFilterDTO == null) {
+            return questionRepository.findAll();
+        }
+
+        List<Question> questionList = new ArrayList<>();
+        List<SelectionProcess> selectionProcesseList = selectionProcessService.findAllByBoardExaminerAndInstitution(questionFilterDTO.boardExaminerIds(), questionFilterDTO.institutionIds());
+
+        if(!selectionProcesseList.isEmpty()) {
+            List<SelectionProcessTest> selectionProcessTestList = selectionProcessTestService.findAllBySelectionProcessAndFunction(selectionProcesseList, questionFilterDTO.functionIds());
+            questionList = selectionProcessTestList.stream().map(SelectionProcessTest::getQuestionList).flatMap(List::stream).toList();
+            questionList = filterByDifficultyLevelAndSubjectAndSubjectTopic(questionList, questionFilterDTO.questionDifficultyLevelIds(), questionFilterDTO.subjectFilterDTOList());
+        }
+
+        return questionList;
+    }
+
+    public List<Question> getValidQuestionListForQuestionnaire(List<Question> questionList, QuestionnaireFormDTO questionnaireFormDTO) throws IOException, InterruptedException {
+        List<Question> newQuestionList = new ArrayList<>();
+
+        for(QuestionnaireQuestionFormDTO questionnaireQuestionFormDTO : questionnaireFormDTO.questionnaireQuestionFormDTOList()) {
+            Subject subject = subjectService.findById(questionnaireQuestionFormDTO.subjectId());
+            List<SubjectTopic> subjectTopicList = subjectTopicService.findAllByIdIn(questionnaireQuestionFormDTO.subjectTopicIds());
+            QuestionDifficultyLevel questionDifficultyLevel = questionDifficultyLevelService.findById(questionnaireQuestionFormDTO.questionDifficultyLevelId());
+            TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(1L);
+
+            String prompt = generateQuestionnairePrompt(questionList, subject, subjectTopicList, questionnaireQuestionFormDTO.quantity(), questionDifficultyLevel, testQuestionCategory);
+            log.info(prompt);
+            List<QuestionFormDTO> questionFormDTO = geminiService.generateQuestionsForQuestionnaire(prompt);
+
+            List<Question> questionListGemini = convertToQuestionList(questionFormDTO, subject, subjectTopicList, questionDifficultyLevel, testQuestionCategory);
+
+            newQuestionList.addAll(questionListGemini);
+        }
+
+        return newQuestionList;
+    }
+
+    private List<Question> convertToQuestionList(List<QuestionFormDTO> questionFormDTOList, Subject subject, List<SubjectTopic> subjectTopicList, QuestionDifficultyLevel questionDifficultyLevel, TestQuestionCategory testQuestionCategory) {
+        List<Question> questionList = new ArrayList<>();
+
+        for(QuestionFormDTO questionFormDTO : questionFormDTOList) {
+            Set<SubjectTopic> subjectTopicSet = new HashSet<>(subjectTopicList);
+
+            Question question = new Question();
+            question.setApplicationDate(LocalDate.now());
+            question.setStatement(questionFormDTO.statement());
+            question.setExplanation(questionFormDTO.explanation());
+            question.setVideoExplanationUrl(null);
+            question.setQuestionDifficultyLevel(questionDifficultyLevel);
+            question.setSubject(subject);
+            question.setTestQuestionCategory(testQuestionCategory);
+            question.setQuestionAlternativeList(generateQuestionAlternativeList(questionFormDTO.questionAlternativeList()));
+            question.setSubjectTopicList(subjectTopicSet);
+            question.setQuantityOfCorrectAnswers(0);
+            question.setQuantityOfWrongAnswers(0);
+            question.setQuantityOfTries(0);
+            question.setName(questionFormDTO.name());
+
+            questionList.add(question);
+        }
+
+        return questionList;
+    }
+
+    private String generateQuestionnairePrompt(
+            List<Question> questionList,
+            Subject subject,
+            List<SubjectTopic> subjectTopicList,
+            Integer quantity,
+            QuestionDifficultyLevel questionDifficultyLevel,
+            TestQuestionCategory testQuestionCategory
+    ) {
+        // 1. Defina um trecho com exemplos de questões existentes (ou um resumo delas)
+        //    Assim a IA entende o estilo esperado.
+        String sampleQuestionsSnippet = buildSampleQuestionsSnippet(questionList);
+
+        // 2. Liste de forma clara os parâmetros que a IA deve levar em conta
+        String subjectName = subject != null ? subject.getName() : "Disciplina não especificada";
+        String difficultyName = questionDifficultyLevel != null
+                ? questionDifficultyLevel.getName()
+                : "Nível de dificuldade não especificado";
+        String categoryName = testQuestionCategory != null
+                ? testQuestionCategory.getName()
+                : "Categoria não especificada";
+
+        // Se você quiser detalhar os assuntos/tópicos (subjectTopicList)
+        // para a IA, concatene os nomes deles em um String
+        StringBuilder topicsBuilder = new StringBuilder();
+        if (subjectTopicList != null && !subjectTopicList.isEmpty()) {
+            for (SubjectTopic st : subjectTopicList) {
+                topicsBuilder.append("- ").append(st.getName()).append("\n");
+            }
+        } else {
+            topicsBuilder.append("Nenhum tópico específico informado.\n");
+        }
+
+        // 3. Montar instruções claras
+        // Você pode usar placeholders, bullet points, etc.
+        // Lembre-se de dizer “no máximo 10 por disciplina”
+        String prompt =
+                """
+                Você é uma IA especializada em criar questões de prova.
+        
+                Por favor, gere até %d questões (no máximo 10) sobre a disciplina "%s" 
+                na categoria "%s" e no nível de dificuldade "%s". 
+                Selecione os tópicos (se existirem) e aborde-os de forma coerente:
+        
+                Tópicos sugeridos:
+                %s
+        
+                As questões devem ser objetivas, cada uma com:
+                - Enunciado claro
+                - 4 ou 5 alternativas (A, B, C, D, E)
+                - 1 alternativa correta
+                - Estilo parecido com as questões já existentes 
+                  (veja a seguir os exemplos que forneço)
+        
+                ***Exemplos de questões existentes (para referência de estilo):***
+                %s
+        
+                Instruções adicionais:
+                - Mantenha o mesmo idioma dos exemplos (caso estejam em Português).
+                - Evite repetir o enunciado das perguntas de exemplo.
+                - As novas questões devem ser originais, alinhadas aos tópicos e nível de dificuldade.
+                - Respeite o limite: no máximo 10 questões.
+                - Gere exatamente %d questões, se possível, com variação de assuntos dentro do tema.
+                
+                Formato de saída sugerido:
+                1) [Enunciado da questão]
+                   A) ...
+                   B) ...
+                   C) ...
+                   D) ...
+                   E) ...
+                   Resposta correta: X
+        
+                2) [Enunciado da questão] 
+                   ... e assim por diante.
+        
+                Obrigado!
+                """.formatted(
+                        // %d #1 -> quantidade solicitada
+                        quantity != null || quantity < 10 ? quantity : 10,
+                        // %s #2 -> nome da disciplina
+                        subjectName,
+                        // %s #3 -> categoria
+                        categoryName,
+                        // %s #4 -> nível de dificuldade
+                        difficultyName,
+                        // %s #5 -> tópicos
+                        topicsBuilder.toString(),
+                        // %s #6 -> trechos de exemplos
+                        sampleQuestionsSnippet,
+                        // %d #7 -> quantidade solicitada novamente
+                        quantity != null ? quantity : 10
+                );
+
+        return prompt;
+    }
+
+    private String buildSampleQuestionsSnippet(List<Question> questionList) {
+        if (questionList == null || questionList.isEmpty()) {
+            return "Nenhuma questão de exemplo disponível.";
+        }
+
+        // Limitar a quantidade de exemplos, para não ficar muito verborrágico
+        int maxExamples = Math.min(questionList.size(), 3);
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < maxExamples; i++) {
+            Question q = questionList.get(i);
+            sb.append("Exemplo ").append(i + 1).append(":\n");
+            sb.append("Enunciado: ").append(q.getStatement()).append("\n");
+            // Se você quiser, pode colocar as alternativas.
+            // Se a classe "QuestionAlternative" tiver 'getText()', adicione-as também:
+            if (q.getQuestionAlternativeList() != null) {
+                int altCount = 1;
+                for (QuestionAlternative alt : q.getQuestionAlternativeList()) {
+                    sb.append((char)('A' + altCount - 1)).append(") ")
+                            .append(alt.getStatement()).append("\n");
+                    altCount++;
+                }
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 
 }

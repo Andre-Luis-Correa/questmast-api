@@ -6,6 +6,7 @@ import com.questmast.questmast.common.exception.type.AiApiException;
 import com.questmast.questmast.core.question.domain.dto.QuestionFormDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -252,5 +253,99 @@ public class GeminiService {
         } catch (Exception e) {
             throw new AiApiException("obter resposta.");
         }
+    }
+
+    public List<QuestionFormDTO> generateQuestionsForQuestionnaire(String prompt) throws IOException, InterruptedException {
+        String escapedPrompt = StringEscapeUtils.escapeJson(prompt);
+
+        String requestBody = String.format("""
+        {
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "%s. O campo `statement` deve conter o enunciado da questão. O campo `explanation` deve conter uma breve explicação da questão. Retorne o texto com a acentuação correta."
+                }
+              ]
+            }
+          ],
+          "generationConfig": {
+             "temperature": 2,
+             "topK": 40,
+             "topP": 0.95,
+             "maxOutputTokens": 8192,
+             "responseMimeType": "application/json",
+             "responseSchema": {
+               "type": "object",
+               "properties": {
+                 "questionList": {
+                   "type": "array",
+                   "items": {
+                     "type": "object",
+                     "properties": {
+                       "name": {
+                         "type": "string"
+                       },
+                       "statement": {
+                         "type": "string"
+                       },
+                       "explanation": {
+                         "type": "string"
+                       },
+                       "questionAlternativeList": {
+                         "type": "array",
+                         "items": {
+                           "type": "object",
+                           "properties": {
+                             "statement": {
+                               "type": "string"
+                             },
+                             "isCorrect": {
+                               "type": "boolean"
+                             }
+                           },
+                           "required": [
+                             "statement",
+                             "isCorrect"
+                           ]
+                         }
+                       }
+                     },
+                     "required": [
+                       "name",
+                       "statement",
+                       "explanation",
+                       "questionAlternativeList"
+                     ]
+                   }
+                 }
+               },
+               "required": [
+                 "questionList"
+               ]
+             }
+           }
+        }
+        """, escapedPrompt);
+
+        // Monta a URL da API Gemini.
+        // Supondo que você tenha algo como 'geminiApiKey' em algum lugar dessa classe
+        String geminiQuestionUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key="
+                + geminiApiKey;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(geminiQuestionUrl))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        log.info("Resposta da API Gemini: {}", response.body());
+
+        // Extrai o JSON e converte para sua lista de QuestionFormDTO
+        return extractQuestionsFromJson(response.body());
     }
 }

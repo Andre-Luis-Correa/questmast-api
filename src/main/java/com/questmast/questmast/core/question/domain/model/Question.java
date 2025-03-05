@@ -56,8 +56,6 @@ public class Question {
     @Column(nullable = false)
     private String explanation;
 
-    @NotNull
-    @Column(nullable = false)
     private String videoExplanationUrl;
 
     @NotEmpty

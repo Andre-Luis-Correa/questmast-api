@@ -1,5 +1,6 @@
 package com.questmast.questmast.core.questionnaire.domain.dto;
 
+import com.questmast.questmast.core.question.domain.dto.QuestionFilterDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,9 +18,10 @@ public record QuestionnaireFormDTO(
         @NotNull
         Boolean isPublic,
 
-        @Valid
         @NotNull
-        List<QuestionnaireQuestionFormDTO> questionnaireQuestionFormDTOList
+        List<QuestionnaireQuestionFormDTO> questionnaireQuestionFormDTOList,
+
+        QuestionFilterDTO questionFilterDTO
 
 ) {
 }
