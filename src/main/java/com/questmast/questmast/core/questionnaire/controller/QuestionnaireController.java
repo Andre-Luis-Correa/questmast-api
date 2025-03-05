@@ -39,7 +39,6 @@ public class QuestionnaireController {
 
         Student student = studentService.findByMainEmail(questionnaireFormDTO.studentEmail());
         questionList = questionService.getValidQuestionListForQuestionnaire(questionList, questionnaireFormDTO);
-        log.info(questionList);
         Questionnaire questionnaire = questionnaireService.create(questionnaireFormDTO, student, questionList);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(questionnaire);
