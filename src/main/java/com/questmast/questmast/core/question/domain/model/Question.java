@@ -72,11 +72,6 @@ public class Question {
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "test_question_category_id", nullable = false)
-    private TestQuestionCategory testQuestionCategory;
-
     @NotEmpty
     @OneToMany
     private Set<SubjectTopic> subjectTopicList;

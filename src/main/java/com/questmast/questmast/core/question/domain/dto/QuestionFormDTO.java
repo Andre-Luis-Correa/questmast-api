@@ -41,10 +41,6 @@ public record QuestionFormDTO(
         @Valid
         @NotNull
         @NotEmpty
-        Set<Long> subjectTopicList,
-
-        @NotNull
-        Long testQuestionCategoryId
-
+        Set<Long> subjectTopicList
         ) {
 }

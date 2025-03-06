@@ -41,42 +41,8 @@ public class GeminiController {
     }
 
     @PostMapping("/pdf")
-    public ResponseEntity<List<QuestionFormDTO>> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
-        List<QuestionFormDTO> allQuestions = new ArrayList<>();
-
-        // 1. Converter MultipartFile para PDDocument
-        PDDocument document = PDDocument.load(multipartFile.getInputStream());
-        int totalPages = document.getNumberOfPages();
-
-        log.info("Total de páginas no PDF: " + totalPages);
-
-        for (int i = 0; i < totalPages; i++) {
-            // 2. Criar um novo documento para cada página
-            PDDocument singlePageDoc = new PDDocument();
-            singlePageDoc.addPage(document.getPage(i));
-
-            // 3. Criar um arquivo temporário para armazenar a página única
-            File tempFile = File.createTempFile("pdf_page_" + (i + 1), ".pdf");
-            singlePageDoc.save(tempFile);
-            singlePageDoc.close();
-
-            // 4. Fazer upload do arquivo e processar o conteúdo
-            String fileUri = geminiService.uploadPdfFile(new MockMultipartFile(tempFile.getName(),
-                    new FileInputStream(tempFile)));
-            log.info("Página " + (i + 1) + " enviada para análise: " + fileUri);
-
-            List<QuestionFormDTO> pageQuestions = geminiService.getPdfFileContent(fileUri);
-
-            // 5. Adicionar perguntas ao resultado final
-            allQuestions.addAll(pageQuestions);
-
-            // 6. Excluir o arquivo temporário após o uso
-            tempFile.delete();
-        }
-
-        document.close();
-
-        return ResponseEntity.ok(allQuestions);
+    public ResponseEntity<List<QuestionFormDTO>> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) {
+        return ResponseEntity.ok(geminiService.getQuestionsFromPdfFile(multipartFile));
     }
 
 }

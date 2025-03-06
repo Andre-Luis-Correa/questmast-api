@@ -62,10 +62,9 @@ public class SelectionProcessTestController {
 
         Function function = functionService.findById(selectionProcessTestFormDTO.functionId());
         ProfessionalLevel professionalLevel = professionalLevelService.findById(selectionProcessTestFormDTO.professionalLevelId());
-        TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(selectionProcessTestFormDTO.testQuestionCategoryId());
         List<Question> questionList = questionService.getValidQuestionList(selectionProcessTestFormDTO.questionList(), selectionProcessTestFormDTO.applicationDate());
 
-        selectionProcessTestService.create(selectionProcessTestFormDTO, contentModerator, function, professionalLevel, testQuestionCategory, selectionProcess, questionList);
+        selectionProcessTestService.create(selectionProcessTestFormDTO, contentModerator, function, professionalLevel, selectionProcess, questionList);
         institutionService.addTestsAndQuestionsCounters(selectionProcess.getInstitution(), questionList.size());
         boardExaminerService.addTestsAndQuestionsCounters(selectionProcess.getBoardExaminer(), questionList.size());
 
@@ -84,11 +83,10 @@ public class SelectionProcessTestController {
         List<Question> oldQuestionList = selectionProcessTest.getQuestionList();
         Function function = functionService.findById(selectionProcessTestFormDTO.functionId());
         ProfessionalLevel professionalLevel = professionalLevelService.findById(selectionProcessTestFormDTO.professionalLevelId());
-        TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(selectionProcessTestFormDTO.testQuestionCategoryId());
         SelectionProcess selectionProcess = selectionProcessService.findById(selectionProcessTestFormDTO.selectionProcessId());
         List<Question> questionList = questionService.updateQuestionList(selectionProcessTest.getQuestionList(), selectionProcessTestFormDTO.questionList(), selectionProcessTestFormDTO);
 
-        selectionProcessTestService.update(selectionProcessTestFormDTO, selectionProcessTest, function, professionalLevel, testQuestionCategory, selectionProcess, questionList);
+        selectionProcessTestService.update(selectionProcessTestFormDTO, selectionProcessTest, function, professionalLevel, selectionProcess, questionList);
         questionService.deleteUnusedQuestions(oldQuestionList, questionList);
 
         return ResponseEntity.ok().build();
@@ -137,9 +135,6 @@ public class SelectionProcessTestController {
 
     @PostMapping("/gemini")
     public ResponseEntity<List<QuestionFormDTO>> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
-        String fileUri = geminiService.uploadPdfFile(multipartFile);
-        List<QuestionFormDTO> content = geminiService.getPdfFileContent(fileUri);
-
-        return ResponseEntity.ok(content);
+        return ResponseEntity.ok(geminiService.getQuestionsFromPdfFile(multipartFile));
     }
 }

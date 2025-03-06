@@ -41,11 +41,6 @@ public class SelectionProcessTest extends EvaluationTest {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "test_question_category_id", nullable = false)
-    private TestQuestionCategory testQuestionCategory;
-
-    @NotNull
-    @ManyToOne
     @JoinColumn(name = "selection_process_id", nullable = false)
     private SelectionProcess selectionProcess;
 

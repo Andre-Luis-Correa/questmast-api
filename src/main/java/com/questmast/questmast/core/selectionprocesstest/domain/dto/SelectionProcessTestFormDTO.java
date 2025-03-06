@@ -24,9 +24,6 @@ public record  SelectionProcessTestFormDTO(
         Long professionalLevelId,
 
         @NotNull
-        Long testQuestionCategoryId,
-
-        @NotNull
         Long selectionProcessId,
 
         @NotBlank

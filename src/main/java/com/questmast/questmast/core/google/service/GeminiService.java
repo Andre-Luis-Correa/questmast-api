@@ -7,20 +7,20 @@ import com.questmast.questmast.core.question.domain.dto.QuestionFormDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -345,7 +345,46 @@ public class GeminiService {
 
         log.info("Resposta da API Gemini: {}", response.body());
 
-        // Extrai o JSON e converte para sua lista de QuestionFormDTO
         return extractQuestionsFromJson(response.body());
+    }
+
+    public List<QuestionFormDTO> getQuestionsFromPdfFile(MultipartFile multipartFile)  {
+        try {
+            List<QuestionFormDTO> allQuestions = new ArrayList<>();
+
+            PDDocument document = PDDocument.load(multipartFile.getInputStream());
+            int totalPages = document.getNumberOfPages();
+
+            log.info("Total de páginas no PDF: " + totalPages);
+
+            for (int i = 0; i < totalPages; i += 5) {
+                PDDocument batchDocument = new PDDocument();
+
+                for (int j = i; j < i + 5 && j < totalPages; j++) {
+                    batchDocument.addPage(document.getPage(j));
+                }
+
+                File tempFile = File.createTempFile("pdf_batch_" + (i / 5 + 1), ".pdf");
+                batchDocument.save(tempFile);
+                batchDocument.close();
+
+                String fileUri = uploadPdfFile(new MockMultipartFile(tempFile.getName(), new FileInputStream(tempFile)));
+                log.info("Lote de páginas " + (i + 1) + " a " + Math.min(i + 5, totalPages) + " enviado para análise: " + fileUri);
+
+                List<QuestionFormDTO> batchQuestions = getPdfFileContent(fileUri);
+
+                allQuestions.addAll(batchQuestions);
+
+                tempFile.delete();
+            }
+
+            document.close();
+
+            return allQuestions;
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new AiApiException("obter questões do arquivo pdf.");
+        }
     }
 }

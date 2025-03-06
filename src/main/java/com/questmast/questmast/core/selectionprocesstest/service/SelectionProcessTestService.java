@@ -45,7 +45,7 @@ public class SelectionProcessTestService {
         return selectionProcessTest;
     }
 
-    public void create(SelectionProcessTestFormDTO selectionProcessTestFormDTO, ContentModerator contentModerator, Function function, ProfessionalLevel professionalLevel, TestQuestionCategory testQuestionCategory, SelectionProcess selectionProcess, List<Question> questionList) {
+    public void create(SelectionProcessTestFormDTO selectionProcessTestFormDTO, ContentModerator contentModerator, Function function, ProfessionalLevel professionalLevel, SelectionProcess selectionProcess, List<Question> questionList) {
         SelectionProcessTest selectionProcessTest = new SelectionProcessTest();
         selectionProcessTest.setContentModerator(contentModerator);
         selectionProcessTest.setApplicationDate(selectionProcessTestFormDTO.applicationDate());
@@ -54,19 +54,17 @@ public class SelectionProcessTestService {
         selectionProcessTest.setQuestionList(questionList);
         selectionProcessTest.setFunction(function);
         selectionProcessTest.setProfessionalLevel(professionalLevel);
-        selectionProcessTest.setTestQuestionCategory(testQuestionCategory);
         selectionProcessTest.setSelectionProcess(selectionProcess);
 
         selectionProcessTestRepository.save(selectionProcessTest);
     }
 
-    public void update(SelectionProcessTestFormDTO selectionProcessTestUpdateDTO, SelectionProcessTest selectionProcessTest, Function function, ProfessionalLevel professionalLevel, TestQuestionCategory testQuestionCategory, SelectionProcess selectionProcess, List<Question> questionList) {
+    public void update(SelectionProcessTestFormDTO selectionProcessTestUpdateDTO, SelectionProcessTest selectionProcessTest, Function function, ProfessionalLevel professionalLevel, SelectionProcess selectionProcess, List<Question> questionList) {
         selectionProcessTest.setName(selectionProcessTestUpdateDTO.name());
         selectionProcessTest.setApplicationDate(selectionProcessTestUpdateDTO.applicationDate());
         selectionProcessTest.setQuestionList(questionList);
         selectionProcessTest.setFunction(function);
         selectionProcessTest.setProfessionalLevel(professionalLevel);
-        selectionProcessTest.setTestQuestionCategory(testQuestionCategory);
         selectionProcessTest.setSelectionProcess(selectionProcess);
 
         selectionProcessTestRepository.save(selectionProcessTest);

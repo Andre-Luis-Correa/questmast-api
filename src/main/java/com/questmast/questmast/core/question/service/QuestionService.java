@@ -65,7 +65,6 @@ public class QuestionService {
         for (QuestionFormDTO dto : questionFormDTOS) {
             QuestionDifficultyLevel questionDifficultyLevel = questionDifficultyLevelService.findById(dto.questionDifficultyLevelId());
             Subject subject = subjectService.findById(dto.subjectId());
-            TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(dto.testQuestionCategoryId());
 
             Question question = new Question();
             question.setApplicationDate(applicationDate);
@@ -74,7 +73,6 @@ public class QuestionService {
             question.setVideoExplanationUrl(dto.videoExplanationUrl());
             question.setQuestionDifficultyLevel(questionDifficultyLevel);
             question.setSubject(subject);
-            question.setTestQuestionCategory(testQuestionCategory);
             question.setQuestionAlternativeList(generateQuestionAlternativeList(dto.questionAlternativeList()));
             question.setSubjectTopicList(generateSubjectTopicList(subject, dto.subjectTopicList()));
             question.setQuantityOfCorrectAnswers(0);
@@ -139,7 +137,6 @@ public class QuestionService {
         for (QuestionFormDTO dto : questionUpdateDTOS) {
             QuestionDifficultyLevel questionDifficultyLevel = questionDifficultyLevelService.findById(dto.questionDifficultyLevelId());
             Subject subject = subjectService.findById(dto.subjectId());
-            TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(dto.testQuestionCategoryId());
 
             Question question = new Question();
             if (dto.id() != null) {
@@ -173,7 +170,6 @@ public class QuestionService {
             question.setVideoExplanationUrl(dto.videoExplanationUrl());
             question.setQuestionDifficultyLevel(questionDifficultyLevel);
             question.setSubject(subject);
-            question.setTestQuestionCategory(testQuestionCategory);
             question.setSubjectTopicList(generateSubjectTopicList(subject, dto.subjectTopicList()));
             question.setQuestionAlternativeList(updateAlternativeList(question, dto.questionAlternativeList()));
             question.setName(dto.name());
@@ -300,13 +296,12 @@ public class QuestionService {
             Subject subject = subjectService.findById(questionnaireQuestionFormDTO.subjectId());
             List<SubjectTopic> subjectTopicList = subjectTopicService.findAllByIdIn(questionnaireQuestionFormDTO.subjectTopicIds());
             QuestionDifficultyLevel questionDifficultyLevel = questionDifficultyLevelService.findById(questionnaireQuestionFormDTO.questionDifficultyLevelId());
-            TestQuestionCategory testQuestionCategory = testQuestionCategoryService.findById(1L);
 
-            String prompt = generateQuestionnairePrompt(questionList, subject, subjectTopicList, questionnaireQuestionFormDTO.quantity(), questionDifficultyLevel, testQuestionCategory);
+            String prompt = generateQuestionnairePrompt(questionList, subject, subjectTopicList, questionnaireQuestionFormDTO.quantity(), questionDifficultyLevel);
             log.info(prompt);
             List<QuestionFormDTO> questionFormDTO = geminiService.generateQuestionsForQuestionnaire(prompt);
 
-            List<Question> questionListGemini = convertToQuestionList(questionFormDTO, subject, subjectTopicList, questionDifficultyLevel, testQuestionCategory);
+            List<Question> questionListGemini = convertToQuestionList(questionFormDTO, subject, subjectTopicList, questionDifficultyLevel);
 
             newQuestionList.addAll(questionListGemini);
         }
@@ -314,7 +309,7 @@ public class QuestionService {
         return newQuestionList;
     }
 
-    private List<Question> convertToQuestionList(List<QuestionFormDTO> questionFormDTOList, Subject subject, List<SubjectTopic> subjectTopicList, QuestionDifficultyLevel questionDifficultyLevel, TestQuestionCategory testQuestionCategory) {
+    private List<Question> convertToQuestionList(List<QuestionFormDTO> questionFormDTOList, Subject subject, List<SubjectTopic> subjectTopicList, QuestionDifficultyLevel questionDifficultyLevel) {
         List<Question> questionList = new ArrayList<>();
 
         for(QuestionFormDTO questionFormDTO : questionFormDTOList) {
@@ -327,7 +322,6 @@ public class QuestionService {
             question.setVideoExplanationUrl(null);
             question.setQuestionDifficultyLevel(questionDifficultyLevel);
             question.setSubject(subject);
-            question.setTestQuestionCategory(testQuestionCategory);
             question.setQuestionAlternativeList(generateQuestionAlternativeList(questionFormDTO.questionAlternativeList()));
             question.setSubjectTopicList(subjectTopicSet);
             question.setQuantityOfCorrectAnswers(0);
@@ -346,24 +340,16 @@ public class QuestionService {
             Subject subject,
             List<SubjectTopic> subjectTopicList,
             Integer quantity,
-            QuestionDifficultyLevel questionDifficultyLevel,
-            TestQuestionCategory testQuestionCategory
+            QuestionDifficultyLevel questionDifficultyLevel
     ) {
-        // 1. Defina um trecho com exemplos de questões existentes (ou um resumo delas)
-        //    Assim a IA entende o estilo esperado.
         String sampleQuestionsSnippet = buildSampleQuestionsSnippet(questionList);
 
-        // 2. Liste de forma clara os parâmetros que a IA deve levar em conta
         String subjectName = subject != null ? subject.getName() : "Disciplina não especificada";
         String difficultyName = questionDifficultyLevel != null
                 ? questionDifficultyLevel.getName()
                 : "Nível de dificuldade não especificado";
-        String categoryName = testQuestionCategory != null
-                ? testQuestionCategory.getName()
-                : "Categoria não especificada";
+        String categoryName = "Questões objetivas";
 
-        // Se você quiser detalhar os assuntos/tópicos (subjectTopicList)
-        // para a IA, concatene os nomes deles em um String
         StringBuilder topicsBuilder = new StringBuilder();
         if (subjectTopicList != null && !subjectTopicList.isEmpty()) {
             for (SubjectTopic st : subjectTopicList) {
@@ -373,9 +359,6 @@ public class QuestionService {
             topicsBuilder.append("Nenhum tópico específico informado.\n");
         }
 
-        // 3. Montar instruções claras
-        // Você pode usar placeholders, bullet points, etc.
-        // Lembre-se de dizer “no máximo 10 por disciplina”
         String prompt =
                 """
                 Você é uma IA especializada em criar questões de prova.
