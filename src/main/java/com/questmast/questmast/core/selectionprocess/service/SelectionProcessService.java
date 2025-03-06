@@ -43,9 +43,13 @@ public class SelectionProcessService {
     }
 
     public SelectionProcess findById(Long id) {
-        return selectionProcessRepository.findById(id).orElseThrow(
+        SelectionProcess selectionProcess = selectionProcessRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundExcpetion("SelectionProcess", "id", id.toString())
         );
+
+        updateViewCounter(selectionProcess);
+
+        return selectionProcess;
     }
 
     public void update(SelectionProcess selectionProcess, SelectionProcessFormDTO selectionProcessFormDTO, BoardExaminer boardExaminer, Institution institution, City city, ContentModerator contentModerator, SelectionProcessStatus selectionProcessStatus) {
@@ -96,4 +100,8 @@ public class SelectionProcessService {
     }
 
 
+    public void updateSelectionProcessStatus(SelectionProcess selectionProcess, SelectionProcessStatus selectionProcessStatus) {
+        selectionProcess.setSelectionProcessStatus(selectionProcessStatus);
+        selectionProcessRepository.save(selectionProcess);
+    }
 }

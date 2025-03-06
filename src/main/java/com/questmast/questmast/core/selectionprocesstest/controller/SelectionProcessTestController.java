@@ -15,6 +15,7 @@ import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.question.service.QuestionService;
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
 import com.questmast.questmast.core.selectionprocess.service.SelectionProcessService;
+import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFilterDTO;
 import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFormDTO;
 import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.selectionprocesstest.service.SelectionProcessTestService;
@@ -120,13 +121,13 @@ public class SelectionProcessTestController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Page<SelectionProcessTest>> list(Pageable pageable) {
-        return ResponseEntity.ok().body(selectionProcessTestService.list(pageable));
+    public ResponseEntity<Page<SelectionProcessTest>> list(Pageable pageable, SelectionProcessTestFilterDTO selectionProcessTestFilterDTO) {
+        return ResponseEntity.ok().body(selectionProcessTestService.list(pageable, selectionProcessTestFilterDTO));
     }
 
     @GetMapping
-    public ResponseEntity<List<SelectionProcessTest>> list() {
-        return ResponseEntity.ok().body(selectionProcessTestService.list());
+    public ResponseEntity<List<SelectionProcessTest>> list(SelectionProcessTestFilterDTO selectionProcessTestFilterDTO) {
+        return ResponseEntity.ok().body(selectionProcessTestService.list(selectionProcessTestFilterDTO));
     }
 
     @GetMapping("/{id}")

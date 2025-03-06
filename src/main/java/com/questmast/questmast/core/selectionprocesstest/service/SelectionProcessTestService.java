@@ -1,12 +1,16 @@
 package com.questmast.questmast.core.selectionprocesstest.service;
 
 import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
+import com.questmast.questmast.common.specification.BaseSpecification;
+import com.questmast.questmast.common.specification.Search;
+import com.questmast.questmast.common.specification.SpecificationUtils;
 import com.questmast.questmast.core.contentmoderator.domain.ContentModerator;
 import com.questmast.questmast.core.function.domain.model.Function;
 import com.questmast.questmast.core.google.service.GoogleStorageService;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
 import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
+import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFilterDTO;
 import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFormDTO;
 import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.selectionprocesstest.mapper.SelectionProcessTestMapper;
@@ -16,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,6 +40,7 @@ public class SelectionProcessTestService {
                 () -> new EntityNotFoundExcpetion("SelectionProcessTest", "id", id.toString())
         );
         insertEncodedImages(new ArrayList<>(List.of(selectionProcessTest)));
+        updateViewCounter(selectionProcessTest);
 
         return selectionProcessTest;
     }
@@ -84,15 +90,25 @@ public class SelectionProcessTestService {
         selectionProcessTestRepository.delete(selectionProcessTest);
     }
 
-    public Page<SelectionProcessTest> list(Pageable pageable) {
-        return selectionProcessTestRepository.findAll(pageable);
+    public Page<SelectionProcessTest> list(Pageable pageable, SelectionProcessTestFilterDTO selectionProcessTestFilterDTO) {
+        Specification<SelectionProcessTest> selectionProcessTestSpecification = generateSpecification(selectionProcessTestFilterDTO);
+        return selectionProcessTestRepository.findAll(selectionProcessTestSpecification, pageable);
     }
 
-    public List<SelectionProcessTest> list() {
-        List<SelectionProcessTest> selectionProcessTests = selectionProcessTestRepository.findAll();
+    public List<SelectionProcessTest> list(SelectionProcessTestFilterDTO selectionProcessTestFilterDTO) {
+        Specification<SelectionProcessTest> selectionProcessTestSpecification = generateSpecification(selectionProcessTestFilterDTO);
+        List<SelectionProcessTest> selectionProcessTests = selectionProcessTestRepository.findAll(selectionProcessTestSpecification);
         insertEncodedImages(selectionProcessTests);
 
         return selectionProcessTests;
+    }
+
+    private Specification<SelectionProcessTest> generateSpecification(SelectionProcessTestFilterDTO selectionProcessTestFilterDTO) {
+        Search<Long> selectionProcessCriteria = SpecificationUtils.generateEqualsCriteria("selectionProcess.id", selectionProcessTestFilterDTO.selectionProcessId());
+
+        Specification<SelectionProcessTest> selectionProcessSpecification = new BaseSpecification<>(selectionProcessCriteria);
+
+        return Specification.where(selectionProcessSpecification);
     }
 
     private void insertEncodedImages(List<SelectionProcessTest> selectionProcessTests) {

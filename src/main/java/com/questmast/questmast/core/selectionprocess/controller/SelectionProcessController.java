@@ -71,6 +71,16 @@ public class SelectionProcessController {
         return ResponseEntity.ok().body(selectionProcessService.findById(id));
     }
 
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestParam Long selectionProcessStatusId) {
+        SelectionProcess selectionProcess = selectionProcessService.findById(id);
+        SelectionProcessStatus selectionProcessStatus = selectionProcessStatusService.findById(selectionProcessStatusId);
+
+        selectionProcessService.updateSelectionProcessStatus(selectionProcess, selectionProcessStatus);
+
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody SelectionProcessFormDTO selectionProcessFormDTO) {
         SelectionProcess selectionProcess = selectionProcessService.findById(id);

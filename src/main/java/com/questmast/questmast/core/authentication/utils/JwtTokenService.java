@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.questmast.questmast.common.exception.type.JwtTokenException;
 import com.questmast.questmast.core.authentication.user.service.UserDetailsImpl;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,7 @@ public class JwtTokenService {
                     .withClaim("email", user.getUser().getUsername())
                     .sign(algorithm);
         } catch (JWTCreationException exception){
-            throw new JWTCreationException("Erro ao gerar token.", exception);
+            throw new JwtTokenException("Erro ao gerar token.");
         }
     }
 
@@ -43,8 +44,8 @@ public class JwtTokenService {
                     .build()
                     .verify(token)
                     .getSubject();
-        } catch (JWTVerificationException exception){
-            throw new JWTVerificationException("Token inválido ou expirado.");
+        } catch (JWTVerificationException exception) {
+            throw new JwtTokenException("Token inválido ou expirado.");
         }
     }
 
