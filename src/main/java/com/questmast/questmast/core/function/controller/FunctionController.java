@@ -43,14 +43,14 @@ public class FunctionController {
         return ResponseEntity.ok().body(function);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Page<Function>> list(Pageable pageable) {
         Page<Function> functionList = functionService.findAll(pageable);
 
         return ResponseEntity.ok().body(functionList);
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<Function>> list() {
         List<Function> functionList = functionService.findAll();
 

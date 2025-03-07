@@ -24,7 +24,6 @@ public record QuestionFormDTO(
         @NotBlank
         String explanation,
 
-        @NotBlank
         String videoExplanationUrl,
 
         @Valid
