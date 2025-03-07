@@ -17,7 +17,9 @@ public class CPFService {
         CPFValidator cpfValidator = new CPFValidator();
         try {
             cpfValidator.assertValid(cpf);
-            return new CPF(cpf);
+            String cleanedCpf = cpf.replaceAll("\\D", "");
+
+            return new CPF(cleanedCpf);
         } catch (Exception e) {
             log.error("Invalid CPF: " + cpf, e.getMessage());
             throw new FieldNotValidException("CPF", cpf);

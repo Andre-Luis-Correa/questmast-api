@@ -26,13 +26,13 @@ public class QuestionAlternativeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(questionAlternativeService.convertEntityToDTO(questionAlternative));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<QuestionAlternativeDTO>> listAll() {
         List<QuestionAlternative> questionAlternativeList = questionAlternativeService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(questionAlternativeService.convertToDTOList(questionAlternativeList));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Page<QuestionAlternativeDTO>> list(Pageable pageable) {
         Page<QuestionAlternative> questionAlternativePage = questionAlternativeService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(questionAlternativeService.convertToDTOPage(questionAlternativePage));

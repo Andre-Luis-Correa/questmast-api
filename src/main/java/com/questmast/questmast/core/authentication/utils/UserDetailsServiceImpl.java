@@ -38,9 +38,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new UserDetailsImpl(user);
     }
 
-    public void create(UserFormDTO userFormDTO, String verificationCode) {
+    public void create(UserFormDTO userFormDTO, CPF cpf, String verificationCode) {
         String encodedPassword = new BCryptPasswordEncoder().encode(userFormDTO.password());
-        User user = new User(userFormDTO.mainEmail(), userFormDTO.name(), userFormDTO.cpf(), encodedPassword, userFormDTO.personRole(), false, verificationCode);
+        User user = new User(userFormDTO.mainEmail(), userFormDTO.name(), cpf.getCpf(), encodedPassword, userFormDTO.personRole(), false, verificationCode);
         userRepository.save(user);
     }
 

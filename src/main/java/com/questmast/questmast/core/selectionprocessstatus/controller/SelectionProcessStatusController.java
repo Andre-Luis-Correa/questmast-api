@@ -26,13 +26,13 @@ public class SelectionProcessStatusController {
         return ResponseEntity.status(HttpStatus.CREATED).body(selectionProcessStatusService.convertEntityToDTO(status));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<SelectionProcessStatusDTO>> listAll() {
         List<SelectionProcessStatus> statusList = selectionProcessStatusService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(selectionProcessStatusService.convertToDTOList(statusList));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Page<SelectionProcessStatusDTO>> list(Pageable pageable) {
         Page<SelectionProcessStatus> statusPage = selectionProcessStatusService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(selectionProcessStatusService.convertToDTOPage(statusPage));

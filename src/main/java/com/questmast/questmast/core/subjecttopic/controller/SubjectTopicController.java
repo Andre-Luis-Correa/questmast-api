@@ -1,6 +1,7 @@
 package com.questmast.questmast.core.subjecttopic.controller;
 
 import com.questmast.questmast.core.subjecttopic.domain.dto.SubjectTopicDTO;
+import com.questmast.questmast.core.subjecttopic.domain.dto.SubjectTopicFilterDTO;
 import com.questmast.questmast.core.subjecttopic.domain.dto.SubjectTopicFormDTO;
 import com.questmast.questmast.core.subjecttopic.domain.entity.SubjectTopic;
 import com.questmast.questmast.core.subjecttopic.service.SubjectTopicService;
@@ -28,17 +29,17 @@ public class SubjectTopicController {
                 .body(subjectTopicService.convertSubjectTopicToSubjectTopicDetailsDTO(subjectTopic));
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<SubjectTopicDTO>> listAll() {
-        List<SubjectTopic> subjectTopicList = subjectTopicService.findAll();
+    @GetMapping
+    public ResponseEntity<List<SubjectTopicDTO>> listAll(SubjectTopicFilterDTO subjectTopicFilterDTO) {
+        List<SubjectTopic> subjectTopicList = subjectTopicService.findAll(subjectTopicFilterDTO);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(subjectTopicService.convertToSubjectTopicDetailsDTOList(subjectTopicList));
     }
 
-    @GetMapping
-    public ResponseEntity<Page<SubjectTopicDTO>> list(Pageable pageable) {
-        Page<SubjectTopic> subjectTopicPage = subjectTopicService.findAll(pageable);
+    @GetMapping("/all")
+    public ResponseEntity<Page<SubjectTopicDTO>> list(Pageable pageable, SubjectTopicFilterDTO subjectTopicFilterDTO) {
+        Page<SubjectTopic> subjectTopicPage = subjectTopicService.findAll(pageable, subjectTopicFilterDTO);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(subjectTopicService.convertToSubjectTopicDetailsDTOPage(subjectTopicPage));

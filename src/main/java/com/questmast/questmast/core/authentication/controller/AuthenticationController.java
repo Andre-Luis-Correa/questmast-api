@@ -68,7 +68,7 @@ public class AuthenticationController {
         }
 
         String verificationEmailCode = userDetailsService.generateVerificationCode();
-        userDetailsService.create(userFormDTO, verificationEmailCode);
+        userDetailsService.create(userFormDTO, cpf, verificationEmailCode);
 
         emailService.sendRegistrationVerificationEmail(userFormDTO.mainEmail(), verificationEmailCode);
 
@@ -111,7 +111,9 @@ public class AuthenticationController {
 
     @GetMapping("/{cpf}")
     public ResponseEntity<UserDTO> getUserByCPF(@PathVariable String cpf) {
-        User user = userDetailsService.findUserByCPF(cpf);
+        String cleanedCpf = cpf.replaceAll("\\D", "");
+        User user = userDetailsService.findUserByCPF(cleanedCpf);
+
         return ResponseEntity.ok(userDetailsService.convertUserToUserDTO(user));
     }
 

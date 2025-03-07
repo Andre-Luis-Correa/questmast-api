@@ -27,14 +27,14 @@ public class QuestionDifficultyLevelController {
                 .body(questionDifficultyLevelService.convertEntityToDTO(questionDifficultyLevel));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<QuestionDifficultyLevelDTO>> listAll() {
         List<QuestionDifficultyLevel> questionDifficultyLevelList = questionDifficultyLevelService.findAll();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(questionDifficultyLevelService.convertToDTOList(questionDifficultyLevelList));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Page<QuestionDifficultyLevelDTO>> list(Pageable pageable) {
         Page<QuestionDifficultyLevel> questionDifficultyLevelPage = questionDifficultyLevelService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK)

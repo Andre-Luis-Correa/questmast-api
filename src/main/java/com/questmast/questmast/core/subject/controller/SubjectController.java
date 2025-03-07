@@ -26,13 +26,13 @@ public class SubjectController {
         return ResponseEntity.status(HttpStatus.CREATED).body(subjectService.convertSubjectToSubjectDetailsDTO(subject));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<SubjectDTO>> listAll() {
         List<Subject> subjectList = subjectService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(subjectService.convertToSubjectDetailsDTOList(subjectList));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Page<SubjectDTO>> list(Pageable pageable) {
         Page<Subject> subjectPage = subjectService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(subjectService.convertToSubjectDetailsDTOPage(subjectPage));

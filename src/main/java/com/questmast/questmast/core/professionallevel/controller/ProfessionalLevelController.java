@@ -27,14 +27,14 @@ public class ProfessionalLevelController {
                 .body(professionalLevelService.convertProfessionalLevelToDTO(professionalLevel));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<ProfessionalLevelDTO>> listAll() {
         List<ProfessionalLevel> professionalLevelList = professionalLevelService.findAll();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(professionalLevelService.convertToProfessionalLevelDTOList(professionalLevelList));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Page<ProfessionalLevelDTO>> list(Pageable pageable) {
         Page<ProfessionalLevel> professionalLevelPage = professionalLevelService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK)
