@@ -58,7 +58,7 @@ public class SolvedEvaluationTestQuestionService {
 
     private Boolean verifyCorrectAnswer(Question question, QuestionAlternative selectedQuestionAlternative) {
         for(QuestionAlternative questionAlternative : question.getQuestionAlternativeList()) {
-            if(questionAlternative.getIsCorrect().equals(Boolean.TRUE)) {
+            if(questionAlternative.getIsCorrect().equals(Boolean.TRUE) && question.getQuestionAlternativeList().contains(selectedQuestionAlternative)) {
                 return questionAlternative.equals(selectedQuestionAlternative);
             }
         }
