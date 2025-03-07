@@ -5,7 +5,6 @@ import com.questmast.questmast.common.specification.BaseSpecification;
 import com.questmast.questmast.common.specification.Search;
 import com.questmast.questmast.common.specification.SpecificationUtils;
 import com.questmast.questmast.core.google.service.GoogleStorageService;
-import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.solvedevaluationtestquestion.domain.model.SolvedEvaluationTestQuestion;
 import com.questmast.questmast.core.solvedevaluationtestquestion.service.SolvedEvaluationTestQuestionService;
@@ -76,7 +75,7 @@ public class SolvedSelectionProcessTestService {
 
     private Specification<SolvedSelectionProcessTest> generateSpecification(SolvedSelectionProcessFilterDTO solvedSelectionProcessFilterDTO) {
         Search<Long> selectionProcessTestCriteria = SpecificationUtils.generateEqualsCriteria("selectionProcessTest.id", solvedSelectionProcessFilterDTO.selectionProcessTestId());
-        Search<Long> studentCriteria = SpecificationUtils.generateEqualsCriteria("student.id", solvedSelectionProcessFilterDTO.studentId());
+        Search<String> studentCriteria = SpecificationUtils.generateEqualsCriteria("student.mainEmail", solvedSelectionProcessFilterDTO.studentMainEmail());
 
         Specification<SolvedSelectionProcessTest> selectionProcessTestSpecification = new BaseSpecification<>(selectionProcessTestCriteria);
         Specification<SolvedSelectionProcessTest> studentSpecification = new BaseSpecification<>(studentCriteria);
