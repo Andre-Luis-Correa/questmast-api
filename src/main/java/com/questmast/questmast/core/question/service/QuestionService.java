@@ -20,6 +20,7 @@ import com.questmast.questmast.core.selectionprocess.service.SelectionProcessSer
 import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFormDTO;
 import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.selectionprocesstest.service.SelectionProcessTestService;
+import com.questmast.questmast.core.solvedevaluationtestquestion.domain.model.SolvedEvaluationTestQuestion;
 import com.questmast.questmast.core.subject.domain.dto.SubjectFilterDTO;
 import com.questmast.questmast.core.subject.domain.entity.Subject;
 import com.questmast.questmast.core.subject.service.SubjectService;
@@ -27,6 +28,7 @@ import com.questmast.questmast.core.subjecttopic.domain.entity.SubjectTopic;
 import com.questmast.questmast.core.subjecttopic.service.SubjectTopicService;
 import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
 import com.questmast.questmast.core.testquestioncategory.service.TestQuestionCategoryService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -448,5 +450,25 @@ public class QuestionService {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    @Transactional
+    public void updateQuestionInformationAfterSolved(List<SolvedEvaluationTestQuestion> solvedEvaluationTestQuestions) {
+        List<Question> updatedQuestions = new ArrayList<>();
+
+        for (SolvedEvaluationTestQuestion solvedQuestion : solvedEvaluationTestQuestions) {
+            Question question = solvedQuestion.getQuestion();
+            question.setQuantityOfTries(question.getQuantityOfTries() + 1);
+
+            if (Boolean.TRUE.equals(solvedQuestion.getIsCorrect())) {
+                question.setQuantityOfCorrectAnswers(question.getQuantityOfCorrectAnswers() + 1);
+            } else {
+                question.setQuantityOfWrongAnswers(question.getQuantityOfWrongAnswers() + 1);
+            }
+
+            updatedQuestions.add(question);
+        }
+
+        questionRepository.saveAll(updatedQuestions);
     }
 }

@@ -111,7 +111,6 @@ public class SelectionProcessTestController {
             throw new NotAuthorizedException(contentModerator.getMainEmail(), "remover prova do processo seletivo");
         }
 
-        //questionService.deleteAll(selectionProcessTest.getQuestionList());
         selectionProcessTestService.delete(selectionProcessTest);
 
         institutionService.subTestsAndQuestionsCounters(selectionProcessTest.getSelectionProcess().getInstitution(), selectionProcessTest.getQuestionList().size());
@@ -133,9 +132,11 @@ public class SelectionProcessTestController {
     @GetMapping("/{id}")
     public ResponseEntity<SelectionProcessTest> getById(@PathVariable Long id) {
         SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(id);
-        selectionProcessTestService.insertEncodedImages(new ArrayList<>(List.of(selectionProcessTest)));
+        SelectionProcessTest updatedSelectionProcessTest = selectionProcessTestService.updateViewCounter(selectionProcessTest);
 
-        return ResponseEntity.ok().body(selectionProcessTest);
+        selectionProcessTestService.insertEncodedImages(new ArrayList<>(List.of(updatedSelectionProcessTest)));
+
+        return ResponseEntity.ok().body(updatedSelectionProcessTest);
     }
 
     @PostMapping("/gemini")

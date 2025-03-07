@@ -68,7 +68,10 @@ public class SelectionProcessController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SelectionProcess> getById(@PathVariable Long id) {
-        return ResponseEntity.ok().body(selectionProcessService.findById(id));
+        SelectionProcess selectionProcess = selectionProcessService.findById(id);
+        SelectionProcess updatedSelectionprocess = selectionProcessService.updateViewCounter(selectionProcess);
+
+        return ResponseEntity.ok().body(updatedSelectionprocess);
     }
 
     @PutMapping("/{id}/status")

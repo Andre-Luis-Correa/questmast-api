@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.solvedselectionprocesstest;
+package com.questmast.questmast.core.solvedselectionprocesstest.domain.model;
 
 import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.solvedevaluationtest.SolvedEvaluationTest;

@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.solvedevaluationtestquestion;
+package com.questmast.questmast.core.solvedevaluationtestquestion.domain.model;
 
 import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.questionalternative.domain.entity.QuestionAlternative;

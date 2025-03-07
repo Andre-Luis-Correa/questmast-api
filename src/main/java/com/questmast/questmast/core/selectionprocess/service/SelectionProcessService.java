@@ -47,8 +47,6 @@ public class SelectionProcessService {
                 () -> new EntityNotFoundExcpetion("SelectionProcess", "id", id.toString())
         );
 
-        updateViewCounter(selectionProcess);
-
         return selectionProcess;
     }
 
@@ -65,7 +63,7 @@ public class SelectionProcessService {
         selectionProcessRepository.save(selectionProcess);
     }
 
-    public void updateViewCounter(SelectionProcess selectionProcess) {
+    public SelectionProcess updateViewCounter(SelectionProcess selectionProcess) {
         Integer viewCounter  = selectionProcess.getViewCounter();
 
         if(viewCounter == null) {
@@ -76,7 +74,7 @@ public class SelectionProcessService {
 
         selectionProcess.setViewCounter(viewCounter);
 
-        selectionProcessRepository.save(selectionProcess);
+        return selectionProcessRepository.save(selectionProcess);
     }
 
     public void delete(SelectionProcess selectionProcess) {

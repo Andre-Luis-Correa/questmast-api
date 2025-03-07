@@ -40,7 +40,6 @@ public class SelectionProcessTestService {
         SelectionProcessTest selectionProcessTest = selectionProcessTestRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundExcpetion("SelectionProcessTest", "id", id.toString())
         );
-        updateViewCounter(selectionProcessTest);
 
         return selectionProcessTest;
     }
@@ -70,7 +69,7 @@ public class SelectionProcessTestService {
         selectionProcessTestRepository.save(selectionProcessTest);
     }
 
-    public void updateViewCounter(SelectionProcessTest selectionProcessTest) {
+    public SelectionProcessTest updateViewCounter(SelectionProcessTest selectionProcessTest) {
         Integer viewCounter  = selectionProcessTest.getViewCounter();
 
         if(viewCounter == null) {
@@ -81,7 +80,7 @@ public class SelectionProcessTestService {
 
         selectionProcessTest.setViewCounter(viewCounter);
 
-        selectionProcessTestRepository.save(selectionProcessTest);
+        return selectionProcessTestRepository.save(selectionProcessTest);
     }
 
     public void delete(SelectionProcessTest selectionProcessTest) {
