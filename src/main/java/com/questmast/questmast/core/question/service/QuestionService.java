@@ -84,6 +84,7 @@ public class QuestionService {
                 MultipartFile questionImage = googleStorageService.convertBase64ToMultipartFile(dto.statementImage(), "question_image.png");
                 String uploadedFileName = googleStorageService.uploadImage(questionImage);
                 question.setStatementImageUrl(uploadedFileName);
+                question.setStatementImageLegend(dto.statementImageLegend());
             }
 
             questionList.add(question);
@@ -158,9 +159,12 @@ public class QuestionService {
                 MultipartFile questionImage = googleStorageService.convertBase64ToMultipartFile(dto.statementImage(), "question_image.png");
                 String uploadedFileName = googleStorageService.uploadImage(questionImage);
                 question.setStatementImageUrl(uploadedFileName);
+                question.setStatementImageLegend(dto.statementImageLegend());
             } else {
                 if(question.getStatementImageUrl() != null) {
                     googleStorageService.removeOldImage(question.getStatementImageUrl());
+                    question.setStatementImageUrl(null);
+                    question.setStatementImageLegend(null);
                 }
             }
 
@@ -425,7 +429,6 @@ public class QuestionService {
             return "Nenhuma questão de exemplo disponível.";
         }
 
-        // Limitar a quantidade de exemplos, para não ficar muito verborrágico
         int maxExamples = Math.min(questionList.size(), 3);
 
         StringBuilder sb = new StringBuilder();
@@ -433,8 +436,7 @@ public class QuestionService {
             Question q = questionList.get(i);
             sb.append("Exemplo ").append(i + 1).append(":\n");
             sb.append("Enunciado: ").append(q.getStatement()).append("\n");
-            // Se você quiser, pode colocar as alternativas.
-            // Se a classe "QuestionAlternative" tiver 'getText()', adicione-as também:
+
             if (q.getQuestionAlternativeList() != null) {
                 int altCount = 1;
                 for (QuestionAlternative alt : q.getQuestionAlternativeList()) {
@@ -447,5 +449,4 @@ public class QuestionService {
         }
         return sb.toString();
     }
-
 }

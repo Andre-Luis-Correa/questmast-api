@@ -9,6 +9,7 @@ import com.questmast.questmast.core.function.domain.model.Function;
 import com.questmast.questmast.core.google.service.GoogleStorageService;
 import com.questmast.questmast.core.professionallevel.domain.entity.ProfessionalLevel;
 import com.questmast.questmast.core.question.domain.model.Question;
+import com.questmast.questmast.core.question.service.QuestionService;
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
 import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFilterDTO;
 import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFormDTO;
@@ -39,7 +40,6 @@ public class SelectionProcessTestService {
         SelectionProcessTest selectionProcessTest = selectionProcessTestRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundExcpetion("SelectionProcessTest", "id", id.toString())
         );
-        insertEncodedImages(new ArrayList<>(List.of(selectionProcessTest)));
         updateViewCounter(selectionProcessTest);
 
         return selectionProcessTest;
@@ -109,7 +109,7 @@ public class SelectionProcessTestService {
         return Specification.where(selectionProcessSpecification);
     }
 
-    private void insertEncodedImages(List<SelectionProcessTest> selectionProcessTests) {
+    public void insertEncodedImages(List<SelectionProcessTest> selectionProcessTests) {
         for(SelectionProcessTest selectionProcessTest : selectionProcessTests) {
             for(Question question : selectionProcessTest.getQuestionList()) {
                 if(question.getStatementImageUrl() != null) {

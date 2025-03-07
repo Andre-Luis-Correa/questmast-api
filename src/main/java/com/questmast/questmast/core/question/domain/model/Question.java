@@ -35,6 +35,7 @@ public class Question {
     private String name;
 
     private String statementImageUrl;
+    private String statementImageLegend;
 
     @NotNull
     @Column(nullable = false)

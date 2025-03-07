@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -110,10 +111,11 @@ public class SelectionProcessTestController {
             throw new NotAuthorizedException(contentModerator.getMainEmail(), "remover prova do processo seletivo");
         }
 
+        //questionService.deleteAll(selectionProcessTest.getQuestionList());
+        selectionProcessTestService.delete(selectionProcessTest);
+
         institutionService.subTestsAndQuestionsCounters(selectionProcessTest.getSelectionProcess().getInstitution(), selectionProcessTest.getQuestionList().size());
         boardExaminerService.subTestsAndQuestionsCounters(selectionProcessTest.getSelectionProcess().getBoardExaminer(), selectionProcessTest.getQuestionList().size());
-
-        selectionProcessTestService.delete(selectionProcessTest);
 
         return ResponseEntity.noContent().build();
     }
@@ -130,7 +132,10 @@ public class SelectionProcessTestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SelectionProcessTest> getById(@PathVariable Long id) {
-        return ResponseEntity.ok().body(selectionProcessTestService.findById(id));
+        SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(id);
+        selectionProcessTestService.insertEncodedImages(new ArrayList<>(List.of(selectionProcessTest)));
+
+        return ResponseEntity.ok().body(selectionProcessTest);
     }
 
     @PostMapping("/gemini")
