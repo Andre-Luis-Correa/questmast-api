@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -31,6 +32,17 @@ public class QuestionnaireController {
     private final QuestionnaireService questionnaireService;
     private final QuestionService questionService;
     private final StudentService studentService;
+
+    @PostMapping
+    public ResponseEntity<Questionnaire> create(@Valid @RequestBody QuestionnaireFormDTO questionnaireFormDTO) throws IOException, InterruptedException {
+        List<Question> questionList = questionService.filter(questionnaireFormDTO.questionFilterDTO());
+        if(questionnaireFormDTO.questionFilterDTO() != null && questionList.isEmpty()) throw new QuestionException("Não foi possível gerar o questionário com os filtros aplicados, pois nenhuma questão foi encontrada para replicar o estilo.");
+
+        Student student = studentService.findByMainEmail(questionnaireFormDTO.studentEmail());
+        Questionnaire questionnaire = questionnaireService.createRandomQuestionnaire(questionnaireFormDTO, student, questionList);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(questionnaire);
+    }
 
     @PostMapping("/gemini")
     public ResponseEntity<Questionnaire> createWithGemini(@Valid @RequestBody QuestionnaireFormDTO questionnaireFormDTO) throws IOException, InterruptedException {
@@ -59,9 +71,12 @@ public class QuestionnaireController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Questionnaire> delete(@PathVariable Long id) {
+    public ResponseEntity<Questionnaire> findById(@PathVariable Long id) {
         Questionnaire questionnaire = questionnaireService.findById(id);
-        return ResponseEntity.ok(questionnaire);
+        Questionnaire updatedQuestionnaire = questionnaireService.updateViewCounter(questionnaire);
+        questionnaireService.insertEncodedImages(new ArrayList<>(List.of(updatedQuestionnaire)));
+
+        return ResponseEntity.ok(updatedQuestionnaire);
     }
 
     @GetMapping

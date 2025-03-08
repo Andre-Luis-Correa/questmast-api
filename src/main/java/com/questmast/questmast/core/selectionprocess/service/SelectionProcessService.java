@@ -90,8 +90,18 @@ public class SelectionProcessService {
     }
 
     public List<SelectionProcess> findAllByBoardExaminerAndInstitution(List<Long> boardExaminerIds, List<Long> institutionIds) {
-        if ((boardExaminerIds == null || boardExaminerIds.isEmpty()) && (institutionIds == null || institutionIds.isEmpty())) {
+        if ((boardExaminerIds == null || boardExaminerIds.isEmpty()) &&
+                (institutionIds == null || institutionIds.isEmpty())) {
             return selectionProcessRepository.findAll();
+        }
+
+        if (boardExaminerIds != null && !boardExaminerIds.isEmpty() &&
+                (institutionIds == null || institutionIds.isEmpty())) {
+            return selectionProcessRepository.findByBoardExaminer_IdIn(boardExaminerIds);
+        }
+
+        if ((boardExaminerIds == null || boardExaminerIds.isEmpty())) {
+            return selectionProcessRepository.findByInstitution_IdIn(institutionIds);
         }
 
         return selectionProcessRepository.findByBoardExaminer_IdInAndInstitution_IdIn(boardExaminerIds, institutionIds);

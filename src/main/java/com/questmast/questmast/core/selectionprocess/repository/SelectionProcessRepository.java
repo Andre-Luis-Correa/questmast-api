@@ -19,4 +19,8 @@ public interface SelectionProcessRepository extends JpaRepository<SelectionProce
             List<Long> boardExaminerIds,
             List<Long> institutionIds
     );
+
+    List<SelectionProcess> findByBoardExaminer_IdIn(List<Long> boardExaminerIds);
+
+    List<SelectionProcess> findByInstitution_IdIn(List<Long> institutionIds);
 }

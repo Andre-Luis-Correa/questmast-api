@@ -225,58 +225,57 @@ public class QuestionService {
         }
     }
 
-    public List<Question> filterByDifficultyLevelAndSubjectAndSubjectTopic(List<Question> questionList, List<Long> questionDifficultyLevelIds, List<SubjectFilterDTO> subjectFilterDTOS) {
+    public List<Question> filterByDifficultyLevelAndSubjectAndSubjectTopic(
+            List<Question> questionList, List<Long> questionDifficultyLevelIds, List<SubjectFilterDTO> subjectFilterDTOS) {
+
         if (questionList == null) {
             return Collections.emptyList();
         }
-        if (questionDifficultyLevelIds == null) {
-            questionDifficultyLevelIds = Collections.emptyList();
-        }
-        if (subjectFilterDTOS == null) {
-            subjectFilterDTOS = Collections.emptyList();
-        }
 
-        final List<Long> finalQuestionDifficultyLevelIds = questionDifficultyLevelIds;
-        final List<SubjectFilterDTO> finalSubjectFilterDTOS = subjectFilterDTOS;
+        boolean filterByDifficulty = questionDifficultyLevelIds != null && !questionDifficultyLevelIds.isEmpty();
+        boolean filterBySubjects = subjectFilterDTOS != null && !subjectFilterDTOS.isEmpty();
+
+        // Se ambos forem vazios ou nulos, retorna todas as questões sem filtragem
+        if (!filterByDifficulty && !filterBySubjects) {
+            return questionList;
+        }
 
         return questionList.stream()
-                .filter(q -> filterByDifficulty(q, finalQuestionDifficultyLevelIds))
-                .filter(q -> filterBySubjectAndTopics(q, finalSubjectFilterDTOS))
+                .filter(q -> !filterByDifficulty || filterByDifficulty(q, questionDifficultyLevelIds))
+                .filter(q -> !filterBySubjects || filterBySubjectAndTopics(q, subjectFilterDTOS))
                 .toList();
     }
 
     private boolean filterByDifficulty(Question question, List<Long> difficultyIds) {
-        if (difficultyIds.isEmpty()) {
-            return true;
+        if (difficultyIds == null || difficultyIds.isEmpty()) {
+            return true; // Se a dificuldade não foi informada, aceita todas as questões
         }
         return difficultyIds.contains(question.getQuestionDifficultyLevel().getId());
     }
 
     private boolean filterBySubjectAndTopics(Question question, List<SubjectFilterDTO> subjectFilters) {
-        if (subjectFilters.isEmpty()) {
-            return true;
+        if (subjectFilters == null || subjectFilters.isEmpty()) {
+            return true; // Se nenhuma disciplina foi informada, aceita todas as questões
         }
 
         return subjectFilters.stream().anyMatch(sf -> matchesSubjectFilter(question, sf));
     }
 
     private boolean matchesSubjectFilter(Question question, SubjectFilterDTO sf) {
+        // Se a disciplina foi informada e não corresponde, descarta a questão
         if (sf.subjectId() != null && !sf.subjectId().equals(question.getSubject().getId())) {
             return false;
         }
 
-        if (sf.subjectTopicIds() != null && !sf.subjectTopicIds().isEmpty()) {
-            boolean foundAtLeastOne =
-                    question.getSubjectTopicList().stream()
-                            .anyMatch(st -> sf.subjectTopicIds().contains(st.getId()));
-            if (!foundAtLeastOne) {
-                return false;
-            }
+        // Se os tópicos não forem informados, aceita todas as questões dessa disciplina
+        if (sf.subjectTopicIds() == null || sf.subjectTopicIds().isEmpty()) {
+            return true;
         }
 
-        return true;
+        // Se os tópicos foram informados, verifica se pelo menos um bate
+        return question.getSubjectTopicList().stream()
+                .anyMatch(st -> sf.subjectTopicIds().contains(st.getId()));
     }
-
 
     public List<Question> filter(QuestionFilterDTO questionFilterDTO) {
         if(questionFilterDTO == null) {

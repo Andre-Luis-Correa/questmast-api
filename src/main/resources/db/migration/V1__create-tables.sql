@@ -165,11 +165,11 @@ create table question (
                           quantity_of_wrong_answers integer not null,
                           question_difficulty_level_id bigint not null,
                           subject_id bigint not null,
-                          test_question_category_id bigint not null,
                           explanation varchar(255) not null,
                           statement varchar(255) not null,
                           name varchar(255) not null,
                           statement_image_url varchar(255),
+                          statement_image_legend VARCHAR(255),
                           video_explanation_url varchar(255),
                           primary key (id)
 );
@@ -215,7 +215,7 @@ create table questionnaire (
 
 -- Tabela QUESTIONNAIRE_QUESTION_LIST
 create table questionnaire_question_list (
-                                             question_list_id bigint not null unique,
+                                             question_list_id bigint not null,
                                              questionnaire_id bigint not null
 );
 
@@ -251,7 +251,6 @@ create table selection_process_test (
                                         function_id bigint not null,
                                         professional_level_id bigint not null,
                                         selection_process_id bigint not null,
-                                        test_question_category_id bigint not null,
                                         name varchar(255) not null,
                                         primary key (id)
 );
@@ -439,10 +438,6 @@ alter table if exists question
     add constraint FKkfvh71q42645g7p9cgxjygbgc
     foreign key (subject_id) references subject;
 
-alter table if exists question
-    add constraint FKldv2um6t26uj2w83u1450bepq
-    foreign key (test_question_category_id) references test_question_category;
-
 -- TABLE: QUESTION_QUESTION_ALTERNATIVE_LIST
 alter table if exists question_question_alternative_list
     add constraint FKaa63vb9ue1dhfg8xrlpynk3bf
@@ -512,10 +507,6 @@ alter table if exists selection_process_test
 alter table if exists selection_process_test
     add constraint FKnushjou5yewjq5rx0kku3eulr
     foreign key (selection_process_id) references selection_process;
-
-alter table if exists selection_process_test
-    add constraint FKc3y0ebhd8s4ojhwdsblqh8xrv
-    foreign key (test_question_category_id) references test_question_category;
 
 -- TABLE: SELECTION_PROCESS_TEST_QUESTION_LIST
 alter table if exists selection_process_test_question_list
