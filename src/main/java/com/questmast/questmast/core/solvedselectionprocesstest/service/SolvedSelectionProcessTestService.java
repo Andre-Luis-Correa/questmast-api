@@ -123,8 +123,6 @@ public class SolvedSelectionProcessTestService {
         Specification<SolvedSelectionProcessTest> solvedSelectionProcessTestSpecification = generateSpecification(solvedSelectionProcessFilterDTO);
         List<SolvedSelectionProcessTest> selectionProcessTests = solvedSelectionProcessTestRepository.findAll(solvedSelectionProcessTestSpecification);
 
-        log.info("Imagem no metodo list:" + selectionProcessTests);
-
         return selectionProcessTests.stream().map(this::convertToSolvedSelectionProcessTestDTO).toList();
     }
 
