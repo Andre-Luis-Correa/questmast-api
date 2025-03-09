@@ -279,7 +279,7 @@ public class QuestionService {
 
     public List<Question> filter(QuestionFilterDTO questionFilterDTO) {
         if(questionFilterDTO == null) {
-            return questionRepository.findAll();
+            return questionRepository.findByIsGeneratedByAiFalse();
         }
 
         List<Question> questionList = new ArrayList<>();
@@ -287,7 +287,7 @@ public class QuestionService {
 
         if(!selectionProcesseList.isEmpty()) {
             List<SelectionProcessTest> selectionProcessTestList = selectionProcessTestService.findAllBySelectionProcessAndFunction(selectionProcesseList, questionFilterDTO.functionIds());
-            questionList = selectionProcessTestList.stream().map(SelectionProcessTest::getQuestionList).flatMap(List::stream).toList();
+            questionList = selectionProcessTestList.stream().map(SelectionProcessTest::getQuestionList).flatMap(List::stream).filter(q -> !q.getIsGeneratedByAi()).toList();
             questionList = filterByDifficultyLevelAndSubjectAndSubjectTopic(questionList, questionFilterDTO.questionDifficultyLevelIds(), questionFilterDTO.subjectFilterDTOList());
         }
 
@@ -322,6 +322,7 @@ public class QuestionService {
 
             Question question = new Question();
             question.setApplicationDate(LocalDate.now());
+            question.setIsGeneratedByAi(true);
             question.setStatement(questionFormDTO.statement());
             question.setExplanation(questionFormDTO.explanation());
             question.setVideoExplanationUrl(null);

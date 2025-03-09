@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.solvedquestionnaire;
+package com.questmast.questmast.core.solvedquestionnaire.domain.model;
 
 import com.questmast.questmast.core.questionnaire.domain.model.Questionnaire;
 import com.questmast.questmast.core.solvedevaluationtest.SolvedEvaluationTest;

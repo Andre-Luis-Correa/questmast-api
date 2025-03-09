@@ -4,7 +4,6 @@ import com.questmast.questmast.core.questionalternative.domain.entity.QuestionAl
 import com.questmast.questmast.core.questiondifficultylevel.domain.entity.QuestionDifficultyLevel;
 import com.questmast.questmast.core.subject.domain.entity.Subject;
 import com.questmast.questmast.core.subjecttopic.domain.entity.SubjectTopic;
-import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -29,6 +28,10 @@ public class Question {
     @NotNull
     @Column(nullable = false)
     private LocalDate applicationDate;
+
+    @NotNull
+    @Column(nullable = false)
+    private Boolean isGeneratedByAi = false;
 
     @NotNull
     @Column(nullable = false)

@@ -95,10 +95,7 @@ public class SelectionProcessTestService {
 
     public List<SelectionProcessTest> list(SelectionProcessTestFilterDTO selectionProcessTestFilterDTO) {
         Specification<SelectionProcessTest> selectionProcessTestSpecification = generateSpecification(selectionProcessTestFilterDTO);
-        List<SelectionProcessTest> selectionProcessTests = selectionProcessTestRepository.findAll(selectionProcessTestSpecification);
-        insertEncodedImages(selectionProcessTests);
-
-        return selectionProcessTests;
+        return selectionProcessTestRepository.findAll(selectionProcessTestSpecification);
     }
 
     private Specification<SelectionProcessTest> generateSpecification(SelectionProcessTestFilterDTO selectionProcessTestFilterDTO) {

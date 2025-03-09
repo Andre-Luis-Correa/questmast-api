@@ -73,6 +73,7 @@ public class SolvedSelectionProcessTestService {
                         Question updatedQuestion = new Question(
                                 question.getId(),
                                 question.getApplicationDate(),
+                                question.getIsGeneratedByAi(),
                                 question.getName(),
                                 encodedImage,
                                 question.getStatementImageLegend(),

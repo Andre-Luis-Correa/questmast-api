@@ -1,0 +1,1 @@
+ALTER TABLE question ADD COLUMN is_generated_by_ai BOOLEAN NOT NULL DEFAULT FALSE;

@@ -59,6 +59,8 @@ public class SolvedSelectionProcessTestController {
         SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(solvedSelectionProcessFilterDTO.selectionProcessTestId());
         SolvedSelectionProcessTest solvedSelectionProcessTest = solvedSelectionProcessTestService.findLastByStudentAndSelectionProcessTest(student, selectionProcessTest);
 
+        if(solvedSelectionProcessTest == null) return ResponseEntity.ok(null);
+
         return ResponseEntity.ok().body(solvedSelectionProcessTestService.convertToSolvedSelectionProcessTestDTO(solvedSelectionProcessTest));
     }
 
