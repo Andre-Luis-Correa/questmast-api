@@ -109,6 +109,7 @@ public class SolvedQuestionnaireService {
     }
 
     public SolvedQuestionnaire findLastByStudentAndQuestionnaire(Student student, Questionnaire questionnaire) {
+        if(student == null || questionnaire == null) return null;
         return solvedQuestionnaireRepository.findFirstByStudentAndQuestionnaireOrderByEndDateTimeDesc(student, questionnaire).orElse(null);
     }
 

@@ -147,6 +147,7 @@ public class SolvedSelectionProcessTestService {
     }
 
     public SolvedSelectionProcessTest findLastByStudentAndSelectionProcessTest(Student student, SelectionProcessTest selectionProcessTest) {
+        if(student == null || selectionProcessTest == null) return null;
         return solvedSelectionProcessTestRepository.findFirstByStudentAndSelectionProcessTestOrderByEndDateTimeDesc(student, selectionProcessTest).orElse(null);
     }
 }

@@ -59,8 +59,8 @@ public class SolvedQuestionnaireController {
 
     @GetMapping("/last")
     public ResponseEntity<SolvedQuestionnaireDTO> findLast(SolvedQuestionnaireFilterDTO solvedQuestionnaireFilterDTO) {
-        Student student = studentService.findByMainEmail(solvedQuestionnaireFilterDTO.studentMainEmail());
-        Questionnaire questionnaire = questionnaireService.findById(solvedQuestionnaireFilterDTO.questionnaireId());
+        Student student = studentService.findByMainEmailOrNull(solvedQuestionnaireFilterDTO.studentMainEmail());
+        Questionnaire questionnaire = questionnaireService.findByIdOrNull(solvedQuestionnaireFilterDTO.questionnaireId());
         SolvedQuestionnaire solvedQuestionnaire = solvedQuestionnaireService.findLastByStudentAndQuestionnaire(student, questionnaire);
 
         if(solvedQuestionnaire == null) return ResponseEntity.ok(null);

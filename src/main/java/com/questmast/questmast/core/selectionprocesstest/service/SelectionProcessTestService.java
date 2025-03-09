@@ -127,4 +127,9 @@ public class SelectionProcessTestService {
     public List<SelectionProcessTest> listByMostSeen() {
         return selectionProcessTestRepository.findTop10ByOrderByViewCounterDesc();
     }
+
+    public SelectionProcessTest findByIdOrNull(Long id) {
+        if(id == null) return null;
+        return findById(id);
+    }
 }

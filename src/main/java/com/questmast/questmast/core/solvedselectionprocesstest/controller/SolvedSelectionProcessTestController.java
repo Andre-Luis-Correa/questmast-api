@@ -55,8 +55,8 @@ public class SolvedSelectionProcessTestController {
 
     @GetMapping("/last")
     public ResponseEntity<SolvedSelectionProcessTestDTO> findLast(SolvedSelectionProcessFilterDTO solvedSelectionProcessFilterDTO) {
-        Student student = studentService.findByMainEmail(solvedSelectionProcessFilterDTO.studentMainEmail());
-        SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(solvedSelectionProcessFilterDTO.selectionProcessTestId());
+        Student student = studentService.findByMainEmailOrNull(solvedSelectionProcessFilterDTO.studentMainEmail());
+        SelectionProcessTest selectionProcessTest = selectionProcessTestService.findByIdOrNull(solvedSelectionProcessFilterDTO.selectionProcessTestId());
         SolvedSelectionProcessTest solvedSelectionProcessTest = solvedSelectionProcessTestService.findLastByStudentAndSelectionProcessTest(student, selectionProcessTest);
 
         if(solvedSelectionProcessTest == null) return ResponseEntity.ok(null);

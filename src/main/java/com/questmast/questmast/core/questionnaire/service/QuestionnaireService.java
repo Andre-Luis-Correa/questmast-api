@@ -102,4 +102,9 @@ public class QuestionnaireService {
             }
         }
     }
+
+    public Questionnaire findByIdOrNull(Long id) {
+        if(id == null) return null;
+        return findById(id);
+    }
 }

@@ -52,4 +52,9 @@ public class StudentService {
 
         studentRepository.save(student);
     }
+
+    public Student findByMainEmailOrNull(String mainEmail) {
+        if(mainEmail == null) return null;
+        return findByMainEmail(mainEmail);
+    }
 }
