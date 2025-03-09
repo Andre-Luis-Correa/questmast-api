@@ -5,6 +5,7 @@ import com.questmast.questmast.common.specification.BaseSpecification;
 import com.questmast.questmast.common.specification.Search;
 import com.questmast.questmast.common.specification.SpecificationUtils;
 import com.questmast.questmast.core.google.service.GoogleStorageService;
+import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.solvedevaluationtestquestion.domain.model.SolvedEvaluationTestQuestion;
 import com.questmast.questmast.core.solvedevaluationtestquestion.service.SolvedEvaluationTestQuestionService;
@@ -15,13 +16,17 @@ import com.questmast.questmast.core.solvedselectionprocesstest.domain.model.Solv
 import com.questmast.questmast.core.solvedselectionprocesstest.repository.SolvedSelectionProcessTestRepository;
 import com.questmast.questmast.core.student.domain.Student;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class SolvedSelectionProcessTestService {
@@ -45,6 +50,7 @@ public class SolvedSelectionProcessTestService {
     }
 
     public SolvedSelectionProcessTestDTO convertToSolvedSelectionProcessTestDTO(SolvedSelectionProcessTest solvedSelectionProcessTest) {
+        log.info("Imagem no metodo convertToSolvedSelectionProcessTestDTO:" + solvedSelectionProcessTest.getSolvedQuestionList());
         return new SolvedSelectionProcessTestDTO(
                 solvedSelectionProcessTest.getId(),
                 solvedSelectionProcessTest.getStartDateTime(),
@@ -55,14 +61,44 @@ public class SolvedSelectionProcessTestService {
     }
 
     private List<SolvedEvaluationTestQuestion> updateImages(List<SolvedEvaluationTestQuestion> solvedQuestionList) {
-        for (SolvedEvaluationTestQuestion solvedEvaluationTestQuestion : solvedQuestionList) {
-            if (solvedEvaluationTestQuestion.getQuestion().getStatementImageUrl() != null) {
-                String encodedImage = googleStorageService.encodeImageToBase64(solvedEvaluationTestQuestion.getQuestion().getStatementImageUrl());
-                solvedEvaluationTestQuestion.getQuestion().setStatementImageUrl(encodedImage);
-            }
-        }
+        return solvedQuestionList.stream()
+                .map(solvedEvaluationTestQuestion -> {
+                    Question question = solvedEvaluationTestQuestion.getQuestion();
 
-        return solvedQuestionList;
+                    if (question.getStatementImageUrl() != null) {
+
+                        String encodedImage = googleStorageService.encodeImageToBase64(question.getStatementImageUrl());
+                        Question updatedQuestion = new Question(
+                                question.getId(),
+                                question.getApplicationDate(),
+                                question.getName(),
+                                encodedImage,
+                                question.getStatementImageLegend(),
+                                question.getStatement(),
+                                question.getQuantityOfCorrectAnswers(),
+                                question.getQuantityOfWrongAnswers(),
+                                question.getQuantityOfTries(),
+                                question.getExplanation(),
+                                question.getVideoExplanationUrl(),
+                                question.getQuestionAlternativeList(),
+                                question.getQuestionDifficultyLevel(),
+                                question.getSubject(),
+                                question.getSubjectTopicList()
+                        );
+                        return new SolvedEvaluationTestQuestion(
+                                solvedEvaluationTestQuestion.getId(),
+                                solvedEvaluationTestQuestion.getIsCorrect(),
+                                solvedEvaluationTestQuestion.getStartDateTime(),
+                                solvedEvaluationTestQuestion.getEndDateTime(),
+                                solvedEvaluationTestQuestion.getQuestionAlternative(),
+                                updatedQuestion
+                        );
+
+                    }
+
+                    return solvedEvaluationTestQuestion;
+                })
+                .toList();
     }
 
     public Page<SolvedSelectionProcessTestDTO> list(Pageable pageable, SolvedSelectionProcessFilterDTO solvedSelectionProcessFilterDTO) {
@@ -86,6 +122,8 @@ public class SolvedSelectionProcessTestService {
     public List<SolvedSelectionProcessTestDTO> list(SolvedSelectionProcessFilterDTO solvedSelectionProcessFilterDTO) {
         Specification<SolvedSelectionProcessTest> solvedSelectionProcessTestSpecification = generateSpecification(solvedSelectionProcessFilterDTO);
         List<SolvedSelectionProcessTest> selectionProcessTests = solvedSelectionProcessTestRepository.findAll(solvedSelectionProcessTestSpecification);
+
+        log.info("Imagem no metodo list:" + selectionProcessTests);
 
         return selectionProcessTests.stream().map(this::convertToSolvedSelectionProcessTestDTO).toList();
     }

@@ -46,6 +46,7 @@ public class GoogleStorageService {
     }
 
     public String encodeImageToBase64(String imageName) {
+        log.info("Erro imagem: " + imageName);
         Blob blob = storage.get(BlobId.of(bucketId, imageName));
         if (blob == null || !blob.exists()) {
             throw new GoogleCloudException("Imagem não encontrada no bucket: " + imageName);
