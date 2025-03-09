@@ -13,6 +13,7 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -111,5 +112,9 @@ public class SelectionProcessService {
     public void updateSelectionProcessStatus(SelectionProcess selectionProcess, SelectionProcessStatus selectionProcessStatus) {
         selectionProcess.setSelectionProcessStatus(selectionProcessStatus);
         selectionProcessRepository.save(selectionProcess);
+    }
+
+    public List<SelectionProcess> listByMostSeen() {
+        return selectionProcessRepository.findTop10ByOrderByViewCounterDesc();
     }
 }

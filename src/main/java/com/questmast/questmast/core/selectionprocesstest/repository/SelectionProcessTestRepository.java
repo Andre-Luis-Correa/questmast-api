@@ -11,6 +11,8 @@ import java.util.List;
 @Repository
 public interface SelectionProcessTestRepository extends JpaRepository<SelectionProcessTest, Long>, JpaSpecificationExecutor<SelectionProcessTest> {
 
+    List<SelectionProcessTest> findTop10ByOrderByViewCounterDesc();
+
     List<SelectionProcessTest> findBySelectionProcessInAndFunction_IdIn(
             List<SelectionProcess> selectionProcessList,
             List<Long> functionIds

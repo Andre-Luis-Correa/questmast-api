@@ -18,7 +18,9 @@ import com.questmast.questmast.core.student.domain.Student;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -104,6 +106,14 @@ public class SolvedSelectionProcessTestService {
     public Page<SolvedSelectionProcessTestDTO> list(Pageable pageable, SolvedSelectionProcessFilterDTO solvedSelectionProcessFilterDTO) {
         Specification<SolvedSelectionProcessTest> solvedSelectionProcessTestSpecification = generateSpecification(solvedSelectionProcessFilterDTO);
 
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "endDateTime")
+            );
+        }
+
         Page<SolvedSelectionProcessTest> solvedSelectionProcessTests = solvedSelectionProcessTestRepository.findAll(solvedSelectionProcessTestSpecification, pageable);
 
         return solvedSelectionProcessTests.map(this::convertToSolvedSelectionProcessTestDTO);
@@ -121,7 +131,10 @@ public class SolvedSelectionProcessTestService {
 
     public List<SolvedSelectionProcessTestDTO> list(SolvedSelectionProcessFilterDTO solvedSelectionProcessFilterDTO) {
         Specification<SolvedSelectionProcessTest> solvedSelectionProcessTestSpecification = generateSpecification(solvedSelectionProcessFilterDTO);
-        List<SolvedSelectionProcessTest> selectionProcessTests = solvedSelectionProcessTestRepository.findAll(solvedSelectionProcessTestSpecification);
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "endDateTime");
+
+        List<SolvedSelectionProcessTest> selectionProcessTests = solvedSelectionProcessTestRepository.findAll(solvedSelectionProcessTestSpecification, sort);
 
         return selectionProcessTests.stream().map(this::convertToSolvedSelectionProcessTestDTO).toList();
     }
@@ -130,5 +143,9 @@ public class SolvedSelectionProcessTestService {
         return solvedSelectionProcessTestRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundExcpetion("SolvedSelectionProcessTest", "id", id.toString())
         );
+    }
+
+    public SolvedSelectionProcessTest findLastByStudentAndSelectionProcessTest(Student student, SelectionProcessTest selectionProcessTest) {
+        return solvedSelectionProcessTestRepository.findFirstByStudentAndSelectionProcessTestOrderByEndDateTimeDesc(student, selectionProcessTest).orElse(null);
     }
 }

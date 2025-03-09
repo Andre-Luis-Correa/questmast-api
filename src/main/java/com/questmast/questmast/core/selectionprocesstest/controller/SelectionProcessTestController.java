@@ -129,6 +129,11 @@ public class SelectionProcessTestController {
         return ResponseEntity.ok().body(selectionProcessTestService.list(selectionProcessTestFilterDTO));
     }
 
+    @GetMapping("/view")
+    public ResponseEntity<List<SelectionProcessTest>> listByMostSeen() {
+        return ResponseEntity.ok().body(selectionProcessTestService.listByMostSeen());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<SelectionProcessTest> getById(@PathVariable Long id) {
         SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(id);

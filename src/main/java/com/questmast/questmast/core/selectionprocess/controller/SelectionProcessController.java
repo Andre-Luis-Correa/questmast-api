@@ -66,6 +66,11 @@ public class SelectionProcessController {
         return ResponseEntity.ok().body(selectionProcessService.list());
     }
 
+    @GetMapping("/view")
+    public ResponseEntity<List<SelectionProcess>> listByMostSeen() {
+        return ResponseEntity.ok().body(selectionProcessService.listByMostSeen());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<SelectionProcess> getById(@PathVariable Long id) {
         SelectionProcess selectionProcess = selectionProcessService.findById(id);

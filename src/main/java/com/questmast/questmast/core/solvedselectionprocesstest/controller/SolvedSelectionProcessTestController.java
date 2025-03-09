@@ -53,6 +53,15 @@ public class SolvedSelectionProcessTestController {
         return ResponseEntity.ok().body(solvedSelectionProcessTestService.convertToSolvedSelectionProcessTestDTO(solvedSelectionProcessTest));
     }
 
+    @GetMapping("/last")
+    public ResponseEntity<SolvedSelectionProcessTestDTO> findLast(SolvedSelectionProcessFilterDTO solvedSelectionProcessFilterDTO) {
+        Student student = studentService.findByMainEmail(solvedSelectionProcessFilterDTO.studentMainEmail());
+        SelectionProcessTest selectionProcessTest = selectionProcessTestService.findById(solvedSelectionProcessFilterDTO.selectionProcessTestId());
+        SolvedSelectionProcessTest solvedSelectionProcessTest = solvedSelectionProcessTestService.findLastByStudentAndSelectionProcessTest(student, selectionProcessTest);
+
+        return ResponseEntity.ok().body(solvedSelectionProcessTestService.convertToSolvedSelectionProcessTestDTO(solvedSelectionProcessTest));
+    }
+
     @GetMapping
     public ResponseEntity<List<SolvedSelectionProcessTestDTO>> list(SolvedSelectionProcessFilterDTO solvedSelectionProcessFilterDTO) {
         return ResponseEntity.ok().body(solvedSelectionProcessTestService.list(solvedSelectionProcessFilterDTO));

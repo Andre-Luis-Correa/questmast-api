@@ -1,6 +1,7 @@
 package com.questmast.questmast.core.selectionprocess.repository;
 
 import com.questmast.questmast.core.selectionprocess.domain.model.SelectionProcess;
+import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,6 +20,8 @@ public interface SelectionProcessRepository extends JpaRepository<SelectionProce
             List<Long> boardExaminerIds,
             List<Long> institutionIds
     );
+
+    List<SelectionProcess> findTop10ByOrderByViewCounterDesc();
 
     List<SelectionProcess> findByBoardExaminer_IdIn(List<Long> boardExaminerIds);
 

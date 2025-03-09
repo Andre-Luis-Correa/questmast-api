@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -124,5 +125,9 @@ public class SelectionProcessTestService {
             return selectionProcessTestRepository.findBySelectionProcessIn(selectionProcesseList);
         }
         return selectionProcessTestRepository.findBySelectionProcessInAndFunction_IdIn(selectionProcesseList, functionIds);
+    }
+
+    public List<SelectionProcessTest> listByMostSeen() {
+        return selectionProcessTestRepository.findTop10ByOrderByViewCounterDesc();
     }
 }
