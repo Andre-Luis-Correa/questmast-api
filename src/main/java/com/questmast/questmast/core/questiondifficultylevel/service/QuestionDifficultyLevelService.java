@@ -69,4 +69,8 @@ public class QuestionDifficultyLevelService {
         questionDifficultyLevelRepository.save(updatedEntity);
         return convertEntityToDTO(updatedEntity);
     }
+
+    public List<QuestionDifficultyLevel> findAllByIdIn(List<Long> ids) {
+        return questionDifficultyLevelRepository.findAllByIdIn(ids);
+    }
 }

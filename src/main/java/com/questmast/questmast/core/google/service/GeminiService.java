@@ -293,6 +293,9 @@ public class GeminiService {
                        "explanation": {
                          "type": "string"
                        },
+                       "questionDifficultyLevelId": {
+                         "type": "integer"
+                       },
                        "questionAlternativeList": {
                          "type": "array",
                          "items": {
@@ -316,6 +319,7 @@ public class GeminiService {
                        "name",
                        "statement",
                        "explanation",
+                       "questionDifficultyLevelId",
                        "questionAlternativeList"
                      ]
                    }

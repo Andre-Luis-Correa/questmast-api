@@ -1,6 +1,7 @@
 package com.questmast.questmast.core.questionnaire.service;
 
 import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
+import com.questmast.questmast.common.exception.type.QuestionException;
 import com.questmast.questmast.core.google.service.GeminiService;
 import com.questmast.questmast.core.google.service.GoogleStorageService;
 import com.questmast.questmast.core.question.domain.model.Question;
@@ -66,13 +67,15 @@ public class QuestionnaireService {
             List<Question> subjectQuestions = questionList.stream()
                     .filter(q -> q.getSubject().getId().equals(questionForm.subjectId()) &&
                             q.getSubjectTopicList().stream().anyMatch(topic -> questionForm.subjectTopicIds().contains(topic.getId())) &&
-                            q.getQuestionDifficultyLevel().getId().equals(questionForm.questionDifficultyLevelId()))
+                            questionForm.questionDifficultyLevelIds().contains(q.getQuestionDifficultyLevel().getId())) // Modificado para lista de dificuldades
                     .collect(Collectors.toList());
 
             if (!subjectQuestions.isEmpty()) {
                 Collections.shuffle(subjectQuestions, random);
                 int quantityToSelect = Math.min(subjectQuestions.size(), questionForm.quantity());
                 selectedQuestions.addAll(subjectQuestions.subList(0, quantityToSelect));
+            } else {
+                throw new QuestionException("Não foi possível encontrar questões com os filtros aplicados.");
             }
         }
 

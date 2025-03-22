@@ -16,6 +16,6 @@ public record QuestionnaireQuestionFormDTO(
         Integer quantity,
 
         @NotNull
-        Long questionDifficultyLevelId
+        List<Long> questionDifficultyLevelIds
 ) {
 }

@@ -26,7 +26,6 @@ import com.questmast.questmast.core.subject.domain.entity.Subject;
 import com.questmast.questmast.core.subject.service.SubjectService;
 import com.questmast.questmast.core.subjecttopic.domain.entity.SubjectTopic;
 import com.questmast.questmast.core.subjecttopic.service.SubjectTopicService;
-import com.questmast.questmast.core.testquestioncategory.domain.entity.TestQuestionCategory;
 import com.questmast.questmast.core.testquestioncategory.service.TestQuestionCategoryService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotEmpty;
@@ -38,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -300,13 +300,13 @@ public class QuestionService {
         for(QuestionnaireQuestionFormDTO questionnaireQuestionFormDTO : questionnaireFormDTO.questionnaireQuestionFormDTOList()) {
             Subject subject = subjectService.findById(questionnaireQuestionFormDTO.subjectId());
             List<SubjectTopic> subjectTopicList = subjectTopicService.findAllByIdIn(questionnaireQuestionFormDTO.subjectTopicIds());
-            QuestionDifficultyLevel questionDifficultyLevel = questionDifficultyLevelService.findById(questionnaireQuestionFormDTO.questionDifficultyLevelId());
+            List<QuestionDifficultyLevel> questionDifficultyLevelList = questionDifficultyLevelService.findAllByIdIn(questionnaireQuestionFormDTO.questionDifficultyLevelIds());
 
-            String prompt = generateQuestionnairePrompt(questionList, subject, subjectTopicList, questionnaireQuestionFormDTO.quantity(), questionDifficultyLevel);
+            String prompt = generateQuestionnairePrompt(questionList, subject, subjectTopicList, questionnaireQuestionFormDTO.quantity(), questionDifficultyLevelList);
             log.info(prompt);
             List<QuestionFormDTO> questionFormDTO = geminiService.generateQuestionsForQuestionnaire(prompt);
 
-            List<Question> questionListGemini = convertToQuestionList(questionFormDTO, subject, subjectTopicList, questionDifficultyLevel);
+            List<Question> questionListGemini = convertToQuestionList(questionFormDTO, subject, subjectTopicList);
 
             newQuestionList.addAll(questionListGemini);
         }
@@ -314,10 +314,12 @@ public class QuestionService {
         return newQuestionList;
     }
 
-    private List<Question> convertToQuestionList(List<QuestionFormDTO> questionFormDTOList, Subject subject, List<SubjectTopic> subjectTopicList, QuestionDifficultyLevel questionDifficultyLevel) {
+    private List<Question> convertToQuestionList(List<QuestionFormDTO> questionFormDTOList, Subject subject, List<SubjectTopic> subjectTopicList) {
         List<Question> questionList = new ArrayList<>();
 
         for(QuestionFormDTO questionFormDTO : questionFormDTOList) {
+            QuestionDifficultyLevel questionDifficultyLevel = questionDifficultyLevelService.findById(questionFormDTO.questionDifficultyLevelId());
+
             Set<SubjectTopic> subjectTopicSet = new HashSet<>(subjectTopicList);
 
             Question question = new Question();
@@ -346,16 +348,25 @@ public class QuestionService {
             Subject subject,
             List<SubjectTopic> subjectTopicList,
             Integer quantity,
-            QuestionDifficultyLevel questionDifficultyLevel
+            List<QuestionDifficultyLevel> questionDifficultyLevelList // Agora recebemos uma lista de dificuldades
     ) {
         String sampleQuestionsSnippet = buildSampleQuestionsSnippet(questionList);
 
-        String subjectName = subject != null ? subject.getName() : "Disciplina não especificada";
-        String difficultyName = questionDifficultyLevel != null
-                ? questionDifficultyLevel.getName()
-                : "Nível de dificuldade não especificado";
+        String subjectName = (subject != null) ? subject.getName() : "Disciplina não especificada";
         String categoryName = "Questões objetivas";
 
+        // 🔹 Monta a lista de dificuldades em uma string amigável
+        String difficultyNames;
+        if (questionDifficultyLevelList != null && !questionDifficultyLevelList.isEmpty()) {
+            difficultyNames = questionDifficultyLevelList.stream()
+                    .sorted(Comparator.comparing(QuestionDifficultyLevel::getId)) // Ordena pelo ID
+                    .map(difficulty -> difficulty.getId() + " - " + difficulty.getName()) // Exibe ID e Nome
+                    .collect(Collectors.joining(", "));
+        } else {
+            difficultyNames = "Nível de dificuldade não especificado";
+        }
+
+        // 🔹 Monta os tópicos em uma string amigável
         StringBuilder topicsBuilder = new StringBuilder();
         if (subjectTopicList != null && !subjectTopicList.isEmpty()) {
             for (SubjectTopic st : subjectTopicList) {
@@ -365,62 +376,57 @@ public class QuestionService {
             topicsBuilder.append("Nenhum tópico específico informado.\n");
         }
 
+        // 🔹 Gera o novo prompt considerando múltiplos níveis de dificuldade
         String prompt =
                 """
                 Você é uma IA especializada em criar questões de prova.
-        
+    
                 Por favor, gere até %d questões (no máximo 10) sobre a disciplina "%s" 
-                na categoria "%s" e no nível de dificuldade "%s". 
-                Selecione os tópicos (se existirem) e aborde-os de forma coerente:
-        
+                na categoria "%s" e considerando os seguintes níveis de dificuldade: **%s**.
+                
+                As questões devem variar entre esses níveis e abordar os tópicos informados.
+                
                 Tópicos sugeridos:
                 %s
-        
+                
                 As questões devem ser objetivas, cada uma com:
                 - Enunciado claro
                 - 4 ou 5 alternativas (A, B, C, D, E)
                 - 1 alternativa correta
                 - Estilo parecido com as questões já existentes 
                   (veja a seguir os exemplos que forneço)
-        
+                
                 ***Exemplos de questões existentes (para referência de estilo):***
                 %s
-        
+                
                 Instruções adicionais:
-                - Mantenha o mesmo idioma dos exemplos (caso estejam em Português).
-                - Evite repetir o enunciado das perguntas de exemplo.
-                - As novas questões devem ser originais, alinhadas aos tópicos e nível de dificuldade.
+                - As questões geradas devem ser equilibradas entre os níveis de dificuldade fornecidos.
+                - Evite repetir enunciados semelhantes às perguntas de exemplo.
+                - Gere um conjunto diversificado de questões que cubram diferentes tópicos.
                 - Respeite o limite: no máximo 10 questões.
-                - Gere exatamente %d questões, se possível, com variação de assuntos dentro do tema.
+                - Produza exatamente %d questões, se possível.
                 
                 Formato de saída sugerido:
-                1) [Enunciado da questão]
+                1) [Enunciado da questão] (Dificuldade: [Fácil, Média ou Difícil])
                    A) ...
                    B) ...
                    C) ...
                    D) ...
                    E) ...
                    Resposta correta: X
-        
+                
                 2) [Enunciado da questão] 
                    ... e assim por diante.
-        
+    
                 Obrigado!
                 """.formatted(
-                        // %d #1 -> quantidade solicitada
-                        quantity != null || quantity < 10 ? quantity : 10,
-                        // %s #2 -> nome da disciplina
-                        subjectName,
-                        // %s #3 -> categoria
-                        categoryName,
-                        // %s #4 -> nível de dificuldade
-                        difficultyName,
-                        // %s #5 -> tópicos
-                        topicsBuilder.toString(),
-                        // %s #6 -> trechos de exemplos
-                        sampleQuestionsSnippet,
-                        // %d #7 -> quantidade solicitada novamente
-                        quantity != null ? quantity : 10
+                        (quantity != null || quantity < 10) ? quantity : 10, // Número de questões
+                        subjectName, // Nome da disciplina
+                        categoryName, // Categoria
+                        difficultyNames, // Lista de níveis de dificuldade formatados
+                        topicsBuilder.toString(), // Lista de tópicos formatada
+                        sampleQuestionsSnippet, // Exemplos de questões existentes
+                        quantity != null ? quantity : 10 // Quantidade de questões novamente
                 );
 
         return prompt;
