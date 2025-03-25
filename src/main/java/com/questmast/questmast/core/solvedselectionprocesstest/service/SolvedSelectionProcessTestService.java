@@ -56,6 +56,7 @@ public class SolvedSelectionProcessTestService {
                 solvedSelectionProcessTest.getStartDateTime(),
                 solvedSelectionProcessTest.getEndDateTime(),
                 solvedSelectionProcessTest.getQuantityOfCorrectAnswers(),
+                solvedSelectionProcessTest.getSelectionProcessTest(),
                 updateImages(solvedSelectionProcessTest.getSolvedQuestionList())
         );
     }

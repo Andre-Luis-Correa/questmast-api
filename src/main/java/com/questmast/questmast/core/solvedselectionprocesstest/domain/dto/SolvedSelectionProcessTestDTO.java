@@ -1,5 +1,6 @@
 package com.questmast.questmast.core.solvedselectionprocesstest.domain.dto;
 
+import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.solvedevaluationtestquestion.domain.model.SolvedEvaluationTestQuestion;
 import jakarta.validation.constraints.NotNull;
 
@@ -18,6 +19,8 @@ public record SolvedSelectionProcessTestDTO (
 
         @NotNull
         Integer quantityOfCorrectAnswers,
+
+        SelectionProcessTest selectionProcessTest,
 
         @NotNull
         List<SolvedEvaluationTestQuestion> solvedQuestionList

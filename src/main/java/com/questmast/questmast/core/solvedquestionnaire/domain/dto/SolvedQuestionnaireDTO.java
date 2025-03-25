@@ -1,5 +1,6 @@
 package com.questmast.questmast.core.solvedquestionnaire.domain.dto;
 
+import com.questmast.questmast.core.questionnaire.domain.model.Questionnaire;
 import com.questmast.questmast.core.solvedevaluationtestquestion.domain.model.SolvedEvaluationTestQuestion;
 import jakarta.validation.constraints.NotNull;
 
@@ -18,6 +19,8 @@ public record SolvedQuestionnaireDTO(
 
         @NotNull
         Integer quantityOfCorrectAnswers,
+
+        Questionnaire questionnaire,
 
         @NotNull
         List<SolvedEvaluationTestQuestion> solvedQuestionList

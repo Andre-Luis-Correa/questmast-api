@@ -53,6 +53,7 @@ public class SolvedQuestionnaireService {
                 solvedQuestionnaire.getStartDateTime(),
                 solvedQuestionnaire.getEndDateTime(),
                 solvedQuestionnaire.getQuantityOfCorrectAnswers(),
+                solvedQuestionnaire.getQuestionnaire(),
                 updateImages(solvedQuestionnaire.getSolvedQuestionList())
         );
     }
