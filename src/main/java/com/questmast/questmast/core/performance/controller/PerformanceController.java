@@ -3,11 +3,9 @@ package com.questmast.questmast.core.performance.controller;
 import com.questmast.questmast.core.performance.domain.dto.StudentPerformanceDTO;
 import com.questmast.questmast.core.performance.domain.model.Performance;
 import com.questmast.questmast.core.performance.service.PerformanceService;
-import com.questmast.questmast.core.solvedquestionnaire.domain.dto.SolvedQuestionnaireDTO;
-import com.questmast.questmast.core.solvedquestionnaire.domain.dto.SolvedQuestionnaireFilterDTO;
+import com.questmast.questmast.core.solvedquestionnaire.domain.model.SolvedQuestionnaire;
 import com.questmast.questmast.core.solvedquestionnaire.service.SolvedQuestionnaireService;
-import com.questmast.questmast.core.solvedselectionprocesstest.domain.dto.SolvedSelectionProcessFilterDTO;
-import com.questmast.questmast.core.solvedselectionprocesstest.domain.dto.SolvedSelectionProcessTestDTO;
+import com.questmast.questmast.core.solvedselectionprocesstest.domain.model.SolvedSelectionProcessTest;
 import com.questmast.questmast.core.solvedselectionprocesstest.service.SolvedSelectionProcessTestService;
 import com.questmast.questmast.core.student.domain.model.Student;
 import com.questmast.questmast.core.student.service.StudentService;
@@ -32,28 +30,37 @@ public class PerformanceController {
     public ResponseEntity<StudentPerformanceDTO> getPerformanceHistory(@PathVariable String email) {
         Student student = studentService.findByMainEmail(email);
 
-        SolvedQuestionnaireFilterDTO solvedQuestionnaireFilterDTO = new SolvedQuestionnaireFilterDTO(null, email);
-        List<SolvedQuestionnaireDTO> solvedQuestionnaireDTOList = solvedQuestionnaireService.list(solvedQuestionnaireFilterDTO);
+        List<SolvedQuestionnaire> solvedQuestionnaireList = solvedQuestionnaireService.findAllByStudent(student);
 
-        SolvedSelectionProcessFilterDTO solvedSelectionProcessFilterDTO = new SolvedSelectionProcessFilterDTO(null, email);
-        List<SolvedSelectionProcessTestDTO> solvedSelectionProcessTestDTOList = solvedSelectionProcessTestService.list(solvedSelectionProcessFilterDTO);
+        List<SolvedSelectionProcessTest> solvedSelectionProcessTests = solvedSelectionProcessTestService.findAllByStudent(student);
 
-        StudentPerformanceDTO studentPerformanceDTO = performanceService.getStudentPerformance(student, solvedQuestionnaireDTOList, solvedSelectionProcessTestDTOList);
+        StudentPerformanceDTO studentPerformanceDTO = performanceService.getStudentPerformance(student, solvedQuestionnaireList, solvedSelectionProcessTests);
 
         return ResponseEntity.ok(studentPerformanceDTO);
     }
 
-    @GetMapping("/{email}/gemini")
+    @GetMapping("/{email}/gemini-analysis")
+    public ResponseEntity<Performance> getPerformanceHistoryAndAnalysis(@PathVariable String email) {
+        Student student = studentService.findByMainEmail(email);
+
+        List<SolvedQuestionnaire> solvedQuestionnaireList = solvedQuestionnaireService.findAllByStudent(student);
+
+        List<SolvedSelectionProcessTest> solvedSelectionProcessTests = solvedSelectionProcessTestService.findAllByStudent(student);
+
+        StudentPerformanceDTO studentPerformanceDTO = performanceService.getStudentPerformance(student, solvedQuestionnaireList, solvedSelectionProcessTests);
+
+        return ResponseEntity.ok(performanceService.getPerformanceAiAnalysis(studentPerformanceDTO));
+    }
+
+    @GetMapping("/{email}/gemini2")
     public ResponseEntity<Performance> getPerformanceAnalysis(@PathVariable String email) {
         Student student = studentService.findByMainEmail(email);
 
-        SolvedQuestionnaireFilterDTO solvedQuestionnaireFilterDTO = new SolvedQuestionnaireFilterDTO(null, email);
-        List<SolvedQuestionnaireDTO> solvedQuestionnaireDTOList = solvedQuestionnaireService.list(solvedQuestionnaireFilterDTO);
+        List<SolvedQuestionnaire> solvedQuestionnaireList = solvedQuestionnaireService.findAllByStudent(student);
 
-        SolvedSelectionProcessFilterDTO solvedSelectionProcessFilterDTO = new SolvedSelectionProcessFilterDTO(null, email);
-        List<SolvedSelectionProcessTestDTO> solvedSelectionProcessTestDTOList = solvedSelectionProcessTestService.list(solvedSelectionProcessFilterDTO);
+        List<SolvedSelectionProcessTest> solvedSelectionProcessTests = solvedSelectionProcessTestService.findAllByStudent(student);
 
-        StudentPerformanceDTO studentPerformanceDTO = performanceService.getStudentPerformance(student, solvedQuestionnaireDTOList, solvedSelectionProcessTestDTOList);
+        StudentPerformanceDTO studentPerformanceDTO = performanceService.getStudentPerformance(student, solvedQuestionnaireList, solvedSelectionProcessTests);
 
         return ResponseEntity.ok(performanceService.getPerformanceAiAnalysis(studentPerformanceDTO));
     }

@@ -5,7 +5,9 @@ import com.questmast.questmast.core.performance.domain.dto.*;
 import com.questmast.questmast.core.performance.domain.model.Performance;
 import com.questmast.questmast.core.solvedevaluationtestquestion.domain.model.SolvedEvaluationTestQuestion;
 import com.questmast.questmast.core.solvedquestionnaire.domain.dto.SolvedQuestionnaireDTO;
+import com.questmast.questmast.core.solvedquestionnaire.domain.model.SolvedQuestionnaire;
 import com.questmast.questmast.core.solvedselectionprocesstest.domain.dto.SolvedSelectionProcessTestDTO;
+import com.questmast.questmast.core.solvedselectionprocesstest.domain.model.SolvedSelectionProcessTest;
 import com.questmast.questmast.core.student.domain.model.Student;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,16 +23,16 @@ public class PerformanceService {
 
     private final GeminiService geminiService;
 
-    public StudentPerformanceDTO getStudentPerformance(Student student, List<SolvedQuestionnaireDTO> solvedQuestionnaireDTOList, List<SolvedSelectionProcessTestDTO> solvedSelectionProcessTestDTOList) {
+    public StudentPerformanceDTO getStudentPerformance(Student student, List<SolvedQuestionnaire> solvedQuestionnaires, List<SolvedSelectionProcessTest> solvedSelectionProcessTestList) {
 
         List<SolvedEvaluationTestQuestion> allSolvedQuestions = mergeAllSolvedQuestions(
-                solvedQuestionnaireDTOList,
-                solvedSelectionProcessTestDTOList
+                solvedQuestionnaires,
+                solvedSelectionProcessTestList
         );
 
         // 3) Número de questionários e processos seletivos respondidos
-        int numberOfQuestionnaires = solvedQuestionnaireDTOList.size();
-        int numberOfSelectionProcessTests = solvedSelectionProcessTestDTOList.size();
+        int numberOfQuestionnaires = solvedQuestionnaires.size();
+        int numberOfSelectionProcessTests = solvedSelectionProcessTestList.size();
 
         // 4) Cálculos gerais (tempo médio, percentual de acertos, etc.)
         PerformanceGeneralStatsDTO generalStats = calculateGeneralStats(
@@ -67,19 +69,19 @@ public class PerformanceService {
     }
 
     private List<SolvedEvaluationTestQuestion> mergeAllSolvedQuestions(
-            List<SolvedQuestionnaireDTO> solvedQuestionnaireDTOList,
-            List<SolvedSelectionProcessTestDTO> solvedSelectionProcessTestDTOList
+            List<SolvedQuestionnaire> solvedQuestionnaireList,
+            List<SolvedSelectionProcessTest> solvedSelectionProcessTestList
     ) {
         List<SolvedEvaluationTestQuestion> allSolvedQuestions = new ArrayList<>();
 
         // Adiciona as questões dos questionários
-        for (SolvedQuestionnaireDTO sq : solvedQuestionnaireDTOList) {
-            allSolvedQuestions.addAll(sq.solvedQuestionList());
+        for (SolvedQuestionnaire sq : solvedQuestionnaireList) {
+            allSolvedQuestions.addAll(sq.getSolvedQuestionList());
         }
 
         // Adiciona as questões dos processos seletivos
-        for (SolvedSelectionProcessTestDTO ss : solvedSelectionProcessTestDTOList) {
-            allSolvedQuestions.addAll(ss.solvedQuestionList());
+        for (SolvedSelectionProcessTest ss : solvedSelectionProcessTestList) {
+            allSolvedQuestions.addAll(ss.getSolvedQuestionList());
         }
 
         return allSolvedQuestions;

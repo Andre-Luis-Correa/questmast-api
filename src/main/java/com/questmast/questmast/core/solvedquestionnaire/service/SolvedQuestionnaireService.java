@@ -147,4 +147,8 @@ public class SolvedQuestionnaireService {
 
         return Specification.where(questionnaireSpecification).and(studentSpecification);
     }
+
+    public List<SolvedQuestionnaire> findAllByStudent(Student student) {
+        return solvedQuestionnaireRepository.findAllByStudent(student);
+    }
 }

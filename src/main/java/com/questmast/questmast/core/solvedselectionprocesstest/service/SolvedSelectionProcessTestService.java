@@ -148,4 +148,8 @@ public class SolvedSelectionProcessTestService {
         if(student == null || selectionProcessTest == null) return null;
         return solvedSelectionProcessTestRepository.findFirstByStudentAndSelectionProcessTestOrderByEndDateTimeDesc(student, selectionProcessTest).orElse(null);
     }
+
+    public List<SolvedSelectionProcessTest> findAllByStudent(Student student) {
+        return solvedSelectionProcessTestRepository.findAllByStudent(student);
+    }
 }
