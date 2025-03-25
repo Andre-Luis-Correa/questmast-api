@@ -1,18 +1,12 @@
 package com.questmast.questmast.core.solvedevaluationtestquestion.service;
 
-import com.questmast.questmast.common.exception.type.FieldNotValidException;
 import com.questmast.questmast.common.exception.type.QuestionException;
 import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.question.service.QuestionService;
 import com.questmast.questmast.core.questionalternative.domain.entity.QuestionAlternative;
 import com.questmast.questmast.core.questionalternative.service.QuestionAlternativeService;
-import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
 import com.questmast.questmast.core.solvedevaluationtestquestion.domain.dto.SolvedEvaluationTestQuestionFormDTO;
 import com.questmast.questmast.core.solvedevaluationtestquestion.domain.model.SolvedEvaluationTestQuestion;
-import com.questmast.questmast.core.solvedselectionprocesstest.domain.dto.SolvedSelectionProcessTestDTO;
-import com.questmast.questmast.core.solvedselectionprocesstest.domain.dto.SolvedSelectionProcessTestFormDTO;
-import com.questmast.questmast.core.solvedselectionprocesstest.domain.model.SolvedSelectionProcessTest;
-import com.questmast.questmast.core.student.domain.Student;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package com.questmast.questmast.core.questionnaire.domain.model;
 
 import com.questmast.questmast.core.evaluationtest.EvaluationTest;
-import com.questmast.questmast.core.student.domain.Student;
+import com.questmast.questmast.core.student.domain.model.Student;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;

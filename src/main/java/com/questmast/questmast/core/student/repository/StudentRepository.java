@@ -1,6 +1,6 @@
 package com.questmast.questmast.core.student.repository;
 
-import com.questmast.questmast.core.student.domain.Student;
+import com.questmast.questmast.core.student.domain.model.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.questmast.questmast.core.student.domain;
+package com.questmast.questmast.core.student.domain.model;
 
 import com.questmast.questmast.core.person.NaturalPerson;
 import jakarta.persistence.Column;

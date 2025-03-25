@@ -14,7 +14,7 @@ import com.questmast.questmast.core.solvedselectionprocesstest.domain.dto.Solved
 import com.questmast.questmast.core.solvedselectionprocesstest.domain.dto.SolvedSelectionProcessTestFormDTO;
 import com.questmast.questmast.core.solvedselectionprocesstest.domain.model.SolvedSelectionProcessTest;
 import com.questmast.questmast.core.solvedselectionprocesstest.repository.SolvedSelectionProcessTestRepository;
-import com.questmast.questmast.core.student.domain.Student;
+import com.questmast.questmast.core.student.domain.model.Student;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -24,9 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Log4j2
 @Service

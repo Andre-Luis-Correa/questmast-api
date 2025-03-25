@@ -3,7 +3,9 @@ package com.questmast.questmast.core.google.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.questmast.questmast.common.exception.type.AiApiException;
+import com.questmast.questmast.core.performance.domain.dto.StudentPerformanceDTO;
 import com.questmast.questmast.core.question.domain.dto.QuestionFormDTO;
+import com.questmast.questmast.core.selectionprocesstest.domain.dto.SelectionProcessTestFormDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -132,7 +134,7 @@ public class GeminiService {
                                 }
                             },
                             {
-                                "text": "Extract all the questions from the provided PDF and return them in JSON format. The `statement` field must contain the full question text, including any auxiliary content. The `explanation` field must be in portuguese and explain the question of the test"
+                                "text": "Extract all the questions from the provided PDF and return them in JSON format. The statement field must contain the full question text, including any auxiliary content. The explanation field must be in portuguese and explain the question of the test. If there is an answer key or if the correct alternatives are marked in any way, set the correct alternative in the isCorrect field."
                             }
                         ]
                     }
@@ -167,6 +169,9 @@ public class GeminiService {
                                      "properties": {
                                        "statement": {
                                          "type": "string"
+                                       },
+                                       "isCorrect": {
+                                         "type": "boolean"
                                        }
                                      },
                                      "required": [
@@ -352,8 +357,9 @@ public class GeminiService {
         return extractQuestionsFromJson(response.body());
     }
 
-    public List<QuestionFormDTO> getQuestionsFromPdfFile(MultipartFile multipartFile)  {
+    public SelectionProcessTestFormDTO getQuestionsFromPdfFile(MultipartFile multipartFile)  {
         try {
+
             List<QuestionFormDTO> allQuestions = new ArrayList<>();
 
             PDDocument document = PDDocument.load(multipartFile.getInputStream());
@@ -384,11 +390,84 @@ public class GeminiService {
 
             document.close();
 
-            return allQuestions;
+            return new SelectionProcessTestFormDTO(null, null, null, null, null, null, allQuestions);
 
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new AiApiException("obter questões do arquivo pdf.");
         }
     }
+
+    public String getAiPerformanceAnalysis(StudentPerformanceDTO studentPerformanceDTO) {
+        try {
+            // 1. Converter DTO para JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            String performanceJson = objectMapper.writeValueAsString(studentPerformanceDTO);
+
+            // 2. Escapar o JSON, para evitar conflitos na hora de montar o payload
+            String escapedPerformanceJson = StringEscapeUtils.escapeJson(performanceJson);
+
+            // 3. Montar o prompt
+            //    Você pode ajustar o texto conforme achar melhor, incluindo mais instruções ou formatações.
+            String promptText = """
+                Você é um tutor virtual especializado em orientar estudantes com base em dados de desempenho. 
+                Abaixo está um objeto JSON contendo diversas estatísticas de um estudante. 
+                Por favor, realize uma análise detalhada desses dados e apresente:
+                  1) Uma visão geral do desempenho do estudante (tempo médio de resposta, número de avaliações, percentual de acertos).
+                  2) Comentários sobre a evolução mês a mês, destacando onde houve mais acertos ou erros.
+                  3) Disciplinas de melhor e pior desempenho, com dicas de estudos específicas.
+                  4) Recomendações gerais de melhoria (técnicas de estudo, gerenciamento de tempo, etc.).
+                Responda em Português e use um tom encorajador como se estivesse conversando com o aluno, a resposta não deve passar de 20 linhas e de ser um texto, não responda em formato json. Se não tiver dados suficientes, ou se o estudante não tiver respondido nada, apenas recomende a ele iniciar os estudos na plataforma.
+                Segue o JSON:
+                %s
+                """.formatted(escapedPerformanceJson);
+
+            // 4. Montar o corpo da requisição para a API do Gemini
+            //    Observação: o "responseMimeType" pode ser "application/json", pois estamos extraindo
+            //    o texto usando 'extractTextFromJson'. Se preferir outra abordagem, basta adaptar.
+            String requestBody = String.format("""
+        {
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "%s"
+                }
+              ]
+            }
+          ],
+          "generationConfig": {
+             "temperature": 2,
+             "topK": 40,
+             "topP": 0.95,
+             "maxOutputTokens": 8192,
+             "responseMimeType": "text/plain"
+          }
+        }
+        """, StringEscapeUtils.escapeJson(promptText));
+
+            // 5. Enviar requisição à API do Gemini
+            String geminiQuestionUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(geminiQuestionUrl))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            log.info("Resposta da API Gemini para análise de desempenho:\n{}", response.body());
+
+            // 6. Extrair o texto da resposta JSON e retornar
+            return extractTextFromJson(response.body());
+
+        } catch (Exception e) {
+            log.error("Erro ao analisar desempenho do estudante via IA: {}", e.getMessage(), e);
+            throw new AiApiException("Erro ao analisar desempenho do estudante.");
+        }
+    }
+
 }

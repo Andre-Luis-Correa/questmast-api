@@ -2,17 +2,14 @@ package com.questmast.questmast.core.questionnaire.service;
 
 import com.questmast.questmast.common.exception.type.EntityNotFoundExcpetion;
 import com.questmast.questmast.common.exception.type.QuestionException;
-import com.questmast.questmast.core.google.service.GeminiService;
 import com.questmast.questmast.core.google.service.GoogleStorageService;
 import com.questmast.questmast.core.question.domain.model.Question;
 import com.questmast.questmast.core.questionnaire.domain.dto.QuestionnaireFormDTO;
 import com.questmast.questmast.core.questionnaire.domain.dto.QuestionnaireQuestionFormDTO;
 import com.questmast.questmast.core.questionnaire.domain.model.Questionnaire;
 import com.questmast.questmast.core.questionnaire.repository.QuestionnaireRepository;
-import com.questmast.questmast.core.selectionprocesstest.domain.model.SelectionProcessTest;
-import com.questmast.questmast.core.student.domain.Student;
+import com.questmast.questmast.core.student.domain.model.Student;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

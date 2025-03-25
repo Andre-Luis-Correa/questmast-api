@@ -5,7 +5,7 @@ import com.questmast.questmast.core.authentication.user.domain.dto.UserFormDTO;
 import com.questmast.questmast.core.contact.phone.domain.model.Phone;
 import com.questmast.questmast.core.gender.domain.Gender;
 import com.questmast.questmast.core.person.cpf.domain.CPF;
-import com.questmast.questmast.core.student.domain.Student;
+import com.questmast.questmast.core.student.domain.model.Student;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

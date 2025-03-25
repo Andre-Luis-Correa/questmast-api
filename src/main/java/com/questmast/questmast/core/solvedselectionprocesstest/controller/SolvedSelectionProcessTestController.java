@@ -10,7 +10,7 @@ import com.questmast.questmast.core.solvedselectionprocesstest.domain.dto.Solved
 import com.questmast.questmast.core.solvedselectionprocesstest.domain.dto.SolvedSelectionProcessTestFormDTO;
 import com.questmast.questmast.core.solvedselectionprocesstest.domain.model.SolvedSelectionProcessTest;
 import com.questmast.questmast.core.solvedselectionprocesstest.service.SolvedSelectionProcessTestService;
-import com.questmast.questmast.core.student.domain.Student;
+import com.questmast.questmast.core.student.domain.model.Student;
 import com.questmast.questmast.core.student.service.StudentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

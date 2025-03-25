@@ -145,7 +145,7 @@ public class SelectionProcessTestController {
     }
 
     @PostMapping("/gemini")
-    public ResponseEntity<List<QuestionFormDTO>> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
+    public ResponseEntity<SelectionProcessTestFormDTO> getQuestionsFromPDF(@RequestParam("file") MultipartFile multipartFile) throws IOException, InterruptedException, ExecutionException {
         return ResponseEntity.ok(geminiService.getQuestionsFromPdfFile(multipartFile));
     }
 }

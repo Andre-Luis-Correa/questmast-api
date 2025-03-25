@@ -7,7 +7,7 @@ import com.questmast.questmast.core.question.service.QuestionService;
 import com.questmast.questmast.core.questionnaire.domain.dto.QuestionnaireFormDTO;
 import com.questmast.questmast.core.questionnaire.domain.model.Questionnaire;
 import com.questmast.questmast.core.questionnaire.service.QuestionnaireService;
-import com.questmast.questmast.core.student.domain.Student;
+import com.questmast.questmast.core.student.domain.model.Student;
 import com.questmast.questmast.core.student.service.StudentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

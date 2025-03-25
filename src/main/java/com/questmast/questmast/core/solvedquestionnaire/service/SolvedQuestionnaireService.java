@@ -14,10 +14,7 @@ import com.questmast.questmast.core.solvedquestionnaire.domain.dto.SolvedQuestio
 import com.questmast.questmast.core.solvedquestionnaire.domain.dto.SolvedQuestionnaireFormDTO;
 import com.questmast.questmast.core.solvedquestionnaire.domain.model.SolvedQuestionnaire;
 import com.questmast.questmast.core.solvedquestionnaire.repository.SolvedQuestionnaireRepository;
-import com.questmast.questmast.core.solvedselectionprocesstest.domain.dto.SolvedSelectionProcessFilterDTO;
-import com.questmast.questmast.core.solvedselectionprocesstest.domain.dto.SolvedSelectionProcessTestDTO;
-import com.questmast.questmast.core.solvedselectionprocesstest.domain.model.SolvedSelectionProcessTest;
-import com.questmast.questmast.core.student.domain.Student;
+import com.questmast.questmast.core.student.domain.model.Student;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

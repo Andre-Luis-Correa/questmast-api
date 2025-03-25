@@ -2,7 +2,7 @@ package com.questmast.questmast.core.solvedquestionnaire.repository;
 
 import com.questmast.questmast.core.questionnaire.domain.model.Questionnaire;
 import com.questmast.questmast.core.solvedquestionnaire.domain.model.SolvedQuestionnaire;
-import com.questmast.questmast.core.student.domain.Student;
+import com.questmast.questmast.core.student.domain.model.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
