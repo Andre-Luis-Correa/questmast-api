@@ -29,7 +29,22 @@ public class PerformanceController {
     private final SolvedSelectionProcessTestService solvedSelectionProcessTestService;
 
     @GetMapping("/{email}")
-    public ResponseEntity<Performance> getPerformanceHistory(@PathVariable String email) {
+    public ResponseEntity<StudentPerformanceDTO> getPerformanceHistory(@PathVariable String email) {
+        Student student = studentService.findByMainEmail(email);
+
+        SolvedQuestionnaireFilterDTO solvedQuestionnaireFilterDTO = new SolvedQuestionnaireFilterDTO(null, email);
+        List<SolvedQuestionnaireDTO> solvedQuestionnaireDTOList = solvedQuestionnaireService.list(solvedQuestionnaireFilterDTO);
+
+        SolvedSelectionProcessFilterDTO solvedSelectionProcessFilterDTO = new SolvedSelectionProcessFilterDTO(null, email);
+        List<SolvedSelectionProcessTestDTO> solvedSelectionProcessTestDTOList = solvedSelectionProcessTestService.list(solvedSelectionProcessFilterDTO);
+
+        StudentPerformanceDTO studentPerformanceDTO = performanceService.getStudentPerformance(student, solvedQuestionnaireDTOList, solvedSelectionProcessTestDTOList);
+
+        return ResponseEntity.ok(studentPerformanceDTO);
+    }
+
+    @GetMapping("/{email}/gemini")
+    public ResponseEntity<Performance> getPerformanceAnalysis(@PathVariable String email) {
         Student student = studentService.findByMainEmail(email);
 
         SolvedQuestionnaireFilterDTO solvedQuestionnaireFilterDTO = new SolvedQuestionnaireFilterDTO(null, email);
