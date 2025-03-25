@@ -138,11 +138,26 @@ public class PerformanceService {
             result.add(new MonthYearCountDTO(
                     entry.getKey().getYear(),
                     entry.getKey().getMonthValue(),
+                    getMonthName(entry.getKey().getMonthValue()),
                     entry.getValue()
             ));
         }
         return result;
     }
+
+    private String getMonthName(int monthValue) {
+        String[] meses = {
+                "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        };
+
+        if (monthValue < 1 || monthValue > 12) {
+            throw new IllegalArgumentException("Mês inválido: " + monthValue);
+        }
+
+        return meses[monthValue - 1];
+    }
+
 
 
     private List<MonthYearCorrectIncorrectDTO> getCorrectIncorrectPerMonth(List<SolvedEvaluationTestQuestion> allSolvedQuestions) {
