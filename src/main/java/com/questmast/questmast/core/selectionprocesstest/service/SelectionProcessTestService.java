@@ -26,6 +26,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Log4j2
@@ -109,6 +110,7 @@ public class SelectionProcessTestService {
     public void insertEncodedImages(List<SelectionProcessTest> selectionProcessTests) {
         for(SelectionProcessTest selectionProcessTest : selectionProcessTests) {
             for(Question question : selectionProcessTest.getQuestionList()) {
+                Collections.shuffle(question.getQuestionAlternativeList());
                 if(question.getStatementImageUrl() != null) {
                     String encodedImage = googleStorageService.encodeImageToBase64(question.getStatementImageUrl());
                     question.setStatementImageUrl(encodedImage);

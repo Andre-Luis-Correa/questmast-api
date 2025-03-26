@@ -95,6 +95,7 @@ public class QuestionnaireService {
     public void insertEncodedImages(List<Questionnaire> questionnaires) {
         for(Questionnaire questionnaire : questionnaires) {
             for(Question question : questionnaire.getQuestionList()) {
+                Collections.shuffle(question.getQuestionAlternativeList());
                 if(question.getStatementImageUrl() != null) {
                     String encodedImage = googleStorageService.encodeImageToBase64(question.getStatementImageUrl());
                     question.setStatementImageUrl(encodedImage);
